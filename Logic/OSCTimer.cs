@@ -334,6 +334,16 @@ namespace OSCLock.Logic {
                         VRChatConnector.SendToVRChat(message3Minutes);
                         VRChatConnector.SendToVRChat(message3Seconds);
                         break;
+                    case 4:
+                        var Readout4Minutes = (float)Math.Floor(remainingTime) * 2;
+                        var Readout4Seconds = (float)Math.Floor(((remainingTime) - Readout4Minutes) * 60) * 2;
+
+                        var message4Minutes = new OscMessage(readout_param, Readout4Minutes);
+                        var message4Seconds = new OscMessage(readout_param2, Readout4Seconds);
+
+                        VRChatConnector.SendToVRChat(message4Minutes);
+                        VRChatConnector.SendToVRChat(message4Seconds);
+                        break;
                     default:
                         //Invalid or no readout mode. Whatever!
                         break;

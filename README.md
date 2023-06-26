@@ -66,7 +66,8 @@ A parameter from VRC can be read to increase the time by x amount. EG: Headpats 
 | 1            | param1 is a float (0 to +1)                                 |
 | 2            | param1 is a float (-1 to +1) for higher precision           |
 | 3            | param1 and 2 are ints for minutes and seconds               |
-| 4            | Param1 is an int, param 2 is a bool for switching mins/secs |
+| 4            | Same as 3 but each int is 0.5, allowing double accuracy     |
+| # (WIP)      | Param1 is an int, param 2 is a bool for switching mins/secs |
 
 VRChat clamps synced floats, which is why so many readout mods are offered. Use whatever works for your setup.
 
