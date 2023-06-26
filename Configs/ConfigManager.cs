@@ -107,11 +107,13 @@ namespace OSCLock.Configs {
                     inc_parameter = "/avatar/parameters/timer_inc",
                     inc_step = 20,
                     dec_parameter = "/avatar/parameters/timer_dec",
-                    dec_step = 10,
+                    dec_step = 5,
 
                     readout_mode = 0,
                     readout_parameter = "/avatar/parameters/timer_readout",
                     readout_parameter2 = "",
+
+                    readout_interval = 500
                 }
             }));
         }

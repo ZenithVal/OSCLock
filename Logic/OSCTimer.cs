@@ -102,7 +102,7 @@ namespace OSCLock.Logic {
                 EndTime = DateTime.MinValue;
                 AbsoluteEndTime = DateTime.MinValue;
                 EarlietEndTime = DateTime.MinValue;
-                Program.isAllowedToUnlock = true;
+                Program.isAllowedToUnlock = false;
             }
 
             //Load previous time and check if timer is already running
@@ -315,7 +315,8 @@ namespace OSCLock.Logic {
 
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 Console.WriteLine("Failed to write vrchat readout parameter" + e.Message);
             }
         }
