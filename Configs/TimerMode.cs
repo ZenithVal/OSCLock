@@ -1,4 +1,5 @@
-﻿using Tomlet.Attributes;
+﻿using System;
+using Tomlet.Attributes;
 
 namespace OSCLock.Configs {
     public class TimerMode {
@@ -14,10 +15,13 @@ namespace OSCLock.Configs {
         //[TomlInlineComment("If the total time has reached this, it can not increase. How much total sand is there?")]
         public int absMax { get; set; }
 
-        [TomlPrecedingComment("")]
-        [TomlProperty("StartingTime")]
-        public DefaultTime defaultTime { get; set; }
-
+        [TomlProperty("starting_value")]
+        //[TomlInlineComment("Random if set to -1")]
+        public int startingValue { get; set; }
+        [TomlProperty("random_min")]
+        public int randomMin { get; set; }
+        [TomlProperty("random_max")]
+        public int randomMax { get; set; }
 
         [TomlPrecedingComment("\n--- Incoming OSC Parameters ---")]
         //[TomlInlineComment("When this Bool is true, it should increase the timer once by inc_step.")]
@@ -34,11 +38,13 @@ namespace OSCLock.Configs {
 
 
         [TomlPrecedingComment("\n-- Outgoing OSC Parameters ---")]
+        public int readout_mode { get; set; }
         public string readout_parameter { get; set; }
         public string readout_parameter2 { get; set; }
-        
-        
-        [TomlInlineComment("Time In miliseconds between messages")]
+
+
+
+        //[TomlInlineComment("Time In miliseconds between messages")]
         public int readout_interval { get; set; }
 
     }

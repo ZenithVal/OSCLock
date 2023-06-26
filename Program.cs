@@ -6,7 +6,6 @@ using OSCLock.Bluetooth;
 using OSCLock.Configs;
 using OSCLock.Logic;
 using System.IO;
-using Bluetooth.GATT;
 
 namespace OSCLock {
     internal class Program {
@@ -26,10 +25,8 @@ namespace OSCLock {
             }
 
             VRChatConnector.Start();
-            Console.WriteLine("Going to home screen...");
-            Thread.Sleep(1500);
-
-            //while (true) {}
+            //Console.WriteLine("Going to home screen...");
+            Thread.Sleep(1000);
             
             await CmdPrompt();
         }
@@ -41,9 +38,9 @@ namespace OSCLock {
             Console.WriteLine("T -- starts a new timer");
             Console.WriteLine("S -- prints status of the app and lock");
             Console.WriteLine("U -- Unlock device");
-            Console.WriteLine("Q -- quits the application");
-            Console.WriteLine("F7 -- Encrypts config & Timer files");
-            Console.WriteLine("F8 -- Decrypts config & Timer files");
+            Console.WriteLine("Q -- Quits the application");
+            Console.WriteLine("{ -- Encrypts Config & Timer files");
+            Console.WriteLine("} -- Decrypts Config & Timer files");
         }
 
         private static async Task PrintStatus() {
@@ -58,8 +55,11 @@ namespace OSCLock {
         private static ESmartLock connectedLock;
         public static async Task UnlockDevice() {
             if (!isAllowedToUnlock) {
-                Console.WriteLine("You are not allowed to unlock yet!" + isAllowedToUnlock);
+                Console.WriteLine("You are not allowed to unlock yet!\n" + isAllowedToUnlock);
                 await PrintStatus();
+
+                Thread.Sleep(1500);
+                await PrintHelp();
                 return;
             }
 
@@ -73,7 +73,7 @@ namespace OSCLock {
             //todo: Attempt unlock here
             await connectedLock.Unlock();
             
-            Console.WriteLine("Removing lock as it turned of by now");
+            Console.WriteLine("Removing lock as it turned of by now\n");
             connectedLock = null;
             Thread.Sleep(1000);
             Console.Clear();
@@ -90,49 +90,35 @@ namespace OSCLock {
 
             //if OSCTimer.HasTimeElapsed is false, don't allow encryption
             if (!OSCTimer.HasTimeElapsed()) {
-                Console.WriteLine("A timer is already running, you need to finish that before attempting encryption.");
-                await PrintStatus();
+                Console.WriteLine("A timer is already running, you need to finish that before attempting encryption.\n");
+                await PrintHelp();
                 return;
             }
 
             if (isEncrypted)
             {
-                Console.WriteLine("Application is already encrypted!");
-                await PrintStatus();
+                Console.WriteLine("Application is already encrypted!\n");
+                await PrintHelp();
                 return;
             }
             
             Encryption.EncryptApp();
             
-            Console.WriteLine("Encryption Complete");
-            isEncrypted = true;
-            Thread.Sleep(1000);
             Console.Clear();
             await PrintHelp();
         }
 
         private static async Task DecryptApp()
         {
-            //if OSCTimer.HasTimeElapsed is false, don't allow encryption
-            if (!OSCTimer.HasTimeElapsed())
+            if (!isEncrypted)
             {
-                Console.WriteLine("A timer is already running, you need to finish that before attempting decryption.");
-                await PrintStatus();
+                Console.WriteLine("Application is already decrypted!\n");
+                await PrintHelp();
                 return;
             }
 
-            if (!isEncrypted)
-            {
-                Console.WriteLine("Application is already decrypted!");
-                await PrintStatus();
-                return;
-            }
-            
             Encryption.DecryptApp();
-            
-            Console.WriteLine("Decryption Complete");
-            isEncrypted = false;
-            Thread.Sleep(1000);
+         
             Console.Clear();
             await PrintHelp();
         }
@@ -142,6 +128,16 @@ namespace OSCLock {
 
             do {
                 Console.Clear();
+                //Swithc statements for the possible UI options
+                //S - await PrintStatus();
+                //H - await PrintHelp();
+                //T - await StartTimer();
+                //U - await UnlockDevice();
+                //F7 - await EncryptApp();
+                //F8 - await DecryptApp();
+                //Q - Quit
+                //Default - Console.WriteLine($"Unknown command {Key}"); and PrintHelp();
+
                 switch (Key) {
                     case 's':
                         await PrintStatus();
@@ -154,12 +150,12 @@ namespace OSCLock {
                         break;
                     case 'u':
                         await UnlockDevice();
-                        break;
-                    case ']':
+                        break; 
+                    case '{':
                         await EncryptApp();
                         break;
-                    case '[':
-                        await DecryptApp();
+                    case '}':
+                       await DecryptApp();
                         break;
                     default:
                         Console.WriteLine($"Unknown command {Key}");

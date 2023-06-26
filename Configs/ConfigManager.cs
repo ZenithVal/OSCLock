@@ -54,8 +54,16 @@ namespace OSCLock.Configs {
 
         public static void Save() {
             try {
-                var value = TomletMain.DocumentFrom(ApplicationConfig);
-                File.WriteAllText(CONFIG_FILE, value.SerializedValue);
+                var configData = TomletMain.DocumentFrom(ApplicationConfig);
+                if (Program.isEncrypted)
+                {
+                    Encryption.Write(CONFIG_FILE, configData.SerializedValue, Program.appPassword);
+                }
+                else
+                {
+                    File.WriteAllText(CONFIG_FILE, configData.SerializedValue);
+                }
+                    
                 InitConfig();                
             }
             catch (Exception e) {
@@ -73,16 +81,21 @@ namespace OSCLock.Configs {
 
         public static void Reset() {
             File.Delete(CONFIG_FILE);
+            File.Delete("app.pass");
             File.WriteAllText(CONFIG_FILE, TomletMain.TomlStringFrom(new MainConfig {
                 port = 9001,
                 vrchatPort = 9000,
                 vrchatAddress = "127.0.0.1",
                 apiUsername = "",
                 apiPassword = "",
+                DevicePassword = "",
+                
                 Mode = ApplicationMode.Testing,
+                
                 BasicConfig = new BasicMode {
                     parameter = "/avatar/parameters/unlock"
                 },
+
                 TimerConfig = new TimerMode {
                     maxTime = 240,
                     absMin = 20,
@@ -95,8 +108,10 @@ namespace OSCLock.Configs {
                     inc_step = 20,
                     dec_parameter = "/avatar/parameters/timer_dec",
                     dec_step = 10,
-                    readout_parameter = "/avatar/parameters/timer_value",
-                    readout_interval = 500
+
+                    readout_mode = 0,
+                    readout_parameter = "/avatar/parameters/timer_readout",
+                    readout_parameter2 = "",
                 }
             }));
         }

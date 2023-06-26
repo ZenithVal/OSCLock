@@ -2,6 +2,8 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using OSCLock.Logic;
 
 //Using public static class Check in ProgramLock.cs:
 //We want to check if a file exists named app.pass, if it does not exist we can skip to the end and return null
@@ -150,16 +152,16 @@ namespace OSCLock {
             }
 
             //Require the user to Press Y  N to CONFIRM the password
-            Console.Write("Press Y to Confirm or N to Cancel");
+            Console.WriteLine("Press Y to Confirm or N to Cancel");
             var key = Console.ReadKey().Key;
             if (key != ConsoleKey.Y)
             {
-                Console.Clear();
                 return;
             }
 
-            Console.Write("Encrypting...");
+            Console.WriteLine("\nEncrypting...");
             //Create a app.pass file with the password and encrypt it using "7b7079bb6379001dce"
+            Program.appPassword = password;
             string appPassPath = "app.pass";
             string encryptedAppPass = Encrypt(password, "7b7079bb6379001dce");
             File.WriteAllText(appPassPath, encryptedAppPass);
@@ -169,12 +171,26 @@ namespace OSCLock {
             string configData = File.ReadAllText(configPath);
             string encryptedConfig = Encrypt(configData, password);
             File.WriteAllText(configPath, encryptedConfig);
+
+            Thread.Sleep(500);
+
+            Console.WriteLine("Encryption Complete\n");
+            Program.isEncrypted = true;
+
+            Thread.Sleep(500);
         }
 
 
         public static void DecryptApp()
         {
-            
+            //if OSCTimer.HasTimeElapsed is false, don't allow encryption
+            if (!OSCTimer.HasTimeElapsed())
+            {
+                Console.WriteLine("A timer is already running, decrypting will terminate it.\n");
+                Thread.Sleep(500);
+
+            }
+
             Console.WriteLine("Password:");
             string password = Console.ReadLine();
 
@@ -182,10 +198,11 @@ namespace OSCLock {
             if (password != Program.appPassword) //LEAST SECURE WAY TO DO THIS. GIVE ME AN AWARD.
             {
                 Console.WriteLine("Passwords did not match.");
-                DecryptApp();
+                Thread.Sleep(800);
+                return;
             }
 
-            Console.Write("Decrypting...");
+            Console.WriteLine("Decrypting...");
             //Delete the app.pass file
             string appPassPath = "app.pass";
             File.Delete(appPassPath);
@@ -195,6 +212,18 @@ namespace OSCLock {
             string configData = File.ReadAllText(configPath);
             string decryptedConfig = Decrypt(configData, password);
             File.WriteAllText(configPath, decryptedConfig);
+
+            Thread.Sleep(500);
+
+            Console.WriteLine("Decryption Complete\n");
+            Program.isEncrypted = false;
+
+            if (!OSCTimer.HasTimeElapsed())
+            {
+               OSCTimer.ForceEnd();
+            }
+
+            Thread.Sleep(1500);
         }
 
     }
