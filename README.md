@@ -88,10 +88,6 @@ VRChat clamps synced floats, which is why so many readout mods are offered. Use 
 | {     | Encrypts the application config with a password |
 | }     | Encrypts the application config with a password |
 
-SyncMode
-
-A float (0-1) is set and updated every second to reflect the percent of time remaining from your maximum timer value. You can use this to put the timer on your avatar like the example image below.
-
 # Credits
 
-- @FrostbyteVR is responsible for the original code of this tool.
+- @FrostbyteVR is responsible for all the original code of this tool prior to it reaching github.

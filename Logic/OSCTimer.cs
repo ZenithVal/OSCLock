@@ -25,9 +25,7 @@ namespace OSCLock.Logic {
         private static int readout_mode;
         private static string readout_param;
         private static string readout_param2;
-
-        public static async Task OnIncParam(OscMessage message) 
-        {
+        
         private static int absolute_max;
         private static DateTime lastAdded = DateTime.Now;
         public static async Task OnIncParam(OscMessage message) {
@@ -81,8 +79,17 @@ namespace OSCLock.Logic {
 
             if (doesFilesExist) {
                 try {
-                    StartTime = DateTime.ParseExact(File.ReadAllText("timer.start"), "O", CultureInfo.InvariantCulture);
-                    EndTime = DateTime.ParseExact(File.ReadAllText("timer.end"), "O", CultureInfo.InvariantCulture);
+                    if (Program.isEncrypted)
+                    {
+                        StartTime = DateTime.ParseExact(Encryption.Read("timer.start", Program.appPassword), "O", CultureInfo.InvariantCulture);
+                        EndTime = DateTime.ParseExact(Encryption.Read("timer.end", Program.appPassword), "O", CultureInfo.InvariantCulture);
+                    }
+                    else
+                    {
+                        StartTime = DateTime.ParseExact(File.ReadAllText("timer.start"), "O", CultureInfo.InvariantCulture);
+                        EndTime = DateTime.ParseExact(File.ReadAllText("timer.end"), "O", CultureInfo.InvariantCulture);
+                    }
+                    
                     AbsoluteEndTime = StartTime.AddMinutes(absolute_max);
                     EarlietEndTime = StartTime.AddMinutes(absolute_min);
                     Program.isAllowedToUnlock = false;
@@ -95,6 +102,8 @@ namespace OSCLock.Logic {
                     AbsoluteEndTime = DateTime.MinValue;
                     EarlietEndTime = DateTime.MinValue;
                     Program.isAllowedToUnlock = true;
+
+                    Console.WriteLine("Failed to restore timer, start a new one.");
                 }
             }
             else {
@@ -110,13 +119,14 @@ namespace OSCLock.Logic {
 
         public static void AddTime(double minutesToAdd) {
             var maxTime = ConfigManager.ApplicationConfig.TimerConfig.maxTime;
-            if (maxTime > 0 && minutesToAdd > 0) {
-                var newTimeSpan = (int) (EndTime.AddSeconds(minutesToAdd) - DateTime.Now).TotalMinutes;
-                if (newTimeSpan > maxTime) {
-                    Console.WriteLine("Reached max allowed accomulated time");
-                    minutesToAdd -= (newTimeSpan - maxTime);
-                }
-            }
+
+            var newTimeSpan = (int)(EndTime.AddMinutes(minutesToAdd) - DateTime.Now).TotalMinutes;
+
+            if (newTimeSpan > maxTime) {
+                Console.WriteLine("Reached timer device cap");
+                //If the new time span is greater than the max time, we need to remove the difference from the minutes to add
+                minutesToAdd -= (newTimeSpan - maxTime);
+             }
             
             var newEndTime = EndTime.AddMinutes(minutesToAdd);
 
@@ -133,7 +143,13 @@ namespace OSCLock.Logic {
 
             EndTime = newEndTime;
             try {
-                File.WriteAllText("timer.end", EndTime.ToString("O"));
+                if (Program.isEncrypted) {
+                    Encryption.Write("timer.end", EndTime.ToString("O"), Program.appPassword);
+                }
+                else {
+                    File.WriteAllText("timer.end", EndTime.ToString("O"));
+                }
+                
             }
             catch (Exception e) {
                 Console.WriteLine("Failed to update endtime file" + e.Message);
@@ -202,6 +218,7 @@ namespace OSCLock.Logic {
             var key = Console.ReadKey().Key;
             if (key != ConsoleKey.Y) {
                 Console.Clear();
+                await Program.PrintHelp();
                 return;
             }
 
@@ -225,12 +242,20 @@ namespace OSCLock.Logic {
             Console.WriteLine($"{startingTime} minutes.\n");
 
             StartTime = DateTime.Now;
-            File.WriteAllText("timer.start", StartTime.ToString("O"));
-
             EndTime = StartTime.AddMinutes(startingTime);
-            File.WriteAllText("timer.end", EndTime.ToString("O"));
+            AbsoluteEndTime = StartTime.AddMinutes(absolute_max);
+            EarlietEndTime = StartTime.AddMinutes(absolute_min);
 
-            StartTime = StartTime.AddMinutes(absolute_max);
+            if (Program.isEncrypted)
+            {
+                Encryption.Write("timer.start", StartTime.ToString("O"), Program.appPassword);
+                Encryption.Write("timer.end", EndTime.ToString("O"), Program.appPassword);
+            }
+            else
+            {
+                File.WriteAllText("timer.start", StartTime.ToString("O"));
+                File.WriteAllText("timer.end", EndTime.ToString("O"));
+            }
 
             Program.isAllowedToUnlock = false;
 

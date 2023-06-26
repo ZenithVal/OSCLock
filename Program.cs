@@ -47,18 +47,21 @@ namespace OSCLock {
             var appConfig = ConfigManager.ApplicationConfig;
             Console.WriteLine($"Operating in {appConfig.Mode} mode.");
             if (appConfig.Mode == ApplicationMode.Timer) {
-                Console.WriteLine("Time left: " + (int)OSCTimer.GetTimeLeftTotal() + " minutes");
+                Console.WriteLine("Time left: " + (int)OSCTimer.GetTimeLeftTotal() + " minutes \n");
             }
-            Console.WriteLine("Allowed to unlock: " + isAllowedToUnlock);
+
+            await PrintHelp();
+
+            //Console.WriteLine("Allowed to unlock: " + isAllowedToUnlock + "\n");
         }
 
         private static ESmartLock connectedLock;
         public static async Task UnlockDevice() {
             if (!isAllowedToUnlock) {
-                Console.WriteLine("You are not allowed to unlock yet!\n" + isAllowedToUnlock);
+                Console.WriteLine("You are not allowed to unlock yet!");
                 await PrintStatus();
 
-                Thread.Sleep(1500);
+                Thread.Sleep(1000);
                 await PrintHelp();
                 return;
             }
