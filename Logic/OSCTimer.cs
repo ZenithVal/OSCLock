@@ -302,10 +302,6 @@ namespace OSCLock.Logic {
         }
 
         private static async void OnProgress(object sender, ElapsedEventArgs elapsedEventArgs) {
-            //Readout mode 0: No functionality! We can skip sending data out to VRChat.
-            //Readout mode 1: We'll output to readout_parameter the total time left as a float between 0 and 1.
-            //Readout mode 2: We'll output to readout_parameter the total time left as a float between -1 and +1.
-            //Readout mode 2: We'll output two ints to VRC. The first will be the minutes left, the second will be the seconds left.
 
             var remainingTime = ((EndTime - DateTime.Now).TotalMinutes);
 
@@ -314,19 +310,21 @@ namespace OSCLock.Logic {
             {
                 switch (readout_mode)
                 {
-                    case 1:
+                    case 1: //Single Float readout 0 to +1
                         var Readout1 = (float)(remainingTime / maxAccumulated);
                         var message1 = new OscMessage(readout_param, Readout1);
                         VRChatConnector.SendToVRChat(message1);
                         break;
-                    case 2:
+
+                    case 2: //Single Float readout -1 to +1
                         var Readout2 = (float)((remainingTime / maxAccumulated * 2) - 1);
                         var message2 = new OscMessage(readout_param, Readout2);
                         VRChatConnector.SendToVRChat(message2);
                         break;
-                    case 3:
-                        var Readout3Minutes = (float)Math.Floor(remainingTime);
-                        var Readout3Seconds = (float)Math.Floor((remainingTime - Readout3Minutes) * 60);
+
+                    case 3: //Double Float readout -1 to +1 Float 1 is mintues while Float 2 is seconds
+                        var Readout3Minutes = (float)(remainingTime / maxAccumulated) * 2 - 1;
+                        var Readout3Seconds = (float)(remainingTime - Math.Floor(Readout3Minutes)) * 2 - 1;
 
                         var message3Minutes = new OscMessage(readout_param, Readout3Minutes);
                         var message3Seconds = new OscMessage(readout_param2, Readout3Seconds);
@@ -334,9 +332,10 @@ namespace OSCLock.Logic {
                         VRChatConnector.SendToVRChat(message3Minutes);
                         VRChatConnector.SendToVRChat(message3Seconds);
                         break;
-                    case 4:
-                        var Readout4Minutes = (float)remainingTime * 2;
-                        var Readout4Seconds = (float)(remainingTime - Readout4Minutes) * 120;
+
+                    case 4: //Double int readout, straight translation of minutes and seconds
+                        var Readout4Minutes = (float)Math.Floor(remainingTime);
+                        var Readout4Seconds = (float)Math.Floor((remainingTime - Readout4Minutes) * 60);
 
                         var message4Minutes = new OscMessage(readout_param, Readout4Minutes);
                         var message4Seconds = new OscMessage(readout_param2, Readout4Seconds);
@@ -344,6 +343,18 @@ namespace OSCLock.Logic {
                         VRChatConnector.SendToVRChat(message4Minutes);
                         VRChatConnector.SendToVRChat(message4Seconds);
                         break;
+
+                    case 5: //Double int readout, 0.5 per int; allows for higher precision. 
+                        var Readout5Minutes = (float)remainingTime * 2;
+                        var Readout5Seconds = (float)(remainingTime - Readout5Minutes) * 120;
+
+                        var message5Minutes = new OscMessage(readout_param, Readout5Minutes);
+                        var message5Seconds = new OscMessage(readout_param2, Readout5Seconds);
+
+                        VRChatConnector.SendToVRChat(message4Minutes);
+                        VRChatConnector.SendToVRChat(message4Seconds);
+                        break;
+
                     default:
                         //Invalid or no readout mode. Whatever!
                         break;
