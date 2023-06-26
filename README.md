@@ -23,17 +23,16 @@ This guide assumes you have an Esseesmart bluetooth lock and have set it up to b
 
 I throw my regular keys into a lockbox locked by the bluetooth lock.
 
-
 # Config
 
-| Value                 | Info                                                        | Default     |
-|:--------------------- | ----------------------------------------------------------- |:-----------:|
-| ip                    | Address to send OSC data to                                 | "127.0.0.1" |
-| listener_port         | Port to listen for OSC data on                              | 9001        |
-| write_port            | Port to send OSC data to                                    | 9000        |
-| mode                  | Timer is the only mode atm                                             | ""     |
-| esmart_username       | Account username for login                                  | ""          |
-| esmart_password       | Account password for login                                  | ""          |
+| Value           | Info                                                        | Default     |
+|:--------------- | ----------------------------------------------------------- |:-----------:|
+| ip              | Address to send OSC data to                                 | "127.0.0.1" |
+| listener_port   | Port to listen for OSC data on                              | 9001        |
+| write_port      | Port to send OSC data to                                    | 9000        |
+| mode            | Timer is the only mode atm                                  | ""          |
+| esmart_username | Account username for login                                  | ""          |
+| esmart_password | Account password for login                                  | ""          |
 | device_password | Lock passcode will be written here after a successful login | ""          |
 
 ### Mode - Timer
@@ -41,34 +40,33 @@ I throw my regular keys into a lockbox locked by the bluetooth lock.
 You won't be able to unlock the Bluetooth lock until this timer finishes.
 A parameter from VRC can be read to increase the time by x amount. EG: Headpats increase the timer by 1 minute
 
-| Value              | Info                                                          | Default         |
-|:------------------ | ------------------------------------------------------------- |:---------------:|
-| max                | Max held minutes. How much sand can the hourglass hold?       | 60              |
-| absolute_min       | Miniumum time that must pass before the system can unlock.    | 0               |
-| absolute_max       | If the total time has reached this, it can not increase       | 0               |
-|
-| starting_value     | Time in minutes the timer should start at. Random if -1       | 0               |
-| random_min         | Random minimum time                                           | 40              |
-| random_min         | Random maximum time                                           | 60              |
-|
-| inc_parameter      | When this Bool is true via OSC, it should increase the timer. | ""     |
-| inc_step           | Time in minutes to add (int)                                  | 1               |
-| dec_parameter      | When this Bool is true via OSC, it should decrease the timer. | ""     |
-| dec_step           | Time in minutes to subtract (int)                             | 1               |
-|
-| readout_mode       | Method of translating time remaining via OSC. Chart below     | 1               |
-| readout_parameter  | Readout parameter 1                                           | "" |
-| readout_parameter2 | Readout parameter 2 (optional)                                | ""              |
-| readout_interval   | Time in miliseconds between parameter updates.                | 500             |
+| Value              | Info                                                          | Default |
+|:------------------ | ------------------------------------------------------------- |:-------:|
+| max                | Max held minutes. How much sand can the hourglass hold?       | 60      |
+| absolute_min       | Miniumum time that must pass before the system can unlock.    | 0       |
+| absolute_max       | If the total time has reached this, it can not increase       | 0       |
+|                    |                                                               |         |
+| starting_value     | Time in minutes the timer should start at. Random if -1       | 0       |
+| random_min         | Random minimum time                                           | 40      |
+| random_min         | Random maximum time                                           | 60      |
+|                    |                                                               |         |
+| inc_parameter      | When this Bool is true via OSC, it should increase the timer. | ""      |
+| inc_step           | Time in minutes to add (int)                                  | 1       |
+| dec_parameter      | When this Bool is true via OSC, it should decrease the timer. | ""      |
+| dec_step           | Time in minutes to subtract (int)                             | 1       |
+|                    |                                                               |         |
+| readout_mode       | Method of translating time remaining via OSC. Chart below     | 1       |
+| readout_parameter  | Readout parameter 1                                           | ""      |
+| readout_parameter2 | Readout parameter 2 (optional)                                | ""      |
+| readout_interval   | Time in miliseconds between parameter updates.                | 500     |
 
-
-| readout_mode | Use of Readout parameters                            |
-|:------------ | ---------------------------------------------------- |
-| 0            | No readout parameter will be used                    |
-| 1            | param1 is a float (0 to +1)                      |
-| 2            | param1 is a float (-1 to +1) for higher precision |
-| 3            | param1 and 2 are ints for minutes and seconds    |
-| 4            | Param1 is an int, param 2 is a bool for switching mins/secs  |
+| readout_mode | Use of Readout parameters                                   |
+|:------------ | ----------------------------------------------------------- |
+| 0            | No readout parameter will be used                           |
+| 1            | param1 is a float (0 to +1)                                 |
+| 2            | param1 is a float (-1 to +1) for higher precision           |
+| 3            | param1 and 2 are ints for minutes and seconds               |
+| 4            | Param1 is an int, param 2 is a bool for switching mins/secs |
 
 VRChat clamps synced floats, which is why so many readout mods are offered. Use whatever works for your setup.
 
@@ -87,15 +85,12 @@ VRChat clamps synced floats, which is why so many readout mods are offered. Use 
 | S     | Prints the status of the app and lock           |
 | U     | Begins unlock process if available              |
 | Q     | Quits the application                           |
-| {    | Encrypts the application config with a password  |
-| }    | Encrypts the application config with a password  |
+| {     | Encrypts the application config with a password |
+| }     | Encrypts the application config with a password |
 
 SyncMode
 
-
 A float (0-1) is set and updated every second to reflect the percent of time remaining from your maximum timer value. You can use this to put the timer on your avatar like the example image below.
-
-
 
 # Credits
 
