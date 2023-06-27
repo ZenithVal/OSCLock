@@ -273,8 +273,8 @@ namespace OSCLock.Logic {
 
                 _timer.Stop();
 
-                var message = new OscMessage(readout_param, 0.0);
-                var message2 = new OscMessage(readout_param2, 0.0);
+                var message = new OscMessage(readout_param, -1.0);
+                var message2 = new OscMessage(readout_param2, -1.0);
                 VRChatConnector.SendToVRChat(message);
                 VRChatConnector.SendToVRChat(message2);
                 //Makes sure the VRC param is set to 0.
@@ -324,8 +324,8 @@ namespace OSCLock.Logic {
                         break;
 
                     case 3: //Double Float readout -1 to +1 Float 1 is mintues while Float 2 is seconds
-                        var Readout3Minutes = (float)(remainingTime / maxAccumulated) * 2 - 1;
-                        var Readout3Seconds = (float)(remainingTime - Math.Floor(Readout3Minutes)) * 2 - 1;
+                        var Readout3Minutes = (float)((remainingTime / maxAccumulated * 2) - 1);
+                        var Readout3Seconds = (float)(((remainingTime - Math.Floor(remainingTime))) * 2) - 1;
 
                         var message3Minutes = new OscMessage(readout_param, Readout3Minutes);
                         var message3Seconds = new OscMessage(readout_param2, Readout3Seconds);
@@ -334,8 +334,8 @@ namespace OSCLock.Logic {
                         VRChatConnector.SendToVRChat(message3Seconds);
                         break;
 
-                    case 4: //Float -1 to +1 for minutes, 1:1 int for seconds
-                        var Readout4Minutes = (float)(remainingTime / maxAccumulated) * 2 - 1;
+                    case 4: //Float -1 to +1 for minutes, Rounded down int for seconds
+                        var Readout4Minutes = (float)((remainingTime / maxAccumulated * 2) - 1);
                         var Readout4Seconds = (float)Math.Floor((remainingTime - Math.Floor(remainingTime)) * 60);
 
                         var message4Minutes = new OscMessage(readout_param, Readout4Minutes);
@@ -345,7 +345,7 @@ namespace OSCLock.Logic {
                         VRChatConnector.SendToVRChat(message4Seconds);
                         break;
 
-                    case 5: //Double int readout, straight translation of minutes and seconds
+                    case 5: //Double int readout, straight translation of minutes and seconds (rounded down)
                         var Readout5Minutes = (float)Math.Floor(remainingTime);
                         var Readout5Seconds = (float)Math.Floor((remainingTime - Readout5Minutes) * 60);
 
@@ -356,7 +356,7 @@ namespace OSCLock.Logic {
                         VRChatConnector.SendToVRChat(message5Seconds);
                         break;
 
-                    case 6: //Signle int and a boolean to tell if it's sending minutes or seconds.
+                    case 6: //Signle int rounded down and a boolean to tell if it's sending minutes or seconds.
                         var Readout6Minutes = (float)Math.Floor(remainingTime);
                         var Readout6Seconds = (float)Math.Floor((remainingTime - Readout6Minutes) * 60);
 
