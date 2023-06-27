@@ -1,27 +1,41 @@
-VRChat OSC Tool that can put control an eseesmart bluetooth lock.
+VRChat OSC Tool that can put control an eseesmart bluetooth lock. Maybe more later.
 
-This app can control an eseesmart Bluetooth lock. I've personally tested it with [this lock.](https://www.amazon.com/gp/product/B096S7PTS1) <br>
-I take no responsibility for unsafe usage of this app and provide no warranty. Have a backup plan!
+This app can control an eseesmart Bluetooth lock. Personally tested it with [this lock.](https://www.amazon.com/gp/product/B096S7PTS1) <br> We take no responsibility for unsafe usage and provide no warranty. Have a backup plan!
 
 <br>
 
+## Getting the app
+
+1. **Via the executable**
+   - Download latest zip [from releases](Link.goes.here)
+   - Extract wherever.
+   - Run the Executable.
+   - Follow first time setup.
+2. **From the source**
+   - Clone the git
+   - Open the sln
+   - Install required nuget packages.
+
 # First Time Setup
 
-This guide assumes you have an Esseesmart bluetooth lock and have set it up to be opened with the app. If not, go ahead and do that that first. You can remove all fingerprints from the lock.
+This guide assumes you have an Esseesmart bluetooth lock and have set it up to be opened with the app. <br> If not, go ahead and do that that first. You probably don't want to assign fingerprints to the lock.
 
-1. Start the application, it will generate a config.toml file
-2. Exit the application and open the config.toml file
-3. Add your esmart credetials and save the file
-4. Start OSCLock
-5. Start a new timer
-6. Unlock the lock
-7. if successful, device_password should be filled in within the config
-8. You can remove your esmart login info and just leave the device password
-9. Configure everything to your hearts content.
+1. Start the application, it will generate a config.toml file.
+2. Exit the application and open the config.toml file.
+3. Add your esmart credetials and save the file.
+4. Start OSCLock.
+5. Start a new timer. (T) 
+6. Unlock yoru lock. (U)
+7. If successful, device_password should be filled in within the config.
+9. Configure everything else in the confg.toml to your heart's content.
 10. You can change your esmart login or remove the app from your phone if you'd like.
-11. Encryption works well if you have a friend you trust to hold onto a backup code
+11. Encryption works well if you have a friend you trust to hold onto the code.
 
-I throw my regular keys into a lockbox locked by the bluetooth lock.
+A simple use case might be throwing your regular lock keys into a lockbox locked by the bluetooth lock. 
+
+--- 
+<br>
+
 
 # Config
 
@@ -31,9 +45,13 @@ I throw my regular keys into a lockbox locked by the bluetooth lock.
 | listener_port   | Port to listen for OSC data on                              | 9001        |
 | write_port      | Port to send OSC data to                                    | 9000        |
 | mode            | Timer is the only mode atm                                  | ""          |
+| lock_type | Not used yet, maybe for different bluetooth locks later.    | eseesmart |
 | esmart_username | Account username for login                                  | ""          |
 | esmart_password | Account password for login                                  | ""          |
 | device_password | Lock passcode will be written here after a successful login | ""          |
+
+<br>
+
 
 ### Mode - Timer
 
@@ -43,10 +61,10 @@ A parameter from VRC can be read to increase the time by x amount. EG: Headpats 
 | Value              | Info                                                          | Default |
 |:------------------ | ------------------------------------------------------------- |:-------:|
 | max                | Max held minutes. How much sand can the hourglass hold?       | 60      |
-| absolute_min       | Miniumum time that must pass before the system can unlock.    | 0       |
-| absolute_max       | If the total time has reached this, it can not increase       | 0       |
+| absolute_min       | Will force inc_step until overall time reaches this. 0 disables.   | 0       |
+| absolute_max       | If overall time reaches this, inc_step wont work. 0 disables.       | 0       |
 |                    |                                                               |         |
-| starting_value     | Time in minutes the timer should start at. Random if -1       | 0       |
+| starting_value     | Time in minutes the timer should start at. Random if -1       | -1       |
 | random_min         | Random minimum time                                           | 40      |
 | random_min         | Random maximum time                                           | 60      |
 |                    |                                                               |         |
@@ -59,23 +77,24 @@ A parameter from VRC can be read to increase the time by x amount. EG: Headpats 
 | readout_parameter  | Readout parameter 1                                           | ""      |
 | readout_parameter2 | Readout parameter 2 (optional)                                | ""      |
 | readout_interval   | Time in miliseconds between parameter updates.                | 500     |
+<br>
+
+
+Readout mode determines how data is output from OSCLock. Choose a method that works for you and your avatar. <br> P1 = readout_parameter and P2 = readout_parameter2
 
 | readout_mode | Use of Readout parameters                                   |
 |:------------ | ----------------------------------------------------------- |
-| 0            | No readout parameter will be used                           |
-| 1            | param1 is a float (0 to +1)                                 |
-| 2            | param1 is a float (-1 to +1) for higher precision           |
-| 3            | param1 and 2 are ints for minutes and seconds, rounded down |
-| 4            | Same as 3 but each int is 0.5 and there's no rounding       |
-| # (WIP)      | Param1 is an int, param 2 is a bool for switching mins/secs |
+| 0 | No readout parameter will be used |
+| 1 | P1, float 0 to +1 |
+| 2 | P1, float -1 to +1 | 
+| 3 | P1, float -1 to +1 for minutes. P2, float -1 to +1 for seconds |
+| 4 | P1, float -1 to +1 for minutes. P2, int 1:1 with seconds |
+| 5 | P1 & P2, ints 1:1 minutes and seconds respectively | 
+| 6 | P1, int 1:1 mins/seconds. P2, bool determines min/sec data |
 
-VRChat clamps synced floats, which is why so many readout mods are offered. Use whatever works for your setup.
+--- 
+<br>
 
-### TBD Mode
-
-| Value | Info | Default |
-|:----- | ---- |:-------:|
-|       |      |         |
 
 # In app Controls
 
@@ -88,6 +107,26 @@ VRChat clamps synced floats, which is why so many readout mods are offered. Use 
 | Q     | Quits the application                           |
 | {     | Encrypts the application config with a password |
 | }     | Encrypts the application config with a password |
+
+--- 
+<br>
+
+
+# FAQ
+### Q: My Parameters aren't working! <br>
+> A1: Reset OSC or delete the OSC folder at `C:\Users\(Username)\AppData\LocalLow\VRChat\VRChat` <br>
+A2: Did you include `/avatar/parameters/` EG: `/avatar/parameters/` <br>
+A3: If your VRC parameter has spaces, replace the spaces with underscores, EG: `head_pat_sensor` 
+
+### Q: 
+> A: 
+
+### Q: 
+> A: 
+
+
+
+
 
 # Credits
 

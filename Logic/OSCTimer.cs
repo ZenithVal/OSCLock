@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using OSCLock.Configs;
 using SharpOSC;
+using Windows.Foundation.Metadata;
 
 namespace OSCLock.Logic {
     public static class OSCTimer {
@@ -351,8 +352,24 @@ namespace OSCLock.Logic {
                         var message5Minutes = new OscMessage(readout_param, Readout5Minutes);
                         var message5Seconds = new OscMessage(readout_param2, Readout5Seconds);
 
-                        VRChatConnector.SendToVRChat(message4Minutes);
-                        VRChatConnector.SendToVRChat(message4Seconds);
+                        VRChatConnector.SendToVRChat(message5Minutes);
+                        VRChatConnector.SendToVRChat(message5Seconds);
+                        break;
+
+                    case 6: //Signle int and a boolean to tell if it's sending minutes or seconds.
+                        var Readout6Minutes = (float)Math.Floor(remainingTime);
+                        var Readout6Seconds = (float)Math.Floor((remainingTime - Readout6Minutes) * 60);
+
+                        var message6Minutes = new OscMessage(readout_param, Readout6Minutes);
+                        var message6BoolFalse = new OscMessage(readout_param2, false);
+
+                        VRChatConnector.SendToVRChat(message6BoolFalse);
+                        VRChatConnector.SendToVRChat(message6Minutes);
+
+                        var message6Seconds = new OscMessage(readout_param, Readout6Seconds);
+                        var message6BoolTrue = new OscMessage(readout_param2, true);
+                        VRChatConnector.SendToVRChat(message6BoolTrue);
+                        VRChatConnector.SendToVRChat(message6Seconds);
                         break;
 
                     default:
