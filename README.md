@@ -1,4 +1,3 @@
-VRChat OSC Tool that can put control an eseesmart bluetooth lock. Maybe more later.
 
 This app can control an eseesmart Bluetooth lock. Personally tested it with [this lock.](https://www.amazon.com/gp/product/B096S7PTS1) <br> We take no responsibility for unsafe usage and provide no warranty. Have a backup plan!
 
