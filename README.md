@@ -16,7 +16,7 @@ This app can control an eseesmart Bluetooth lock. Personally tested it with [thi
 
 # First Time Setup
 
-This guide assumes you have an Esseesmart bluetooth lock and have set it up to be opened with the app. <br> If not, go ahead and do that that first. You probably don't want to assign fingerprints to the lock.
+This guide assumes you have an Esseesmart bluetooth lock and have set it up to be opened with the app. <br> If not, go ahead and do that that first. You probably don't need to assign fingerprints to the lock. <br> This app can be used without a physical lock in a more pretend manner if you want as well.
 
 1. Start the application, it will generate a config.toml file.
 2. Exit the application and open the config.toml file.

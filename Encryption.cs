@@ -5,15 +5,12 @@ using System.Text;
 using System.Threading;
 using OSCLock.Logic;
 
-//Using public static class Check in ProgramLock.cs:
-//We want to check if a file exists named app.pass, if it does not exist we can skip to the end and return null
-//If it does exist, we want to read the file, decrypt it using a string listed here and return that instead.
+//This is mostly just fun security theater. Strings are not protected in memory, and you have access to the source code here.
 
 namespace OSCLock {
 
     public static class Encryption
     {
-        //This is just security theater (and practice for me). Don't worry about it.
         public static string Read(string filePath, string encryptionKey)
         {
             //Read incoming data and decrypt it
@@ -81,7 +78,7 @@ namespace OSCLock {
             }
         }
 
-        // Oublic Static string Encrypt using AES. 
+        // Encrypt using AES. 
         public static string Encrypt(string decryptedData, string encryptionKey)
         {
             byte[] keyBytes = Encoding.UTF8.GetBytes(encryptionKey);
@@ -121,19 +118,6 @@ namespace OSCLock {
             }
         }
 
-            //We need a public static for EncryptApp() that will encrypt the config.toml file and create a app.pass file with the password
-
-            //Request the user type a password
-            //the password must be The key must be 16, 24, or 32 bytes long
-            //so we need to pad the password with spaces to make it 32 bytes long
-            //we can do this by adding spaces to the end of the string until it is 32 bytes long
-
-            //Require the user to Press Y o N to CONFIRM the password
-
-            //Encrypt the config.toml file with the password
-
-            //Create a app.pass file with the password and encrypt it using "7b7079bb6379001dce"
-
         public static void EncryptApp()
             {
             //Request the user type a password
@@ -160,7 +144,7 @@ namespace OSCLock {
             }
 
             Console.WriteLine("\nEncrypting...");
-            //Create a app.pass file with the password and encrypt it using "7b7079bb6379001dce"
+            //Create a app.pass file with the password and encrypt it using a generic key.
             Program.appPassword = password;
             string appPassPath = "app.pass";
             string encryptedAppPass = Encrypt(password, "7b7079bb6379001dce");
@@ -183,7 +167,7 @@ namespace OSCLock {
 
         public static void DecryptApp()
         {
-            //if OSCTimer.HasTimeElapsed is false, don't allow encryption
+            //if a timer is already running, allow the user to use the key as a failsafe.
             if (!OSCTimer.HasTimeElapsed())
             {
                 Console.WriteLine("A timer is already running, decrypting will terminate it.\n");
@@ -194,8 +178,8 @@ namespace OSCLock {
             Console.WriteLine("Password:");
             string password = Console.ReadLine();
 
-            //If the passwords do not match, ask the user to try again
-            if (password != Program.appPassword) //LEAST SECURE WAY TO DO THIS. GIVE ME AN AWARD.
+            //If the passwords do not match, boot the to the main screen.
+            if (password != Program.appPassword) //LEAST SECURE WAY TO DO THIS. GIVE ZENI AN AWARD.
             {
                 Console.WriteLine("Passwords did not match.");
                 Thread.Sleep(800);
