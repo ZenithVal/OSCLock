@@ -15,13 +15,8 @@ namespace OSCLock.Configs {
         //[TomlInlineComment("If the total time has reached this, it can not increase. How much total sand is there?")]
         public int absMax { get; set; }
 
-        [TomlProperty("starting_value")]
-        //[TomlInlineComment("Random if set to -1")]
-        public int startingValue { get; set; }
-        [TomlProperty("random_min")]
-        public int randomMin { get; set; }
-        [TomlProperty("random_max")]
-        public int randomMax { get; set; }
+        [TomlProperty("StartingTime")]
+        public DefaultTime StartTime { get; set; }
 
         [TomlPrecedingComment("\n--- Incoming OSC Parameters ---")]
         //[TomlInlineComment("When this Bool is true, it should increase the timer once by inc_step.")]

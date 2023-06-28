@@ -98,6 +98,7 @@
         <Compile Include="Configs\IncrementalParameterConfig.cs" />
         <Compile Include="Configs\MainConfig.cs" />
         <Compile Include="Configs\TimerMode.cs" />
+        <Compile Include="Encryption.cs" />
         <Compile Include="ESmartLockAPI.cs" />
         <Compile Include="Logic\IUnlockableLogic.cs" />
         <Compile Include="Logic\OSCBasic.cs" />

@@ -11,15 +11,8 @@ namespace OSCLock.Configs {
 
         [TomlProperty("write_port")]
         public int vrchatPort { get; set; }
-        [TomlProperty("write_address")]
-        public string vrchatAddress { get; set; }
-        
-        [TomlProperty("device_password_from_cloud")]
-        [TomlPrecedingComment("The password to the device, gotten from the cloud")]
-        public string DevicePassword { get; set; }
 
-        [TomlPrecedingComment("\n--- Eseesmart lock Login ---")]
-        [TomlPrecedingComment("If you have your lock bound to the app/cloud, we must get the device's password from the cloud for now\n\nFor this the username and password of an account the lock is shared with is required.")]
+        [TomlPrecedingComment("\n--- Eseesmart lock Login ---\nIf you have your lock bound to the app/cloud, we must get the device's password from the cloud for now\n\nFor this the username and password of an account the lock is shared with is required.")]
         [TomlProperty("esmart_username")]
         public string apiUsername { get; set; }
 
@@ -31,6 +24,9 @@ namespace OSCLock.Configs {
         [TomlInlineComment("The password to the device, gotten from the cloud after a successful login.")]
         public string DevicePassword { get; set; }
 
+        [TomlProperty("Mode")]
+        public ApplicationMode Mode { get; set; }
+        
         [TomlPrecedingComment("")]
         [TomlProperty("Basic")]
         public BasicMode BasicConfig { get; set; }

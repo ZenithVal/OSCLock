@@ -98,7 +98,7 @@ namespace OSCLock.Configs {
                 TimerConfig = new TimerMode {
                     maxTime = 240,
                     absMin = 20,
-                    defaultTime = new DefaultTime {
+                    StartTime = new DefaultTime {
                         startingValue = -1,
                         randomMin = 10,
                         randomMax = 20

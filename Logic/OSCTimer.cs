@@ -29,7 +29,6 @@ namespace OSCLock.Logic {
         private static string readout_param;
         private static string readout_param2;
         
-        private static int absolute_max;
         private static DateTime lastAdded = DateTime.Now;
         public static async Task OnIncParam(OscMessage message) {
             var shouldAdd = (bool) message.Arguments[0];
@@ -257,9 +256,10 @@ namespace OSCLock.Logic {
             Console.WriteLine("If encrypted, the key can be used as a failsafe.\n");
             //Random disclaimer
             var TimerConfig = ConfigManager.ApplicationConfig.TimerConfig;
-            var startingTime = TimerConfig.startingValue;
-            if (startingTime < 0) {
-                Console.WriteLine($"The time is set to random between {TimerConfig.randomMin} and {TimerConfig.randomMax} minutes.");
+            var startTimeConfig = TimerConfig.StartTime;
+            int startingTime = startTimeConfig.startingValue;
+            if (startTimeConfig.startingValue < 0) {
+                Console.WriteLine($"The time is set to random between {startTimeConfig.randomMin} and {startTimeConfig.randomMax} minutes.");
             }
 
             var minimumTime = ConfigManager.ApplicationConfig.TimerConfig.absMin;
@@ -280,7 +280,7 @@ namespace OSCLock.Logic {
             Console.Write("New timer started with ");
 
             if (startingTime < 0) {
-                var randomTime = new Random().Next(TimerConfig.randomMin, TimerConfig.randomMax);
+                var randomTime = new Random().Next(startTimeConfig.randomMin, startTimeConfig.randomMax);
                 startingTime = randomTime;
                 Console.Write("randomly rolled starting time ");
             }
