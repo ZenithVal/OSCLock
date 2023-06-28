@@ -1,4 +1,6 @@
-This app can control an eseesmart Bluetooth lock. Personally tested it with [this lock.](https://www.amazon.com/gp/product/B096S7PTS1) <br> We take no responsibility for unsafe usage and provide no warranty. Have a backup plan!
+# OSCLock
+
+This app can control any bluetooth lock that uses the ESmartLock app. It's been tested it with [this lock.](https://amzn.to/3JAGxmm) <br> A simple use case might be throwing regular keys into a lockbox secured by the bluetooth lock. <br> We take no responsibility for unsafe usage and provide no warranty. Have a backup plan!
 
 <br>
 
@@ -16,7 +18,7 @@ This app can control an eseesmart Bluetooth lock. Personally tested it with [thi
 
 # First Time Setup
 
-This guide assumes you have an Esseesmart bluetooth lock and have set it up to be opened with the app. <br> If not, go ahead and do that that first. You probably don't need to assign fingerprints to the lock. <br> This app can be used without a physical lock in a more pretend manner if you want as well.
+This guide assumes you have an ESmartLock bluetooth lock and have set it up to be opened with the app. <br> If not, go ahead and do that that first. You probably don't need to assign fingerprints to the lock. <br> This app can be used without a physical lock in a more pretend manner if you want as well.
 
 1. Start the application, it will generate a config.toml file.
 2. Exit the application and open the config.toml file.
@@ -29,7 +31,7 @@ This guide assumes you have an Esseesmart bluetooth lock and have set it up to b
 9. You can change your esmart login or remove the app from your phone if you'd like.
 10. Encryption works well if you have a friend you trust to hold onto the code.
 
-A simple use case might be throwing regular keys into a lockbox secured by the bluetooth lock. <br> For setup questions you can ask in #OSC-Talkin in [Zeni's Discord](https://discord.gg/7VAm3twDyy)
+<br> For setup questions you can ask in #OSC-Talkin in [Zeni's Discord](https://discord.gg/7VAm3twDyy)
 
 --- 
 
@@ -43,7 +45,7 @@ A simple use case might be throwing regular keys into a lockbox secured by the b
 | listener_port   | Port to listen for OSC data on                              | 9001        |
 | write_port      | Port to send OSC data to                                    | 9000        |
 | mode            | Timer is the only mode atm                                  | ""          |
-| lock_type       | Not used yet, maybe for different bluetooth locks later.    | eseesmart   |
+| lock_type       | Not used yet, maybe for different bluetooth locks later.    | ESmartLock  |
 | esmart_username | Account username for login                                  | ""          |
 | esmart_password | Account password for login                                  | ""          |
 | device_password | Lock passcode will be written here after a successful login | ""          |
@@ -108,18 +110,53 @@ Readout mode determines how data is output from OSCLock. Choose a method that wo
 
 <br>
 
+# Avatar Setup
+Avatar setup is up to the user. You can use any of the readout modes to fit your avatar setup. <br>
+A simple accurate digital timer using readout mode 3 can be found on [Zenith's Booth](https://zenithval.booth.pm/items/4892327)
+
+
+--- 
+
+<br>
+
 # FAQ
 
 ### Q: My Parameters aren't working! <br>
 
-> A1: Reset OSC or delete the OSC folder at `C:\Users\(Username)\AppData\LocalLow\VRChat\VRChat` <br>
-> A2: Did you include `/avatar/parameters/` EG: `/avatar/parameters/` <br>
-> A3: If your VRC parameter has spaces, replace the spaces with underscores, EG: `head_pat_sensor` 
+- Reset OSC or delete the OSC folder at `C:\Users\(Username)\AppData\LocalLow\VRChat\VRChat` <br>
+- Did you include `/avatar/parameters/` EG: `/avatar/parameters/` <br>
+- A3: If your VRC parameter has spaces, replace the spaces with underscores, EG: `head_pat_sensor` 
 
-### Q:
+<br>
 
-> A: 
+### Q: What locks does this work with?
 
-### Q:
+Theoretically, this should work with ANY bleueooth Lock that uses the ESmartLock App. <br>
+Look for the white/green color laytout with the ESmartLock Icon. If a specific brand doesnt work please let us know. 
+- [EseeSmart](https://amzn.to/3PuaTuo) 
+- [ELinkSmart](https://amzn.to/3ra1NsM)
+- [Pothunder](https://amzn.to/3r1EJfv) 
+- [Dhiedas](https://amzn.to/46t4xBC)
 
-> A: 
+<br>
+
+# Roadmap
+The code as it is right now was only ever really meant to be a draft but we all know how that goes. <br> At some point it'll probably be refactored, optimized, and, modularized to make it easier to add features.
+
+Want to:
+ - The above
+ - Add more modes
+   - Extensions of the basic timer mode.
+   - Some "Gamified" elements.
+ - Automate a simple avatar setup
+ - Unique avatar add ons/integrations
+ - Make the encryption feature not security theater
+ - Have Zeni actually know how to code
+ - Support difficent brands of bluetooth locks (VERY painful without an API)
+ - PiShock?
+
+<br>
+
+<br>
+
+# Liscense
