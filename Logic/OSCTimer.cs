@@ -46,7 +46,7 @@ namespace OSCLock.Logic {
             var shouldDec = (bool) message.Arguments[0];
             if (shouldDec)
                 Console.WriteLine($"Param recieved - Attempting to remove {dec_step} minute(s)");
-                AddTime(dec_step);
+                AddTime(dec_step*-1);
         }
 
         public static void Setup() {
