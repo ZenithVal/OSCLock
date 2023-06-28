@@ -123,7 +123,3 @@ Readout mode determines how data is output from OSCLock. Choose a method that wo
 ### Q:
 
 > A: 
-
-# Credits
-
-- @FrostbyteVR is responsible for all the original code of this tool prior to it reaching github.
