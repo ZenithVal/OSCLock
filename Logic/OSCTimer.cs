@@ -332,7 +332,6 @@ namespace OSCLock.Logic {
                 //Negative number is fine, it'll be clamped if they're using bools or ints.
 
                 Program.isAllowedToUnlock = true;
-                await Program.PrintHelp();
             }
         }
 
