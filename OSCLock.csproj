@@ -39,11 +39,28 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Configs\ApplicationMode.cs" />
+        <Compile Include="Configs\BasicMode.cs" />
+        <Compile Include="Configs\ConfigManager.cs" />
+        <Compile Include="Configs\Counter.cs" />
+        <Compile Include="Configs\DefaultTime.cs" />
+        <Compile Include="Configs\IncrementalParameterConfig.cs" />
+        <Compile Include="Configs\MainConfig.cs" />
+        <Compile Include="Configs\TimerMode.cs" />
+        <Compile Include="ESmartLockAPI.cs" />
+        <Compile Include="Logic\IUnlockableLogic.cs" />
+        <Compile Include="Logic\OSCBasic.cs" />
+        <Compile Include="Logic\OSCTimer.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="VRChatConnector.cs" />
     </ItemGroup>
     <ItemGroup>
       <Content Include="README.md" />
+      <Content Include="thirdparty\oscsharp\Debug\SharpOSC.dll" />
+      <Content Include="thirdparty\oscsharp\Debug\SharpOSC.pdb" />
+      <Content Include="thirdparty\oscsharp\Release\SharpOSC.dll" />
+      <Content Include="thirdparty\oscsharp\Release\SharpOSC.pdb" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
