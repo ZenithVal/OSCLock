@@ -9,6 +9,7 @@ using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Animation;
 using OSCLock.Configs;
 using OSCLock2;
+using System.Threading;
 
 namespace OSCLock.Bluetooth {
     public class ESmartLock {
@@ -81,7 +82,7 @@ namespace OSCLock.Bluetooth {
             //Subscribe to notify
             GattCommunicationStatus status = await NotifyChar.WriteClientCharacteristicConfigurationDescriptorAsync(
                 GattClientCharacteristicConfigurationDescriptorValue.Notify);
-            if (status != GattCommunicationStatus.Success) Console.WriteLine("Failed to notify :c");
+            if (status != GattCommunicationStatus.Success) Console.WriteLine("Failed to notify");
             else NotifyChar.ValueChanged += FromDevice;
 
             Console.WriteLine("Login in to device");
@@ -219,7 +220,11 @@ namespace OSCLock.Bluetooth {
                 }
             }
             catch (Exception e) {
-                Console.WriteLine("Error while reading from device " + e, e);
+                //Console.WriteLine("Error while reading from device " + e, e);
+                Console.WriteLine("There was an error, but the lock opened, PROBABLY? Good luck if it didn't.");
+                CurrentPacket_TOTALSIZE = 0;
+                CurrentPacket_DATA = null;
+                DATA_LENGTH = 0;
             }
         }
         

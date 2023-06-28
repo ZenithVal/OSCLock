@@ -1,48 +1,165 @@
-# OSCLOCK
+# OSCLock
 
-# Editing this README
+This app can control any bluetooth lock that uses the ESmartLock app. It's been tested it with [this lock.](https://amzn.to/3JAGxmm) <br> A simple use case might be throwing regular keys into a lockbox secured by the bluetooth lock. <br> We take no responsibility for unsafe usage and provide no warranty. Have a backup plan!
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+<br>
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+## Getting the app
 
-## Name
-Choose a self-explaining name for your project.
+1. **Via the executable**
+   - Download latest zip [from releases](Link.goes.here)
+   - Extract wherever.
+   - Run the Executable.
+   - Follow first time setup.
+2. **From the source**
+   - Clone the git
+   - Open the sln
+   - Install required nuget packages.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+# First Time Setup
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+This guide assumes you have an ESmartLock bluetooth lock and have set it up to be opened with the app. <br> If not, go ahead and do that that first. You probably don't need to assign fingerprints to the lock. <br> This app can be used without a physical lock in a more pretend manner if you want as well.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+1. Start the application, it will generate a config.toml file.
+2. Exit the application and open the config.toml file.
+3. Add your esmart credetials and save the file.
+4. Start OSCLock.
+5. Start a new timer. (T) 
+6. Unlock yoru lock. (U)
+7. If successful, device_password should be filled in within the config.
+8. Configure everything else in the confg.toml to your heart's content.
+9. You can change your esmart login or remove the app from your phone if you'd like.
+10. Encryption works well if you have a friend you trust to hold onto the code.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+<br> For setup questions you can ask in #OSC-Talkin in [Zeni's Discord](https://discord.gg/7VAm3twDyy)
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+--- 
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+<br>
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+# Config
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+| Value           | Info                                                        | Default     |
+|:--------------- | ----------------------------------------------------------- |:-----------:|
+| ip              | Address to send OSC data to                                 | "127.0.0.1" |
+| listener_port   | Port to listen for OSC data on                              | 9001        |
+| write_port      | Port to send OSC data to                                    | 9000        |
+| mode            | Timer is the only mode atm                                  | ""          |
+| lock_type       | Not used yet, maybe for different bluetooth locks later.    | ESmartLock  |
+| esmart_username | Account username for login                                  | ""          |
+| esmart_password | Account password for login                                  | ""          |
+| device_password | Lock passcode will be written here after a successful login | ""          |
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+<br>
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+### Mode - Timer
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+You won't be able to unlock the Bluetooth lock until this timer finishes.
+A parameter from VRC can be read to increase the time by x amount. EG: Headpats increase the timer by 1 minute
 
-## License
-For open source projects, say how it is licensed.
+| Value              | Info                                                             | Default |
+|:------------------ | ---------------------------------------------------------------- |:-------:|
+| max                | Max held minutes. How much sand can the hourglass hold?          | 60      |
+| absolute_min       | Will force inc_step until overall time reaches this. 0 disables. | 0       |
+| absolute_max       | If overall time reaches this, inc_step wont work. 0 disables.    | 0       |
+|                    |                                                                  |         |
+| starting_value     | Time in minutes the timer should start at. Random if -1          | -1      |
+| random_min         | Random minimum time                                              | 40      |
+| random_min         | Random maximum time                                              | 60      |
+|                    |                                                                  |         |
+| inc_parameter      | When this Bool is true via OSC, it should increase the timer.    | ""      |
+| inc_step           | Time in minutes to add (int)                                     | 1       |
+| dec_parameter      | When this Bool is true via OSC, it should decrease the timer.    | ""      |
+| dec_step           | Time in minutes to subtract (int)                                | 1       |
+|                    |                                                                  |         |
+| readout_mode       | Method of translating time remaining via OSC. Chart below        | 1       |
+| readout_parameter  | Readout parameter 1                                              | ""      |
+| readout_parameter2 | Readout parameter 2 (optional)                                   | ""      |
+| readout_interval   | Time in miliseconds between parameter updates.                   | 500     |
+| <br>               |                                                                  |         |
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Readout mode determines how data is output from OSCLock. Choose a method that works for you and your avatar. <br> P1 = readout_parameter and P2 = readout_parameter2
+
+| readout_mode | Use of Readout parameters                                      |
+|:------------ | -------------------------------------------------------------- |
+| 0            | No readout parameter will be used                              |
+| 1            | P1, float 0 to +1                                              |
+| 2            | P1, float -1 to +1                                             |
+| 3            | P1, float -1 to +1 for minutes. P2, float -1 to +1 for seconds |
+| 4            | P1, float -1 to +1 for minutes. P2, int 1:1 with seconds       |
+| 5            | P1 & P2, ints 1:1 minutes and seconds respectively             |
+| 6            | P1, int 1:1 mins/seconds. P2, bool determines min/sec data     |
+
+--- 
+
+<br>
+
+# In app Controls
+
+| Value | Info                                            |
+|:----- | ----------------------------------------------- |
+| H     | Prints the help screen                          |
+| T     | Starts a new timer (If in timer mode)           |
+| S     | Prints the status of the app and lock           |
+| U     | Begins unlock process if available              |
+| Q     | Quits the application                           |
+| {     | Encrypts the application config with a password |
+| }     | Encrypts the application config with a password |
+
+--- 
+
+<br>
+
+# Avatar Setup
+Avatar setup is up to the user. You can use any of the readout modes to fit your avatar setup. <br>
+A simple accurate digital timer using readout mode 3 can be found on [Zenith's Booth](https://zenithval.booth.pm/items/4892327)
+
+
+--- 
+
+<br>
+
+# FAQ
+
+### Q: My Parameters aren't working! <br>
+
+- Reset OSC or delete the OSC folder at `C:\Users\(Username)\AppData\LocalLow\VRChat\VRChat` <br>
+- Did you include `/avatar/parameters/` EG: `/avatar/parameters/` <br>
+- A3: If your VRC parameter has spaces, replace the spaces with underscores, EG: `head_pat_sensor` 
+
+<br>
+
+### Q: What locks does this work with?
+
+Theoretically, this should work with ANY bleueooth Lock that uses the ESmartLock App. <br>
+Look for the white/green color laytout with the ESmartLock Icon. If a specific brand doesnt work please let us know. 
+- [EseeSmart](https://amzn.to/3PuaTuo) 
+- [ELinkSmart](https://amzn.to/3ra1NsM)
+- [Pothunder](https://amzn.to/3r1EJfv) 
+- [Dhiedas](https://amzn.to/46t4xBC)
+
+<br>
+
+# Roadmap
+The code as it is right now was only ever really meant to be a draft but we all know how that goes. <br> At some point it'll probably be refactored, optimized, and, modularized to make it easier to add features.
+
+Want to:
+ - The above
+ - Add more modes
+   - Extensions of the basic timer mode.
+   - Some "Gamified" elements.
+ - Automate a simple avatar setup
+ - Unique avatar add ons/integrations
+ - Make the encryption feature not security theater
+ - Have Zeni actually know how to code
+ - Support difficent brands of bluetooth locks (VERY painful without an API)
+ - PiShock?
+
+<br>
+
+<br>
+
+# Credits & Liscense 
+
+App Icon from [Game-icons.net](https://game-icons.net/1x1/delapouite/locked-heart.html) under https://creativecommons.org/licenses/by/3.0/ 
+
