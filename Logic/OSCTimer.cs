@@ -45,7 +45,7 @@ namespace OSCLock.Logic {
             var shouldDec = (bool) message.Arguments[0];
             if (shouldDec)
                 Console.WriteLine($"Param recieved - Attempting to remove {dec_step} minute(s)");
-                AddTime(dec_step*-1);
+                AddTime(dec_step);
         }
 
         public static void Setup() {
@@ -78,7 +78,7 @@ namespace OSCLock.Logic {
             }
 
             dec_parameter = timerConfig.dec_parameter;
-            dec_step = timerConfig.dec_step;
+            dec_step = -timerConfig.dec_step;
 
             //If dec_parameter is NOT null, then add a handler and print the added parameter.
             if (dec_parameter != "") {
@@ -417,8 +417,10 @@ namespace OSCLock.Logic {
                         VRChatConnector.SendToVRChat(message6BoolFalse);
                         VRChatConnector.SendToVRChat(message6Minutes);
 
+
                         var message6Seconds = new OscMessage(readout_param, Readout6Seconds);
                         var message6BoolTrue = new OscMessage(readout_param2, true);
+
                         VRChatConnector.SendToVRChat(message6BoolTrue);
                         VRChatConnector.SendToVRChat(message6Seconds);
                         break;

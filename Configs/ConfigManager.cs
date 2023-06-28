@@ -82,29 +82,35 @@ namespace OSCLock.Configs {
             File.Delete(CONFIG_FILE);
             File.Delete("app.pass");
             File.WriteAllText(CONFIG_FILE, TomletMain.TomlStringFrom(new MainConfig {
+
+                vrchatAddress = "127.0.0.1",
                 port = 9001,
                 vrchatPort = 9000,
-                vrchatAddress = "127.0.0.1",
-                apiUsername = "",
-                apiPassword = "",
-                DevicePassword = "",
-                
+
                 Mode = ApplicationMode.Testing,
+
+                ESmartConfig = new ESmartCredentials
+                {
+                    apiUsername = "",
+                    apiPassword = "",
+                    DevicePassword = "",
+                },
+
                 
                 BasicConfig = new BasicMode {
                     parameter = "/avatar/parameters/unlock"
                 },
 
                 TimerConfig = new TimerMode {
-                    maxTime = 240,
-                    absMin = 20,
+                    maxTime = 60,
+                    absMin = 0,
                     StartTime = new DefaultTime {
                         startingValue = -1,
                         randomMin = 10,
                         randomMax = 20
                     },
                     inc_parameter = "/avatar/parameters/timer_inc",
-                    inc_step = 20,
+                    inc_step = 1,
                     dec_parameter = "/avatar/parameters/timer_dec",
                     dec_step = 5,
 

@@ -16,7 +16,7 @@ namespace OSCLock {
 
         public static async Task<string> GetDevicePassword(string deviceAddress, string loginToken) {
             var deviceInfoResponse = await client.PostAsync("http://web.iloveismarthome.com?m=lock&a=getLockInfoByMac", new FormUrlEncodedContent(new[] {
-                new KeyValuePair<string, string>("user_name", ConfigManager.ApplicationConfig.apiUsername),
+                new KeyValuePair<string, string>("user_name", ConfigManager.ApplicationConfig.ESmartConfig.apiUsername),
                 new KeyValuePair<string, string>("loginToken", loginToken),
                 new KeyValuePair<string, string>("mac", deviceAddress)
             }));
@@ -55,8 +55,8 @@ namespace OSCLock {
 
         public static async Task<string> Login() {
             var loginResponse = await client.PostAsync("http://web.iloveismarthome.com?m=user&a=login", new FormUrlEncodedContent(new[] {
-                new KeyValuePair<string, string>("user_name", ConfigManager.ApplicationConfig.apiUsername),
-                new KeyValuePair<string, string>("user_pwd", ConfigManager.ApplicationConfig.apiPassword),
+                new KeyValuePair<string, string>("user_name", ConfigManager.ApplicationConfig.ESmartConfig.apiUsername),
+                new KeyValuePair<string, string>("user_pwd", ConfigManager.ApplicationConfig.ESmartConfig.apiPassword),
                 new KeyValuePair<string, string>("type", "2"),
                 new KeyValuePair<string, string>("way", "0")
             }));

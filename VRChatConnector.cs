@@ -89,6 +89,7 @@ namespace OSCLock {
             //Console.WriteLine($"Installed OSC handler for address {addr}");
         }
 
+        //Might need a queue here, as it might be possible to send too many messages at once.
         public static void SendToVRChat(OscMessage message) {
             try {
                 oscSender.Send(message);

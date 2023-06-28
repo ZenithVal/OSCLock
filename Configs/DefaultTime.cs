@@ -4,7 +4,7 @@ using Tomlet.Attributes;
 namespace OSCLock.Configs {
     public class DefaultTime {
         [TomlProperty("starting_value")]
-        [TomlInlineComment("Random if set to -1")]
+        [TomlInlineComment("If set to -1, a random value will be chosen betwen the min and max below.")]
         public int startingValue { get; set; }
         [TomlProperty("random_min")]
         public int randomMin { get; set; }

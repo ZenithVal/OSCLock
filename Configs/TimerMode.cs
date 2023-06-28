@@ -11,6 +11,7 @@ namespace OSCLock.Configs {
         //[TomlInlineComment("Miniumum time that must pass before the system can unlock. Minimum Sand")]
         public int absMin { get; set; }
 
+
         [TomlProperty("absolute_max")]
         //[TomlInlineComment("If the total time has reached this, it can not increase. How much total sand is there?")]
         public int absMax { get; set; }
@@ -18,7 +19,7 @@ namespace OSCLock.Configs {
         [TomlProperty("StartingTime")]
         public DefaultTime StartTime { get; set; }
 
-        [TomlPrecedingComment("\n--- Incoming OSC Parameters ---")]
+        [TomlPrecedingComment("--- Incoming OSC Parameters ---")]
         //[TomlInlineComment("When this Bool is true, it should increase the timer once by inc_step.")]
         public string inc_parameter { get; set; }
 
@@ -32,7 +33,7 @@ namespace OSCLock.Configs {
         public int dec_step { get; set; }
 
 
-        [TomlPrecedingComment("\n-- Outgoing OSC Parameters ---")]
+        [TomlPrecedingComment("-- Outgoing OSC Parameters ---")]
         public int readout_mode { get; set; }
         public string readout_parameter { get; set; }
         public string readout_parameter2 { get; set; }
