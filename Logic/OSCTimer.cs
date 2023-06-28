@@ -20,7 +20,9 @@ namespace OSCLock.Logic {
         private static int absolute_min;
         private static int absolute_max;
 
+        private static string inc_parameter;
         private static int inc_step;
+        private static string dec_parameter;
         private static int dec_step;
 
         private static int readout_mode;
@@ -49,20 +51,51 @@ namespace OSCLock.Logic {
 
         public static void Setup() {
             var timerConfig = ConfigManager.ApplicationConfig.TimerConfig;
-            VRChatConnector.AddHandler(timerConfig.dec_parameter, OnDecParam);
+
             VRChatConnector.AddHandler(timerConfig.inc_parameter, OnIncParam);
 
+            //Bumper
+            Console.WriteLine("");
+
             maxAccumulated = timerConfig.maxTime;
+            Console.WriteLine($"max: {maxAccumulated}");
 
             absolute_min = timerConfig.absMin;
             absolute_max = timerConfig.absMax;
+            Console.WriteLine($"absolute_min: {absolute_min}");
+            Console.WriteLine($"absolute_min: {absolute_max}\n");
 
+            inc_parameter = timerConfig.inc_parameter;
             inc_step = timerConfig.inc_step;
-            dec_step = -timerConfig.dec_step;
+
+            //If inc_parameter is NOT null, then add a handler and print the added parameter.
+            if (inc_parameter != "") {
+                VRChatConnector.AddHandler(inc_parameter, OnDecParam);
+                Console.WriteLine($"inc_parameter: {inc_parameter}");
+                Console.WriteLine($"inc_step: {inc_step}");
+            }
+            else {
+                Console.WriteLine("inc_parameter not defined.");
+            }
+
+            dec_parameter = timerConfig.dec_parameter;
+            dec_step = timerConfig.dec_step;
+
+            //If dec_parameter is NOT null, then add a handler and print the added parameter.
+            if (dec_parameter != "") {
+                VRChatConnector.AddHandler(dec_parameter, OnDecParam);
+                Console.WriteLine($"dec_parameter: {dec_parameter}");
+                Console.WriteLine($"dec_step: {dec_step}");
+            }
+            else {
+                Console.WriteLine("dec_parameter not defined.");
+            }
 
             readout_mode = timerConfig.readout_mode;
+            Console.WriteLine($"\nreadout_mode: {readout_mode}\n");
 
-        _timer = new Timer();
+
+            _timer = new Timer();
 
             var callbackInterval = timerConfig.readout_interval;
             if (callbackInterval > 0 && !String.IsNullOrEmpty(timerConfig.readout_parameter)) {
@@ -97,14 +130,23 @@ namespace OSCLock.Logic {
                     _timer.Start();
                 }
                 catch (Exception e) {
-                    Console.WriteLine("Failed to restore timer, start a new one at wish, lock has been made unlockable");
+                    
                     StartTime = DateTime.MinValue;
                     EndTime = DateTime.MinValue;
                     AbsoluteEndTime = DateTime.MinValue;
                     EarlietEndTime = DateTime.MinValue;
-                    Program.isAllowedToUnlock = true;
 
-                    Console.WriteLine("Failed to restore timer, start a new one.");
+                    //If the app is encrypted, require the user to start a new timer to enable unlocking again.
+                    if (!Program.isEncrypted) 
+                    {
+                        Program.isAllowedToUnlock = true;
+                        Console.WriteLine("Failed to restore timer.\n");
+                    }
+                    else
+                    {
+                        Program.isAllowedToUnlock = false;
+                        Console.WriteLine("Failed to restore timer.\nEncryption prevents timer file tampering.");
+                    }
                 }
             }
             else {
@@ -112,7 +154,17 @@ namespace OSCLock.Logic {
                 EndTime = DateTime.MinValue;
                 AbsoluteEndTime = DateTime.MinValue;
                 EarlietEndTime = DateTime.MinValue;
-                Program.isAllowedToUnlock = false;
+
+                if (!Program.isEncrypted)
+                {
+                    Program.isAllowedToUnlock = true;
+                    Console.WriteLine("No timer files found.\n");
+                }
+                else
+                {
+                    Program.isAllowedToUnlock = false;
+                    Console.WriteLine("No timer files found.\nEncryption prevents timer file tampering.");
+                }
             }
 
             //Load previous time and check if timer is already running
@@ -206,7 +258,7 @@ namespace OSCLock.Logic {
             //Random disclaimer
             var TimerConfig = ConfigManager.ApplicationConfig.TimerConfig;
             var startingTime = TimerConfig.startingValue;
-            if (startingTime <= 0) {
+            if (startingTime < 0) {
                 Console.WriteLine($"The time is set to random between {TimerConfig.randomMin} and {TimerConfig.randomMax} minutes.");
             }
 
@@ -268,8 +320,7 @@ namespace OSCLock.Logic {
 
         private static async void CheckIfUnlockable(object sender, ElapsedEventArgs elapsedEventArgs) {
             if (HasTimeElapsed()) {
-                Console.Clear();
-                Console.WriteLine("Time is up, Marking as unlockable and stopping timer");
+                Console.WriteLine("\nTime is up, Marking as unlockable and stopping timer");
 
                 _timer.Stop();
 
@@ -277,7 +328,8 @@ namespace OSCLock.Logic {
                 var message2 = new OscMessage(readout_param2, -1.0);
                 VRChatConnector.SendToVRChat(message);
                 VRChatConnector.SendToVRChat(message2);
-                //Makes sure the VRC param is set to 0.
+                //Makes sure the VRC param is set to lowest possible value. 
+                //Negative number is fine, it'll be clamped if they're using bools or ints.
 
                 Program.isAllowedToUnlock = true;
                 await Program.PrintHelp();

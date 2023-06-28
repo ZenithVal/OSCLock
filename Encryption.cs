@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using OSCLock.Logic;
 
-//This is mostly just fun security theater. Strings are not protected in memory, and you have access to the source code here.
+//This is mostly just fun security theater. Strings are not protected in memory, and you have access to the source code anyway.
 
 namespace OSCLock {
 
@@ -122,6 +122,7 @@ namespace OSCLock {
             {
             //Request the user type a password
             Console.WriteLine("Enter a password to encrypt configurations with.");
+            Console.WriteLine("Pasting from the clipboard works. Maybe ask a friend for a code?");
             string password = Console.ReadLine();
 
             //Require the user to type it again, just in case.
@@ -147,14 +148,34 @@ namespace OSCLock {
             //Create a app.pass file with the password and encrypt it using a generic key.
             Program.appPassword = password;
             string appPassPath = "app.pass";
-            string encryptedAppPass = Encrypt(password, "7b7079bb6379001dce");
-            File.WriteAllText(appPassPath, encryptedAppPass);
+            Encryption.Write(appPassPath, password, "7b7079bb6379001dce"); //Really secret, I know.
+
+            //Old Expanded version
+            //string encryptedAppPass = Encrypt(password, "7b7079bb6379001dce");
+            //File.WriteAllText(appPassPath, encryptedAppPass);
 
             //Encrypt the config.toml file with the password
             string configPath = "config.toml";
             string configData = File.ReadAllText(configPath);
-            string encryptedConfig = Encrypt(configData, password);
-            File.WriteAllText(configPath, encryptedConfig);
+            Encryption.Write(configPath, configData, password);
+
+            //Old Expanded version
+            //string encryptedConfig = Encrypt(configData, password);
+            //File.WriteAllText(configPath, encryptedConfig);
+
+
+            //Encrypt the existing timer.end and timer.start files, IF THEY EXIST.
+            var timersExist = File.Exists("timer.start") && File.Exists("timer.end");
+            if (timersExist)
+            {
+                string timerStartPath = "timer.start";
+                string timerStartData = File.ReadAllText(timerStartPath);
+                Encryption.Write(timerStartPath, timerStartData, password);
+
+                string timerEndPath = "timer.end";
+                string timerEndData = File.ReadAllText(timerEndPath);
+                Encryption.Write(timerEndPath, timerEndData, password);
+            }
 
             Thread.Sleep(500);
 
@@ -205,6 +226,17 @@ namespace OSCLock {
             if (!OSCTimer.HasTimeElapsed())
             {
                OSCTimer.ForceEnd();
+            }
+
+            //Delete existing encrypted timer files.
+            string timerStartPath = "timer.start";
+            string timerEndPath = "timer.end";
+
+            var timersExist = File.Exists(timerStartPath) && File.Exists(timerEndPath);
+            if (timersExist)
+            {
+                File.Delete(timerStartPath);
+                File.Delete(timerEndPath);
             }
 
             Thread.Sleep(1500);

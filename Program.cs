@@ -15,18 +15,20 @@ namespace OSCLock {
 
         public static async Task Main(string[] args) {
 
+            Console.WriteLine("OSCLock Version v1.0 - 6/27/23\n");
+
             if (File.Exists("app.pass"))
             {
                 isEncrypted = true;
                 //Idk how to really hide this. Too lazy to hide it in RAM either. Very secure, I know.
                 appPassword = Encryption.Read("app.pass", "7b7079bb6379001dce"); 
-                Console.WriteLine("Application Config is encrypted.");
+                Console.WriteLine("Application Config is encrypted.\n");
                 //Console.WriteLine(appPassword);
             }
 
             VRChatConnector.Start();
             //Console.WriteLine("Going to home screen...");
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
             
             await CmdPrompt();
         }
@@ -62,7 +64,6 @@ namespace OSCLock {
                 await PrintStatus();
 
                 Thread.Sleep(1000);
-                await PrintHelp();
                 return;
             }
 

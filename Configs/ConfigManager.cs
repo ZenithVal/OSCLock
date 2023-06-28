@@ -23,7 +23,6 @@ namespace OSCLock.Configs {
             try 
             {
                 //Check if isEncrypted is true, if so we need to decrypt it before attempting to parse it.
-                // You need to parse the string that you decrypted.
                 if (Program.isEncrypted)
                 {
                     string decryptedConfig = (Encryption.Read(CONFIG_FILE, Program.appPassword));
@@ -45,7 +44,7 @@ namespace OSCLock.Configs {
                 ApplicationConfig = TomletMain.To<MainConfig>(lastDocument);
             }
             catch (Exception e) {
-                Console.WriteLine("FAILED TO READ CONFIG FILE!!!" + e, e);
+                Console.WriteLine("FAILED TO READ CONFIG FILE!" + e, e);
                 Thread.Sleep(5000);
             }
 
