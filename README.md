@@ -159,4 +159,7 @@ Want to:
 
 <br>
 
-# Liscense
+# Credits & Liscense 
+
+App Icon from [Game-icons.net](https://game-icons.net/1x1/delapouite/locked-heart.html) under https://creativecommons.org/licenses/by/3.0/ 
+
