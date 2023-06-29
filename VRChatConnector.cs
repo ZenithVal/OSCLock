@@ -64,25 +64,27 @@ namespace OSCLock {
             //todo: add one for avatar change
         }
 
-
-        //This is not needed anymore due to the bugix with SharpOSC
-        //we'll keep OnOSCMessage for debugging purposes though.
         private static async void OnOscMessage(OscPacket packet) {
-            if (debugging) {
-                Console.WriteLine("Package recieved: " + packet);
-                try {
-                    if (packet is OscMessage message) {
-                        Console.WriteLine($"{message.Address}" + $"({message.Arguments[0]})");
+            if (debugging) Console.WriteLine("Package recieved: " + packet);
+            try {
+                if (packet is OscMessage message) {
+                    AddressHandler handler;
+                    if (debugging) Console.WriteLine($"{message.Address}" + $"({message.Arguments[0]})");
+                    if (addressHandlers.TryGetValue(message.Address, out handler)) {
+                        if (message.Arguments[0] is true) {
+                            await handler(message);
+                        }
                     }
-                    else
-                        Console.WriteLine("Packet did not seem to be an OSC Message");
                 }
-                catch (Exception e) {
-                    Console.WriteLine("Failed to handle osc message: " + e, e);
-                }
-
+            }
+            catch (InvalidCastException e) {
+                Console.WriteLine("Wrong parameter type written!" + e, e);
+            }
+            catch (Exception e) {
+                Console.WriteLine("Failed to handle osc message: " + e, e);
             }
         }
+
 
         public static void AddHandler(string addr, AddressHandler handler) {
             addressHandlers[addr] = handler;

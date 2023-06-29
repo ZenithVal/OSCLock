@@ -49,22 +49,12 @@ namespace OSCLock.Logic {
             }
         }
 
-        public static async Task OnIncParam(OscMessage message)
-        {
-            var shouldAdd = (bool)message.Arguments[0];
-            if (shouldAdd) {
-                Console.WriteLine($"Param recieved - Attempting to add {inc_step} minute(s)");
-                AddTime(inc_step);
-            }
-        }
-
         public static async Task OnDecParam(OscMessage message) {
             var shouldDec = (bool) message.Arguments[0];
             if (shouldDec) {
                 Console.WriteLine($"Param recieved - Attempting to remove {dec_step} minute(s)");
                 AddTime(dec_step);
             }
-
         }
 
         public static void Setup() {
@@ -190,7 +180,7 @@ namespace OSCLock.Logic {
         public static void AddTime(double minutesToAdd) {
             var maxTime = ConfigManager.ApplicationConfig.TimerConfig.maxTime;
 
-            var newTimeSpan = (int)(EndTime.AddMinutes(minutesToAdd) - DateTime.Now).TotalMinutes;
+            var newTimeSpan = (int)(EndTime.AddSeconds(minutesToAdd) - DateTime.Now).TotalMinutes;
 
             if (newTimeSpan > maxTime) {
                 Console.WriteLine("Reached timer device cap");
@@ -198,7 +188,7 @@ namespace OSCLock.Logic {
                 minutesToAdd -= (newTimeSpan - maxTime);
              }
             
-            var newEndTime = EndTime.AddMinutes(minutesToAdd);
+            var newEndTime = EndTime.AddSeconds(minutesToAdd);
 
             if (absolute_max > 0 && minutesToAdd > 0) {
                 //Checking if going past absolute max
