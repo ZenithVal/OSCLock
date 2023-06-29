@@ -20,7 +20,7 @@ namespace OSCLock.Configs {
         public DefaultTime StartTime { get; set; }
 
         [TomlPrecedingComment("--- Incoming OSC Parameters ---")]
-        [TomlInlineComment("When this Bool is true, it should increase the timer once by inc_step.)]
+        [TomlInlineComment("When this Bool is true, it should increase the timer once by inc_step.")]
         public string inc_parameter { get; set; }
 
         //Should make this a float and allow seconds to be added.
