@@ -42,8 +42,8 @@
       <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SharpOSC, Version=0.1.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>thirdparty\oscsharp\SharpOSC.dll</HintPath>
+    <Reference Include="SharpOSC">
+      <HintPath>..\Repo\thirdparty\oscsharp\SharpOSC.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />

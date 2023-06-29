@@ -45,22 +45,23 @@ namespace OSCLock.Logic {
         public static async Task OnIncParam(OscMessage message)
         {
             var shouldAdd = (bool)message.Arguments[0];
-            if (shouldAdd)
+            if (shouldAdd) {
                 Console.WriteLine($"Param recieved - Attempting to add {inc_step} minute(s)");
-            AddTime(inc_step);
+                AddTime(inc_step);
+            }
         }
 
         public static async Task OnDecParam(OscMessage message) {
             var shouldDec = (bool) message.Arguments[0];
-            if (shouldDec)
+            if (shouldDec) {
                 Console.WriteLine($"Param recieved - Attempting to remove {dec_step} minute(s)");
                 AddTime(dec_step);
+            }
+
         }
 
         public static void Setup() {
             var timerConfig = ConfigManager.ApplicationConfig.TimerConfig;
-
-            VRChatConnector.AddHandler(timerConfig.inc_parameter, OnIncParam);
 
             //Bumper
             Console.WriteLine("");
@@ -78,7 +79,7 @@ namespace OSCLock.Logic {
 
             //If inc_parameter is NOT null, then add a handler and print the added parameter.
             if (inc_parameter != "") {
-                VRChatConnector.AddHandler(inc_parameter, OnDecParam);
+                VRChatConnector.AddHandler(inc_parameter, OnIncParam);
                 Console.WriteLine($"inc_parameter: {inc_parameter}");
                 Console.WriteLine($"inc_step: {inc_step}");
             }

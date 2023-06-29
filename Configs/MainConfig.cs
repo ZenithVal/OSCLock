@@ -15,6 +15,9 @@ namespace OSCLock.Configs {
         [TomlProperty("Mode")]
         public ApplicationMode Mode { get; set; }
 
+        [TomlProperty("Debugging")]
+        public bool debugging { get; set; }
+
         [TomlProperty("Credentials for ESmartLock")]
         public ESmartCredentials ESmartConfig { get; set; }
         

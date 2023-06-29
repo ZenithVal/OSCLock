@@ -19,6 +19,7 @@ namespace OSCLock {
 
         private static UDPListener oscListener;
         private static UDPSender oscSender;
+        private static bool debugging = ConfigManager.ApplicationConfig.debugging;
         private static int listener_port = ConfigManager.ApplicationConfig.listener_port;
         private static int write_port = ConfigManager.ApplicationConfig.write_port;
         private static string ipAddress = ConfigManager.ApplicationConfig.ipAddress ?? "127.0.0.1";
@@ -40,47 +41,45 @@ namespace OSCLock {
             oscSender = new UDPSender(ipAddress, write_port);
             Console.WriteLine("write_port: " + write_port);
 
-            //Disabled other modes, as they are not used.
-            OSCTimer.Setup();
-
-            //switch (ConfigManager.ApplicationConfig.Mode) {
-            //    case ApplicationMode.Testing:
-            //        Program.isAllowedToUnlock = true;
-            //        break;
-            //    case ApplicationMode.Basic:
-            //        OSCBasic.Setup();
-            //        break;
-            //    case ApplicationMode.Timer:
-            //        OSCTimer.Setup();
-            //        break;
-            //}
+            Console.WriteLine($"mode: {ConfigManager.ApplicationConfig.Mode}");
+            Console.WriteLine($"debugging: {debugging}");
+            switch (ConfigManager.ApplicationConfig.Mode) {
+                case ApplicationMode.Testing:
+                    Program.isAllowedToUnlock = true;
+                    break;
+                case ApplicationMode.Basic:
+                    OSCBasic.Setup();
+                    break;
+                case ApplicationMode.Timer:
+                    OSCTimer.Setup();
+                    break;
+                //Not implemented yet
+                //case ApplicationMode.Counter: 
+                //    OSCCounter.Setup();
+                //break;
+            }
+            
 
             //todo: add one for avatar change
         }
 
 
+        //This is not needed anymore due to the bugix with SharpOSC
+        //we'll keep OnOSCMessage for debugging purposes though.
         private static async void OnOscMessage(OscPacket packet) {
-            Console.WriteLine(packet);
-            try {
-                if (packet is OscMessage message) {
-                    AddressHandler handler;
-                    if (addressHandlers.TryGetValue(message.Address, out handler)) {
-                        if (message.Arguments[0] is true) {
-                            await handler(message);
-                        }
-                        //Checks if the message recieved (only bother accepting true messages.)
+            if (debugging) {
+                Console.WriteLine("Package recieved:" + packet);
+                try {
+                    if (packet is OscMessage message) {
+                        Console.WriteLine($"{message.Address}" + $"({message.Arguments})");
                     }
-
-                    //Console.WriteLine($"{message.Address} Recieved");
+                    else
+                        Console.WriteLine("Packet did not seem to be an OSC Message");
                 }
-            }
-            catch (InvalidCastException e)
-            {
-                Console.WriteLine("Wrong parameter type written!" + e, e);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Failed to handle osc message: " + e, e);
+                catch (Exception e) {
+                    Console.WriteLine("Failed to handle osc message: " + e, e);
+                }
+
             }
         }
 
