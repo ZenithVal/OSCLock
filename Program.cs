@@ -47,8 +47,8 @@ namespace OSCLock {
 
         private static async Task PrintStatus() {
             var appConfig = ConfigManager.ApplicationConfig;
-            Console.WriteLine($"Operating in {appConfig.Mode} mode.");
-            if (appConfig.Mode == ApplicationMode.Timer) {
+            Console.WriteLine($"Operating in {appConfig.mode} mode.");
+            if (appConfig.mode == ApplicationMode.Timer) {
                 Console.WriteLine("Time left: " + (int)OSCTimer.GetTimeLeftTotal() + " minutes \n");
             }
 
@@ -85,7 +85,7 @@ namespace OSCLock {
         }
 
         private static async Task StartTimer() {
-            if (ConfigManager.ApplicationConfig.Mode == ApplicationMode.Timer) {
+            if (ConfigManager.ApplicationConfig.mode == ApplicationMode.Timer) {
                 await OSCTimer.Start();
             } else Console.WriteLine("Not operating in timer mode, change mode in config and restart");
         }

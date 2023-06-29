@@ -13,7 +13,7 @@ namespace OSCLock.Configs {
         public int write_port { get; set; }
 
         [TomlProperty("Mode")]
-        public ApplicationMode Mode { get; set; }
+        public ApplicationMode mode { get; set; }
 
         [TomlProperty("Debugging")]
         public bool debugging { get; set; }

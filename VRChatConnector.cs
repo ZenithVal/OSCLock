@@ -41,10 +41,10 @@ namespace OSCLock {
             oscSender = new UDPSender(ipAddress, write_port);
             Console.WriteLine("write_port: " + write_port);
 
-            Console.WriteLine($"mode: {ConfigManager.ApplicationConfig.Mode}");
+            Console.WriteLine($"mode: {ConfigManager.ApplicationConfig.mode}");
             Console.WriteLine($"debugging: {debugging}");
 
-            switch (ConfigManager.ApplicationConfig.Mode) {
+            switch (ConfigManager.ApplicationConfig.mode) {
                 case ApplicationMode.Testing:
                     Program.isAllowedToUnlock = true;
                     break;
@@ -88,7 +88,7 @@ namespace OSCLock {
 
         public static void AddHandler(string addr, AddressHandler handler) {
             addressHandlers[addr] = handler;
-            Console.WriteLine($"Installed OSC handler for address {addr}");
+            if (debugging) Console.WriteLine($"Installed OSC handler for address {addr}");
         }
 
         //Might need a queue here, as it might be possible to send too many messages at once.

@@ -87,7 +87,8 @@ namespace OSCLock.Configs {
                 listener_port = 9001,
                 write_port = 9000,
 
-                Mode = ApplicationMode.Testing,
+                mode = ApplicationMode.Testing,
+                debugging = false,
 
                 ESmartConfig = new ESmartCredentials
                 {
@@ -110,9 +111,9 @@ namespace OSCLock.Configs {
                         randomMax = 20
                     },
                     inc_parameter = "/avatar/parameters/timer_inc",
-                    inc_step = 1,
+                    inc_step = 60,
                     dec_parameter = "/avatar/parameters/timer_dec",
-                    dec_step = 5,
+                    dec_step = 300,
 
                     input_delay = 1500,
 

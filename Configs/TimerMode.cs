@@ -24,14 +24,14 @@ namespace OSCLock.Configs {
         public string inc_parameter { get; set; }
 
         //Should make this a float and allow seconds to be added.
-        [TomlInlineComment("Time (whole minutes) added per dec_step")]
+        [TomlInlineComment("Time (seconds) added per dec_step")]
         public int inc_step { get; set; }
 
         [TomlInlineComment("Avatar parameter used.")]
         public string dec_parameter { get; set; }
 
         //Should make this a float and allow seconds to be added.
-        [TomlInlineComment("Time (whole minutes) removed per dec_step")]
+        [TomlInlineComment("Time (seconds) removed per dec_step")]
         public int dec_step { get; set; }
 
         [TomlInlineComment("Minimum Time (miliseconds) between allowed inputs")]

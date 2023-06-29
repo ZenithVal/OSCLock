@@ -27,8 +27,8 @@ namespace OSCLock.Logic {
         private static float input_delay;
 
         private static int readout_mode;
-        private static string readout_param;
-        private static string readout_param2;
+        private static string readout_parameter;
+        private static string readout_parameter2;
         
         private static DateTime lastAdded = DateTime.Now;
 
@@ -75,10 +75,10 @@ namespace OSCLock.Logic {
             if (inc_parameter != "") {
                 VRChatConnector.AddHandler(inc_parameter, OnIncParam);
                 Console.WriteLine($"inc_parameter: {inc_parameter}");
-                Console.WriteLine($"inc_step: {inc_step}");
+                Console.WriteLine($"inc_step: {inc_step}\n");
             }
             else {
-                Console.WriteLine("inc_parameter not defined.");
+                Console.WriteLine("inc_parameter not defined.\n");
             }
 
 
@@ -89,25 +89,27 @@ namespace OSCLock.Logic {
             if (dec_parameter != "") {
                 VRChatConnector.AddHandler(dec_parameter, OnDecParam);
                 Console.WriteLine($"dec_parameter: {dec_parameter}");
-                Console.WriteLine($"dec_step: {dec_step}");
+                Console.WriteLine($"dec_step: {dec_step}\n");
             }
             else {
-                Console.WriteLine("dec_parameter not defined.");
+                Console.WriteLine("dec_parameter not defined.\n");
             }
 
             input_delay = timerConfig.input_delay;
-            Console.Write($"input_delay: {input_delay}");
+            Console.WriteLine($"input_delay: {input_delay}\n");
 
             readout_mode = timerConfig.readout_mode;
-            Console.WriteLine($"\nreadout_mode: {readout_mode}\n");
+            readout_parameter = timerConfig.readout_parameter;
+            readout_parameter2 = timerConfig.readout_parameter2;
 
+            Console.WriteLine($"readout_mode: {readout_mode}");
+            Console.WriteLine($"readout_parameter: {readout_parameter}");
+            Console.WriteLine($"readout_parameter2: {readout_parameter2}\n");
 
             _timer = new Timer();
 
             var callbackInterval = timerConfig.readout_interval;
             if (callbackInterval > 0 && !String.IsNullOrEmpty(timerConfig.readout_parameter)) {
-                readout_param = timerConfig.readout_parameter;
-                readout_param2 = timerConfig.readout_parameter2;
                 _timer.Elapsed += OnProgress;
             }
             else callbackInterval = 1000;
@@ -177,20 +179,20 @@ namespace OSCLock.Logic {
             //Load previous time and check if timer is already running
         }
 
-        public static void AddTime(double minutesToAdd) {
+        public static void AddTime(double timeToAdd) {
             var maxTime = ConfigManager.ApplicationConfig.TimerConfig.maxTime;
 
-            var newTimeSpan = (int)(EndTime.AddSeconds(minutesToAdd) - DateTime.Now).TotalMinutes;
+            var newTimeSpan = (int)(EndTime.AddSeconds(timeToAdd) - DateTime.Now).TotalMinutes;
 
             if (newTimeSpan > maxTime) {
                 Console.WriteLine("Reached timer device cap");
                 //If the new time span is greater than the max time, we need to remove the difference from the minutes to add
-                minutesToAdd -= (newTimeSpan - maxTime);
+                timeToAdd -= (newTimeSpan - maxTime);
              }
             
-            var newEndTime = EndTime.AddSeconds(minutesToAdd);
+            var newEndTime = EndTime.AddSeconds(timeToAdd);
 
-            if (absolute_max > 0 && minutesToAdd > 0) {
+            if (absolute_max > 0 && timeToAdd > 0) {
                 //Checking if going past absolute max
                 if (newEndTime > AbsoluteEndTime) {
                     newEndTime = AbsoluteEndTime;
@@ -332,8 +334,8 @@ namespace OSCLock.Logic {
 
                 _timer.Stop();
 
-                var message = new OscMessage(readout_param, (float)-1.0); 
-                var message2 = new OscMessage(readout_param2, (float)-1.0);
+                var message = new OscMessage(readout_parameter, (float)-1.0); 
+                var message2 = new OscMessage(readout_parameter2, (float)-1.0);
                 VRChatConnector.SendToVRChat(message);
                 VRChatConnector.SendToVRChat(message2);
                 //Makes sure the VRC param is set to lowest possible value. 
@@ -351,8 +353,8 @@ namespace OSCLock.Logic {
                 _timer.Stop();
                 EndTime = DateTime.Now;
 
-                var message = new OscMessage(readout_param, (float)-1.0);
-                var message2 = new OscMessage(readout_param2, (float)-1.0);
+                var message = new OscMessage(readout_parameter, (float)-1.0);
+                var message2 = new OscMessage(readout_parameter2, (float)-1.0);
                 VRChatConnector.SendToVRChat(message);
                 VRChatConnector.SendToVRChat(message2);
                 //Makes sure the VRC param is set to the minimum.
@@ -372,13 +374,13 @@ namespace OSCLock.Logic {
                 {
                     case 1: //Single Float readout 0 to +1
                         var Readout1 = (float)(remainingTime / maxAccumulated);
-                        var message1 = new OscMessage(readout_param, Readout1);
+                        var message1 = new OscMessage(readout_parameter, Readout1);
                         VRChatConnector.SendToVRChat(message1);
                         break;
 
                     case 2: //Single Float readout -1 to +1
                         var Readout2 = (float)((remainingTime / maxAccumulated * 2) - 1);
-                        var message2 = new OscMessage(readout_param, Readout2);
+                        var message2 = new OscMessage(readout_parameter, Readout2);
                         VRChatConnector.SendToVRChat(message2);
                         break;
 
@@ -386,8 +388,8 @@ namespace OSCLock.Logic {
                         var Readout3Minutes = (float)((remainingTime / maxAccumulated * 2) - 1);
                         var Readout3Seconds = (float)(((remainingTime - Math.Floor(remainingTime))) * 2) - 1;
 
-                        var message3Minutes = new OscMessage(readout_param, Readout3Minutes);
-                        var message3Seconds = new OscMessage(readout_param2, Readout3Seconds);
+                        var message3Minutes = new OscMessage(readout_parameter, Readout3Minutes);
+                        var message3Seconds = new OscMessage(readout_parameter2, Readout3Seconds);
 
                         VRChatConnector.SendToVRChat(message3Minutes);
                         VRChatConnector.SendToVRChat(message3Seconds);
@@ -398,8 +400,8 @@ namespace OSCLock.Logic {
                         var Readout4Seconds = (float)Math.Floor((remainingTime - Math.Floor(remainingTime)) * 60);
 
 
-                        var message4Minutes = new OscMessage(readout_param, Readout4Minutes);
-                        var message4Seconds = new OscMessage(readout_param2, Readout4Seconds);
+                        var message4Minutes = new OscMessage(readout_parameter, Readout4Minutes);
+                        var message4Seconds = new OscMessage(readout_parameter2, Readout4Seconds);
 
                         VRChatConnector.SendToVRChat(message4Minutes);
                         VRChatConnector.SendToVRChat(message4Seconds);
@@ -409,8 +411,8 @@ namespace OSCLock.Logic {
                         var Readout5Minutes = (float)Math.Floor(remainingTime);
                         var Readout5Seconds = (float)Math.Floor((remainingTime - Readout5Minutes) * 60);
 
-                        var message5Minutes = new OscMessage(readout_param, Readout5Minutes);
-                        var message5Seconds = new OscMessage(readout_param2, Readout5Seconds);
+                        var message5Minutes = new OscMessage(readout_parameter, Readout5Minutes);
+                        var message5Seconds = new OscMessage(readout_parameter2, Readout5Seconds);
 
                         VRChatConnector.SendToVRChat(message5Minutes);
                         VRChatConnector.SendToVRChat(message5Seconds);
@@ -420,15 +422,15 @@ namespace OSCLock.Logic {
                         var Readout6Minutes = (float)Math.Floor(remainingTime);
                         var Readout6Seconds = (float)Math.Floor((remainingTime - Readout6Minutes) * 60);
 
-                        var message6Minutes = new OscMessage(readout_param, Readout6Minutes);
-                        var message6BoolFalse = new OscMessage(readout_param2, false);
+                        var message6Minutes = new OscMessage(readout_parameter, Readout6Minutes);
+                        var message6BoolFalse = new OscMessage(readout_parameter2, false);
 
                         VRChatConnector.SendToVRChat(message6BoolFalse);
                         VRChatConnector.SendToVRChat(message6Minutes);
 
 
-                        var message6Seconds = new OscMessage(readout_param, Readout6Seconds);
-                        var message6BoolTrue = new OscMessage(readout_param2, true);
+                        var message6Seconds = new OscMessage(readout_parameter, Readout6Seconds);
+                        var message6BoolTrue = new OscMessage(readout_parameter2, true);
 
                         VRChatConnector.SendToVRChat(message6BoolTrue);
                         VRChatConnector.SendToVRChat(message6Seconds);
