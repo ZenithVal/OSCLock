@@ -196,7 +196,7 @@ namespace OSCLock {
 
             }
 
-            Console.WriteLine("Password:");
+            Console.WriteLine("Password: ");
             string password = Console.ReadLine();
 
             //If the passwords do not match, boot the to the main screen.

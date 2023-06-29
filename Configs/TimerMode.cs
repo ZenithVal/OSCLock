@@ -4,33 +4,38 @@ using Tomlet.Attributes;
 namespace OSCLock.Configs {
     public class TimerMode {
         [TomlProperty("max")]
-        //[TomlInlineComment("Max minutes. How much sand can the hourglass hold? ")]
+        [TomlInlineComment("Max minutes at a given moment. How much sand can the hourglass hold?")]
         public int maxTime { get; set; }
 
         [TomlProperty("absolute_min")]
-        //[TomlInlineComment("Miniumum time that must pass before the system can unlock. Minimum Sand")]
+        [TomlInlineComment("Miniumum time that must pass before the system can unlock. Minimum Sand that must pass")]
         public int absMin { get; set; }
 
 
         [TomlProperty("absolute_max")]
-        //[TomlInlineComment("If the total time has reached this, it can not increase. How much total sand is there?")]
+        [TomlInlineComment("If total time >= this, ignore all time add requests")]
         public int absMax { get; set; }
 
         [TomlProperty("StartingTime")]
         public DefaultTime StartTime { get; set; }
 
         [TomlPrecedingComment("--- Incoming OSC Parameters ---")]
-        //[TomlInlineComment("When this Bool is true, it should increase the timer once by inc_step.")]
+        [TomlInlineComment("When this Bool is true, it should increase the timer once by inc_step.)]
         public string inc_parameter { get; set; }
 
-        //[TomlInlineComment("Time in whole minutes to add when inc_parameter true recieved")]
+        //Should make this a float and allow seconds to be added.
+        [TomlInlineComment("Time (whole minutes) added per dec_step")]
         public int inc_step { get; set; }
 
-        //[TomlInlineComment("When this Bool is true, it should decrease the timer by dec_step.")]
+        [TomlInlineComment("Avatar parameter used.")]
         public string dec_parameter { get; set; }
 
-        //[TomlInlineComment("Time in whole minutes to remove when dec_parameter true recieved")]
+        //Should make this a float and allow seconds to be added.
+        [TomlInlineComment("Time (whole minutes) removed per dec_step")]
         public int dec_step { get; set; }
+
+        [TomlInlineComment("Minimum Time (miliseconds) between allowed inputs")]
+        public int input_delay { get; set; }
 
 
         [TomlPrecedingComment("-- Outgoing OSC Parameters ---")]
@@ -39,8 +44,7 @@ namespace OSCLock.Configs {
         public string readout_parameter2 { get; set; }
 
 
-
-        //[TomlInlineComment("Time In miliseconds between messages")]
+        [TomlInlineComment("Time (miliseconds) between outgoing messages")]
         public int readout_interval { get; set; }
 
     }

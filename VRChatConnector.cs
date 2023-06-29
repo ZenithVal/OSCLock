@@ -43,6 +43,7 @@ namespace OSCLock {
 
             Console.WriteLine($"mode: {ConfigManager.ApplicationConfig.Mode}");
             Console.WriteLine($"debugging: {debugging}");
+
             switch (ConfigManager.ApplicationConfig.Mode) {
                 case ApplicationMode.Testing:
                     Program.isAllowedToUnlock = true;
@@ -68,10 +69,10 @@ namespace OSCLock {
         //we'll keep OnOSCMessage for debugging purposes though.
         private static async void OnOscMessage(OscPacket packet) {
             if (debugging) {
-                Console.WriteLine("Package recieved:" + packet);
+                Console.WriteLine("Package recieved: " + packet);
                 try {
                     if (packet is OscMessage message) {
-                        Console.WriteLine($"{message.Address}" + $"({message.Arguments})");
+                        Console.WriteLine($"{message.Address}" + $"({message.Arguments[0]})");
                     }
                     else
                         Console.WriteLine("Packet did not seem to be an OSC Message");

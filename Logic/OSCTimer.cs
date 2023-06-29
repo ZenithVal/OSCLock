@@ -24,23 +24,30 @@ namespace OSCLock.Logic {
         private static int inc_step;
         private static string dec_parameter;
         private static int dec_step;
+        private static float input_delay;
 
         private static int readout_mode;
         private static string readout_param;
         private static string readout_param2;
         
         private static DateTime lastAdded = DateTime.Now;
-        //public static async Task OnIncParam(OscMessage message) {
-        //    var shouldAdd = (bool) message.Arguments[0];
-        //    if (shouldAdd)
-        //        Console.WriteLine($"Param recieved - Attempting to add {inc_step} minute(s)");
-        //        shouldAdd = DateTime.Now >= lastAdded;
-        //    else Console.WriteLine($"Time adding cooldown: " + lastAdded);
-        //    if (shouldAdd) {
-        //        AddTime(inc_step);
-        //        lastAdded = DateTime.Now.AddSeconds(1.5);
-        //    }
-        //}
+
+        public static async Task OnIncParam(OscMessage message) {
+            var shouldAdd = (bool)message.Arguments[0];
+            if (input_delay > 0 & shouldAdd) {
+                if (DateTime.Now > lastAdded) {
+                    Console.WriteLine($"Param recieved - Attempting to add {inc_step} minute(s)");
+                    lastAdded = DateTime.Now.AddMilliseconds(input_delay);
+                }
+                else {
+                    Console.WriteLine($"Restricted by input delay until: " + lastAdded);
+                }
+            }
+            else if (shouldAdd) {
+                Console.WriteLine($"Param recieved - Attempting to add {inc_step} minute(s)");
+                AddTime(inc_step);
+            }
+        }
 
         public static async Task OnIncParam(OscMessage message)
         {
@@ -63,11 +70,8 @@ namespace OSCLock.Logic {
         public static void Setup() {
             var timerConfig = ConfigManager.ApplicationConfig.TimerConfig;
 
-            //Bumper
-            Console.WriteLine("");
-
             maxAccumulated = timerConfig.maxTime;
-            Console.WriteLine($"max: {maxAccumulated}");
+            Console.WriteLine($"\nmax: {maxAccumulated}");
 
             absolute_min = timerConfig.absMin;
             absolute_max = timerConfig.absMax;
@@ -87,6 +91,7 @@ namespace OSCLock.Logic {
                 Console.WriteLine("inc_parameter not defined.");
             }
 
+
             dec_parameter = timerConfig.dec_parameter;
             dec_step = -timerConfig.dec_step;
 
@@ -99,6 +104,9 @@ namespace OSCLock.Logic {
             else {
                 Console.WriteLine("dec_parameter not defined.");
             }
+
+            input_delay = timerConfig.input_delay;
+            Console.Write($"input_delay: {input_delay}");
 
             readout_mode = timerConfig.readout_mode;
             Console.WriteLine($"\nreadout_mode: {readout_mode}\n");
