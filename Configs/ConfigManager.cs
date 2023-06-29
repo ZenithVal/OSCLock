@@ -83,9 +83,9 @@ namespace OSCLock.Configs {
             File.Delete("app.pass");
             File.WriteAllText(CONFIG_FILE, TomletMain.TomlStringFrom(new MainConfig {
 
-                vrchatAddress = "127.0.0.1",
-                port = 9001,
-                vrchatPort = 9000,
+                ipAddress = "127.0.0.1",
+                listener_port = 9001,
+                write_port = 9000,
 
                 Mode = ApplicationMode.Testing,
 

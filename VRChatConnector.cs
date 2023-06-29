@@ -19,9 +19,9 @@ namespace OSCLock {
 
         private static UDPListener oscListener;
         private static UDPSender oscSender;
-        private static int listenerPort = ConfigManager.ApplicationConfig.port;
-        private static int senderPort = ConfigManager.ApplicationConfig.vrchatPort;
-        private static string recipientAddress = ConfigManager.ApplicationConfig.vrchatAddress ?? "127.0.0.1";
+        private static int listener_port = ConfigManager.ApplicationConfig.listener_port;
+        private static int write_port = ConfigManager.ApplicationConfig.write_port;
+        private static string ipAddress = ConfigManager.ApplicationConfig.ipAddress ?? "127.0.0.1";
 
         public delegate Task AddressHandler(OscMessage address);
 
@@ -34,12 +34,11 @@ namespace OSCLock {
                 Program.isAllowedToUnlock = false;
             }
             
-            oscListener = new UDPListener(listenerPort, OnOscMessage);
-            Console.WriteLine("listener_port: " + listenerPort);
+            oscListener = new UDPListener(listener_port, OnOscMessage);
+            Console.WriteLine("listener_port: " + listener_port);
 
-            oscSender = new UDPSender(recipientAddress, senderPort);
-
-            Console.WriteLine("write_port: " + senderPort);
+            oscSender = new UDPSender(ipAddress, write_port);
+            Console.WriteLine("write_port: " + write_port);
 
             //Disabled other modes, as they are not used.
             OSCTimer.Setup();
@@ -61,13 +60,12 @@ namespace OSCLock {
 
 
         private static async void OnOscMessage(OscPacket packet) {
+            Console.WriteLine(packet);
             try {
                 if (packet is OscMessage message) {
                     AddressHandler handler;
-                    if (addressHandlers.TryGetValue(message.Address, out handler)) 
-                    {
-                        if (message.Arguments[0] is true)
-                        {
+                    if (addressHandlers.TryGetValue(message.Address, out handler)) {
+                        if (message.Arguments[0] is true) {
                             await handler(message);
                         }
                         //Checks if the message recieved (only bother accepting true messages.)
@@ -76,17 +74,19 @@ namespace OSCLock {
                     //Console.WriteLine($"{message.Address} Recieved");
                 }
             }
-            catch (InvalidCastException e) {
+            catch (InvalidCastException e)
+            {
                 Console.WriteLine("Wrong parameter type written!" + e, e);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 Console.WriteLine("Failed to handle osc message: " + e, e);
             }
         }
 
         public static void AddHandler(string addr, AddressHandler handler) {
             addressHandlers[addr] = handler;
-            //Console.WriteLine($"Installed OSC handler for address {addr}");
+            Console.WriteLine($"Installed OSC handler for address {addr}");
         }
 
         //Might need a queue here, as it might be possible to send too many messages at once.

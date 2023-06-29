@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -42,7 +43,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SharpOSC, Version=0.1.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>thirdparty\oscsharp\Release\SharpOSC.dll</HintPath>
+      <HintPath>thirdparty\oscsharp\SharpOSC.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -114,12 +115,11 @@
   <ItemGroup>
     <Content Include="Heart.ico" />
     <Content Include="README.md" />
-    <Content Include="thirdparty\oscsharp\Debug\SharpOSC.dll" />
-    <Content Include="thirdparty\oscsharp\Debug\SharpOSC.pdb" />
-    <Content Include="thirdparty\oscsharp\Release\SharpOSC.dll" />
-    <Content Include="thirdparty\oscsharp\Release\SharpOSC.pdb" />
+    <Content Include="thirdparty\oscsharp\SharpOSC.dll" />
+    <Content Include="thirdparty\oscsharp\SharpOSC.pdb" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

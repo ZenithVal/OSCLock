@@ -4,13 +4,13 @@ using Tomlet.Models;
 namespace OSCLock.Configs {
     public class MainConfig {
         [TomlProperty("ip")]
-        public string vrchatAddress { get; set; }
+        public string ipAddress { get; set; }
 
         [TomlProperty("listener_port")]
-        public int port { get; set; }
+        public int listener_port { get; set; }
 
         [TomlProperty("write_port")]
-        public int vrchatPort { get; set; }
+        public int write_port { get; set; }
 
         [TomlProperty("Mode")]
         public ApplicationMode Mode { get; set; }
