@@ -87,7 +87,7 @@ namespace OSCLock.Configs {
                 listener_port = 9001,
                 write_port = 9000,
 
-                mode = ApplicationMode.Testing,
+                mode = ApplicationMode.Timer,
                 debugging = false,
 
                 ESmartConfig = new ESmartCredentials

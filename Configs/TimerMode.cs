@@ -8,12 +8,12 @@ namespace OSCLock.Configs {
         public int maxTime { get; set; }
 
         [TomlProperty("absolute_min")]
-        [TomlInlineComment("Miniumum time that must pass before the system can unlock. Minimum Sand that must pass")]
+        [TomlInlineComment("Miniumum time (minutes) that must pass before the system can unlock. Minimum Sand that must pass")]
         public int absMin { get; set; }
 
 
         [TomlProperty("absolute_max")]
-        [TomlInlineComment("If total time >= this, ignore all time add requests")]
+        [TomlInlineComment("If total time (minutes) greater than this, ignore all time add requests")]
         public int absMax { get; set; }
 
         [TomlProperty("StartingTime")]
@@ -34,7 +34,7 @@ namespace OSCLock.Configs {
         [TomlInlineComment("Time (seconds) removed per dec_step")]
         public int dec_step { get; set; }
 
-        [TomlInlineComment("Minimum Time (miliseconds) between allowed inputs")]
+        [TomlInlineComment("Minimum Time (miliseconds) between allowed inputs, 0 to disable.")]
         public int input_delay { get; set; }
 
 
