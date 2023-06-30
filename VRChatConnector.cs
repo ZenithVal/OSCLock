@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OSCLock.Configs;
 using OSCLock.Logic;
 using SharpOSC;
-using Windows.Security.Cryptography.Core;
+
 
 namespace OSCLock {
     public static class VRChatConnector {
@@ -26,7 +23,7 @@ namespace OSCLock {
 
         public delegate Task AddressHandler(OscMessage address);
 
-        private static Dictionary<string, AddressHandler> addressHandlers = new Dictionary<string, AddressHandler>();
+        public static Dictionary<string, AddressHandler> addressHandlers = new Dictionary<string, AddressHandler>();
 
         public static void Start() {
             if (oscListener != null) {
@@ -64,6 +61,7 @@ namespace OSCLock {
             //todo: add one for avatar change
         }
 
+
         private static async void OnOscMessage(OscPacket packet) {
             if (debugging) Console.WriteLine("Package recieved: " + packet);
             try {
@@ -84,7 +82,6 @@ namespace OSCLock {
                 Console.WriteLine("Failed to handle osc message: " + e, e);
             }
         }
-
 
         public static void AddHandler(string addr, AddressHandler handler) {
             addressHandlers[addr] = handler;

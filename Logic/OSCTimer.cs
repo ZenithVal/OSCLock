@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using OSCLock.Configs;
 using SharpOSC;
+using Windows.Devices.Printers;
 using Windows.Foundation.Metadata;
 
 namespace OSCLock.Logic {
@@ -93,6 +94,11 @@ namespace OSCLock.Logic {
             }
             else {
                 Console.WriteLine("dec_parameter not defined.\n");
+            }
+
+            //print the addressHandlers dictionary
+            foreach (var handler in VRChatConnector.addressHandlers) {
+                Console.WriteLine($"Address: {handler.Key} | Value: {handler.Value}");
             }
 
             input_delay = timerConfig.input_delay;
