@@ -45,7 +45,7 @@ namespace OSCLock.Logic {
                 }
             }
             else if (shouldAdd) {
-                Console.WriteLine($"Param recieved - Attempting to add {inc_step} minute(s)");
+                Console.WriteLine($"Param recieved - Attempting to add {inc_step} seconds(s)");
                 AddTime(inc_step);
             }
         }
@@ -53,7 +53,7 @@ namespace OSCLock.Logic {
         public static async Task OnDecParam(OscMessage message) {
             var shouldDec = (bool) message.Arguments[0];
             if (shouldDec) {
-                Console.WriteLine($"Param recieved - Attempting to remove {dec_step} minute(s)");
+                Console.WriteLine($"Param recieved - Attempting to remove {dec_step} seconds(s)");
                 AddTime(dec_step);
             }
         }
