@@ -48,6 +48,7 @@ namespace OSCLock {
         private static async Task PrintStatus() {
             var appConfig = ConfigManager.ApplicationConfig;
             Console.WriteLine($"Operating in {appConfig.mode} mode.");
+
             if (appConfig.mode == ApplicationMode.Timer) {
                 Console.WriteLine("Time left: " + (int)OSCTimer.GetTimeLeftTotal() + " minutes \n");
             }
@@ -60,10 +61,16 @@ namespace OSCLock {
         private static ESmartLock connectedLock;
         public static async Task UnlockDevice() {
             if (!isAllowedToUnlock) {
-                Console.WriteLine("You are not allowed to unlock yet!");
-                await PrintStatus();
+                Console.WriteLine("You are not allowed to unlock yet!\n");
 
-                Thread.Sleep(1000);
+                if (isEncrypted && OSCTimer.HasTimeElapsed()) {
+                    Console.WriteLine("Encryption requires a complete timer to allow unlocking.");
+                    Thread.Sleep(1500);
+                    Console.Clear();
+                    await PrintHelp();
+                }
+                
+                else await PrintStatus();
                 return;
             }
 
@@ -79,7 +86,8 @@ namespace OSCLock {
             
             Console.WriteLine("Removing lock as it turned of by now\n");
             connectedLock = null;
-            Thread.Sleep(1000);
+
+            Thread.Sleep(1500);
             Console.Clear();
             await PrintHelp();
         }
