@@ -232,17 +232,28 @@ namespace OSCLock.Logic {
                     if (absolute_min > 0 && EarlietEndTime > currentTime)
                     { //Endtime in past, but minimum time has not passed
                         Console.WriteLine("Absolute minimum time has not yet elapsed, ");
-                        //Going to use ceiling instead of floor to prevent the timer from having to fire minimum warning twice in rare cases..
-                        var timeDiff = Math.Ceiling((EarlietEndTime - currentTime).TotalMinutes);
-                        Console.WriteLine($"atleast {timeDiff} more minutes must pass, ");
-                        if (timeDiff > maxAccumulated)
-                        {
-                            timeDiff = maxAccumulated;
+                        
+                        //Going to use ceiling instead of floor to prevent the timer from having to fire minimum warning twice in rare cases.
+                        var timeDiff = Math.Ceiling((EarlietEndTime - currentTime).TotalSeconds);
+                        var timeDiffMinutes = Math.Round(timeDiff / 60.0);
+
+                        if (timeDiff < 60) {
+                        Console.WriteLine($"atleast {timeDiff} more seconds must pass, ");
+                        }
+                        else {
+                        Console.WriteLine($"atleast {timeDiffMinutes} more minute(s) must pass, ");
                         }
 
-                        Console.WriteLine($"adding {timeDiff} minute(s)");
+                        //Makes sure we don't go past the max accumulated time. 
+                        //EG: If their max timer is 30 minutes but their minimum time is 40, it should only add a total of 30 minutes.
+                        if (timeDiff > maxAccumulated*60)
+                        {
+                            timeDiff = maxAccumulated*60;
+                        }
 
-                        AddTime(timeDiff*60);
+                        Console.WriteLine($"adding remaining time.");
+
+                        AddTime(timeDiff);
                         return timeDiff;
                     }
 
