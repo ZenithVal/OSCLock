@@ -8,6 +8,7 @@ namespace OSCLock.Logic {
         public static async Task onUnlockParameter(OscMessage message) {
             bool writtenBool = (bool) message.Arguments[0];
             Program.isAllowedToUnlock = writtenBool;
+            Console.WriteLine("Unlock Parameter Recieved!");
         }
 
         public static void Setup() {

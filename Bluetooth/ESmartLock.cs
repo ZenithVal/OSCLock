@@ -221,7 +221,8 @@ namespace OSCLock.Bluetooth {
             }
             catch (Exception e) {
                 //Console.WriteLine("Error while reading from device " + e, e);
-                Console.WriteLine("There was an error, but the lock opened, PROBABLY? Good luck if it didn't.");
+                Console.WriteLine(e);
+                Console.WriteLine("\n\nThere was an error which is usually expected but the lock should've opened. \nPlease let the creators know if it didn't!");
                 CurrentPacket_TOTALSIZE = 0;
                 CurrentPacket_DATA = null;
                 DATA_LENGTH = 0;
