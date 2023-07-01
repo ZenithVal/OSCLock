@@ -314,8 +314,13 @@ namespace OSCLock.Logic {
             }
             else Console.Write("configured starting time ");
 
-            if (startingTime > ConfigManager.ApplicationConfig.TimerConfig.maxTime && ConfigManager.ApplicationConfig.TimerConfig.maxTime > 0) {
-                startingTime = ConfigManager.ApplicationConfig.TimerConfig.maxTime;
+            if (startingTime > maxAccumulated && maxAccumulated > 0) {
+                startingTime = maxAccumulated;
+
+                //This case should NEVER happen... but just in case.
+                if (startingTime > absolute_max) {
+                startingTime = absolute_max;
+                }
                 Console.Write("capped by maxtime to ");
             }
             else Console.Write("of ");
