@@ -1,42 +1,61 @@
 # OSCLock
-
-This app can control any bluetooth lock that uses the ESmartLock app. It's been tested it with [this lock.](https://amzn.to/3JAGxmm) <br> A simple use case might be throwing regular keys into a lockbox secured by the bluetooth lock. <br> We take no responsibility for unsafe usage and provide no warranty. Have a backup plan!
+This app can unlock a bluetooth lock that uses the ESmartLock app. It's been well tested it with [this lock.](https://amzn.to/3JAGxmm) <br> A simple use case might be throwing regular keys into a lockbox secured by the bluetooth lock. <br> We take no responsibility for unsafe usage and provide no warranty. Always a backup plan!
 
 <br>
 
-## Getting the app
+# Modes
+OSCLock's parameters & timings are fully configurable. <br> Check down in the config section or the config.toml file.
 
-1. **Via the executable**
-   - Download latest zip [from releases](https://gitlab.com/osclock/osclock/-/releases)
-   - Extract wherever.
-   - Run the Executable.
-   - Follow first time setup.
-2. **From the source**
-   - Clone the git.
-   - Open the sln.
-   - Install required nuget packages.
+### Timer:
+- Starts a timer for a specified duration. 
+- While the timer is running, unlock functions of the app are disabled.
+- Specific avatar parameters that can add or remove some time 
+- Will readout a parameter so you can reflect the current timer on your avatar.
+
+### Basic:
+ - By default, unlock functions of the app are disabled
+ - When a specific parameter is recieved, the app will enable unlock functions.
+
+### Testing: 
+ - Unlock functionality is always available. Good for testing your lock.
+
+### Counter:
+ - TBD
+
+Although the app is built for An ESmartLock in mind, **it doesn't actually require one to function.** If you'd like to entirely skip over the physical device and just use it's timer control functions and readouts, feel free to skip 3-8 in setup.
+
+
+<br>
+<br>
 
 # First Time Setup
+You can get the latest zip [from releases](https://github.com/ZenithVal/OSCLock/releases) (On the right side panel) <br> Unzip the entire folder wherever. You can also clone the git and build it yourself. 
 
-This guide assumes you have an ESmartLock bluetooth lock and have set it up to be opened with the app. <br> If not, go ahead and do that that first. You probably don't need to assign fingerprints to the lock. <br> This app can be used without a physical lock in a more pretend manner if you want as well.
-
-1. Start the application, it will generate a config.toml file.
-2. Exit the application and open the config.toml file.
-3. Add your esmart credetials and save the file.
-4. Start OSCLock.
-5. Unlock your lock. (U)
-7. Once successful, exit the application.
-8. In config.toml, device_password should now be filled in. 
-9. You can remove your esmart username and password if you'd like.
+1. Start OSCLock.exe once to generate a config.toml
+2. Exit the application and open the config.toml next to the executable
+3. Add your eSmartLock credentials to the config.toml
+4. Start OSCLock
+5. Unlock your lock (Press U)
+6. Once successfully completed, exit the application
+7. In the config.toml, device_password should now be filled in
+8. You can remove your esmart username and password if you'd like.
 9. Configure everything else in the confg.toml to your heart's content.
-10. Encryption works well if you have a friend you trust to hold onto the code.
 
---- 
+##### *Skip 3-8 if you don't actually have a physical lock*
+
 
 <br>
+<br>
 
-# Config
+# Avatar Setup
+Avatar setup is decided by the user. You can use any of the readout modes to fit your avatar setup. 
+A simple digital timer using readout mode 3 can be found on at https://zenithval.booth.pm/items/4892327
 
+
+<br>
+<br>
+
+# Config - Main
 | Value           | Info                                                        | Default     |
 |:--------------- | ----------------------------------------------------------- |:-----------:|
 | ip              | Address to send OSC data to                                 | "127.0.0.1" |
@@ -49,13 +68,10 @@ This guide assumes you have an ESmartLock bluetooth lock and have set it up to b
 | esmart_password | Account password for login                                  | ""          |
 | device_password | Lock passcode will be written here after a successful login | ""          |
 
+
 <br>
 
-### Mode - Timer
-
-You won't be able to unlock the Bluetooth lock until this timer finishes.
-A parameter from VRC can be read to increase the time by x amount. EG: Headpats increase the timer by 1 minute
-
+## Config - Timer
 | Value              | Info                                                             | Default |
 |:------------------ | ---------------------------------------------------------------- |:-------:|
 | max                | Maximum time. How much sand can the hourglass hold at a time?    | 60      |
@@ -79,8 +95,10 @@ A parameter from VRC can be read to increase the time by x amount. EG: Headpats 
 |                    |                                                                  |         |
 
 <br>
+<br>
 
-Readout mode determines how data is output from OSCLock. Choose a method that works for you and your avatar. <br> P1 = readout_parameter and P2 = readout_parameter2
+# Readout modes
+readout_mode determines how data is output from OSCLock. Choose a method that works for you and your avatar. <br> P1 = readout_parameter and P2 = readout_parameter2
 
 | readout_mode | Use of Readout parameters                                      |
 |:------------ | -------------------------------------------------------------- |
@@ -92,8 +110,8 @@ Readout mode determines how data is output from OSCLock. Choose a method that wo
 | 5            | P1 & P2, ints 1:1 minutes and seconds respectively             |
 | 6            | P1, int 1:1 mins/seconds. P2, bool determines min/sec data     |
 
---- 
 
+<br>
 <br>
 
 # In app Controls
@@ -106,20 +124,19 @@ Readout mode determines how data is output from OSCLock. Choose a method that wo
 | U     | Begins unlock process if available              |
 | Q     | Quits the application                           |
 | {     | Encrypts the application config with a password |
-| }     | Encrypts the application config with a password |
+| }     | Decrypts the application config with a password |
 
---- 
 
 <br>
-
-# Avatar Setup
-Avatar setup is decided by the user. You can use any of the readout modes to fit your avatar setup. <br>
-A simple digital timer using readout mode 3 can be found on at https://zenithval.booth.pm/items/4892327
-
-
---- 
-
 <br>
+
+# Encryption
+Encryption uses very basic encryption to obfuscate the config.toml and timer files. After pressing { in the app, you'll be prompted with a password prompt. You can paste from your clipboard if you wish. If encryption is enabled, the timer can not simply be ended early by deleting the timer files. Decryption will force end the current time. 
+
+It's only "effective" if OSCLock is the only method easily available to open the lock. You can do this by not keeping the eSmartLock app or not memorizing the login and logging out. Encrypt OSCLock with a code impossible to remember, maybe print it or DM it to someone you trust to send back to you if needed.
+
+Goes without saying, only use this if you're confident and have confirmed it can open your lock!
+
 
 # FAQ
 
@@ -152,15 +169,15 @@ Want to:
    - Some "Gamified" elements.
  - Automate a simple avatar setup
  - Unique avatar add ons/integrations
- - Make the encryption feature not security theater
  - Have Zeni actually know how to code
  - Support difficent brands of bluetooth locks (VERY painful without an API)
- - PiShock?
+ - Make the encryption feature not security theater (Probably never, might be a safety hazard.)
 
 <br>
 
 # Credits & Liscense 
 
+- GitLab Mirror: https://gitlab.com/osclock/osclock
+- Original programming before git by @NeetCode. 08/2022
 - SharpOSC [MIT Liscense](https://github.com/tecartlab/SharpOSC/blob/master/License.txt)
 - App Icon  [Game-icons.net](https://game-icons.net/1x1/delapouite/locked-heart.html) under [CC by 3.0](https://creativecommons.org/licenses/by/3.0/)
-
