@@ -8,7 +8,7 @@ namespace OSCLock.Configs {
         public int maxTime { get; set; }
 
         [TomlProperty("absolute_min")]
-        [TomlInlineComment(" (minutes). Time will be added if it total time is below this. 0 disables.")]
+        [TomlInlineComment("(Minutes). Time will be added if it total time is below this. 0 disables.")]
         public int absMin { get; set; }
 
         [TomlProperty("absolute_max")]
@@ -24,7 +24,7 @@ namespace OSCLock.Configs {
         public string inc_parameter { get; set; }
 
         //Should make this a float and allow seconds to be added.
-        [TomlInlineComment("Sseconds added per dec_step")]
+        [TomlInlineComment("Seconds added per dec_step")]
         public int inc_step { get; set; }
 
         [TomlInlineComment("Avatar parameter used.")]
