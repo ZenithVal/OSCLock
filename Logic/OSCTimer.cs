@@ -7,6 +7,7 @@ using OSCLock.Configs;
 using SharpOSC;
 using Windows.Devices.Printers;
 using Windows.Foundation.Metadata;
+using Windows.System.Profile;
 
 namespace OSCLock.Logic {
     public static class OSCTimer {
@@ -290,9 +291,8 @@ namespace OSCLock.Logic {
                 Console.WriteLine($"The time is set to random between {startTimeConfig.randomMin} and {startTimeConfig.randomMax} minutes.");
             }
 
-            var minimumTime = ConfigManager.ApplicationConfig.TimerConfig.absMin;
-            if (minimumTime > 0) {
-                Console.WriteLine("There is a minimum time of " + minimumTime + " minutes set.");
+            if (absolute_min > 0) {
+                Console.WriteLine("There is a minimum time of " + absolute_min + " minutes set.");
             }
             
             Console.Write("Press 'y', to proceed or any other key to quit");
@@ -314,10 +314,16 @@ namespace OSCLock.Logic {
             }
             else Console.Write("configured starting time ");
 
-            if (startingTime > maxAccumulated && maxAccumulated > 0) {
+            //Minimum check
+            if (startingTime < absolute_min && absolute_min > 0) {
+                startingTime = absolute_min;
+                Console.Write("capped by minimum time to ");
+            }
+            //Maximum check
+            else if (startingTime > maxAccumulated && maxAccumulated > 0) {
                 startingTime = maxAccumulated;
 
-                //This case should NEVER happen... but just in case.
+                //Absolute max check. This should never really happen... but just in case someone really fumbles the config:
                 if (startingTime > absolute_max) {
                 startingTime = absolute_max;
                 }
@@ -445,18 +451,22 @@ namespace OSCLock.Logic {
                         var Readout6Minutes = (float)Math.Floor(remainingTime);
                         var Readout6Seconds = (float)Math.Floor((remainingTime - Readout6Minutes) * 60);
 
+                        var message6Seconds = new OscMessage(readout_parameter, Readout6Seconds);
+                        var message6BoolTrue = new OscMessage(readout_parameter2, true);
+
+                        VRChatConnector.SendToVRChat(message6BoolTrue);
+                        VRChatConnector.SendToVRChat(message6Seconds);
+
+                        Task.Delay(50).Wait();
+                        //There NEEDS to be a delay here or the bool will be overwritten by the next message.
+                        //Hopefully with it being less than a second, it'll be unnoticable. 
+
                         var message6Minutes = new OscMessage(readout_parameter, Readout6Minutes);
                         var message6BoolFalse = new OscMessage(readout_parameter2, false);
 
                         VRChatConnector.SendToVRChat(message6BoolFalse);
                         VRChatConnector.SendToVRChat(message6Minutes);
 
-
-                        var message6Seconds = new OscMessage(readout_parameter, Readout6Seconds);
-                        var message6BoolTrue = new OscMessage(readout_parameter2, true);
-
-                        VRChatConnector.SendToVRChat(message6BoolTrue);
-                        VRChatConnector.SendToVRChat(message6Seconds);
                         break;
 
                     default:
