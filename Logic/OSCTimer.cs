@@ -323,10 +323,11 @@ namespace OSCLock.Logic {
             else if (startingTime > maxAccumulated && maxAccumulated > 0) {
                 startingTime = maxAccumulated;
 
-                //Absolute max check. This should never really happen... but just in case someone really fumbles the config:
-                if (startingTime > absolute_max) {
+                Console.Write("capped by maxtime to ");
+            }
+            //Absolute max check. This should never really happen... but just in case someone really fumbles the config:
+            else if (startingTime > absolute_max && absolute_max > 0) {
                 startingTime = absolute_max;
-                }
                 Console.Write("capped by maxtime to ");
             }
             else Console.Write("of ");
