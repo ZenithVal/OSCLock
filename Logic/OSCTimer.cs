@@ -67,7 +67,7 @@ namespace OSCLock.Logic {
             absolute_min = timerConfig.absMin;
             absolute_max = timerConfig.absMax;
             Console.WriteLine($"absolute_min: {absolute_min}");
-            Console.WriteLine($"absolute_min: {absolute_max}\n");
+            Console.WriteLine($"absolute_max: {absolute_max}\n");
 
             inc_parameter = timerConfig.inc_parameter;
             inc_step = timerConfig.inc_step;
@@ -232,7 +232,8 @@ namespace OSCLock.Logic {
                     if (absolute_min > 0 && EarlietEndTime > currentTime)
                     { //Endtime in past, but minimum time has not passed
                         Console.WriteLine("Absolute minimum time has not yet elapsed, ");
-                        var timeDiff = Math.Round((EarlietEndTime - currentTime).TotalMinutes);
+                        //Going to use ceiling instead of floor to prevent the timer from having to fire minimum warning twice in rare cases..
+                        var timeDiff = Math.Ceiling((EarlietEndTime - currentTime).TotalMinutes);
                         Console.WriteLine($"atleast {timeDiff} more minutes must pass, ");
                         if (timeDiff > maxAccumulated)
                         {
@@ -241,7 +242,7 @@ namespace OSCLock.Logic {
 
                         Console.WriteLine($"adding {timeDiff} minute(s)");
 
-                        AddTime(timeDiff);
+                        AddTime(timeDiff*60);
                         return timeDiff;
                     }
 
