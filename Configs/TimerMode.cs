@@ -16,7 +16,7 @@ namespace OSCLock.Configs {
         public int absMax { get; set; }
 
         //Time Section
-        [TomlProperty("StartingTime")]
+        [TomlProperty("startingTime")]
         public DefaultTime StartTime { get; set; }
 
         [TomlPrecedingComment("--- Incoming OSC Parameters ---")]
@@ -27,7 +27,7 @@ namespace OSCLock.Configs {
         [TomlInlineComment("Seconds added per dec_step")]
         public int inc_step { get; set; }
 
-        [TomlInlineComment("Avatar parameter used.")]
+        [TomlInlineComment("When this bool is true, decrease time once by dec_step")]
         public string dec_parameter { get; set; }
 
         //Should make this a float and allow seconds to be added.
