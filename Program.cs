@@ -15,7 +15,7 @@ namespace OSCLock {
 
         public static async Task Main(string[] args) {
 
-            Console.WriteLine("OSCLock Version v1.0 - 6/29/23\n");
+            Console.WriteLine("OSCLock Version v1.0 - 7/1/23\n");
 
             if (File.Exists("app.pass"))
             {

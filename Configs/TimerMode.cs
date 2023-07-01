@@ -4,38 +4,37 @@ using Tomlet.Attributes;
 namespace OSCLock.Configs {
     public class TimerMode {
         [TomlProperty("max")]
-        [TomlInlineComment("Max minutes at a given moment. How much sand can the hourglass hold?")]
+        [TomlInlineComment("Max minutes at a given moment. How much sand can the hourglass hold at a time?")]
         public int maxTime { get; set; }
 
         [TomlProperty("absolute_min")]
-        [TomlInlineComment("Miniumum time (minutes) that must pass before the system can unlock. Minimum Sand that must pass")]
+        [TomlInlineComment(" (minutes). Time will be added if it total time is below this. 0 disables.")]
         public int absMin { get; set; }
 
-
         [TomlProperty("absolute_max")]
-        [TomlInlineComment("If total time (minutes) greater than this, ignore all time add requests")]
+        [TomlInlineComment("(Minutes) If overall time reaches this, inc_step wont work. 0 disables.")]
         public int absMax { get; set; }
 
+        //Time Section
         [TomlProperty("StartingTime")]
         public DefaultTime StartTime { get; set; }
-
 
         [TomlPrecedingComment("--- Incoming OSC Parameters ---")]
         [TomlInlineComment("When this Bool is true, it should increase the timer once by inc_step.")]
         public string inc_parameter { get; set; }
 
         //Should make this a float and allow seconds to be added.
-        [TomlInlineComment("Time (seconds) added per dec_step")]
+        [TomlInlineComment("Sseconds added per dec_step")]
         public int inc_step { get; set; }
 
         [TomlInlineComment("Avatar parameter used.")]
         public string dec_parameter { get; set; }
 
         //Should make this a float and allow seconds to be added.
-        [TomlInlineComment("Time (seconds) removed per dec_step")]
+        [TomlInlineComment("Seconds removed per dec_step")]
         public int dec_step { get; set; }
 
-        [TomlInlineComment("Minimum Time (miliseconds) between allowed inputs, 0 to disable.")]
+        [TomlInlineComment("Cooldown (miliseconds) between allowed inputs, 0 to disable.")]
         public int input_delay { get; set; }
 
 

@@ -7,13 +7,13 @@ This app can control any bluetooth lock that uses the ESmartLock app. It's been 
 ## Getting the app
 
 1. **Via the executable**
-   - Download latest zip [from releases](Link.goes.here)
+   - Download latest zip [from releases](https://gitlab.com/osclock/osclock/-/releases)
    - Extract wherever.
    - Run the Executable.
    - Follow first time setup.
 2. **From the source**
-   - Clone the git
-   - Open the sln
+   - Clone the git.
+   - Open the sln.
    - Install required nuget packages.
 
 # First Time Setup
@@ -24,14 +24,12 @@ This guide assumes you have an ESmartLock bluetooth lock and have set it up to b
 2. Exit the application and open the config.toml file.
 3. Add your esmart credetials and save the file.
 4. Start OSCLock.
-5. Start a new timer. (T) 
-6. Unlock yoru lock. (U)
-7. If successful, device_password should be filled in within the config.
-8. Configure everything else in the confg.toml to your heart's content.
-9. You can change your esmart login or remove the app from your phone if you'd like.
+5. Unlock your lock. (U)
+7. Once successful, exit the application.
+8. In config.toml, device_password should now be filled in. 
+9. You can remove your esmart username and password if you'd like.
+9. Configure everything else in the confg.toml to your heart's content.
 10. Encryption works well if you have a friend you trust to hold onto the code.
-
-<br> For setup questions you can ask in #OSC-Talkin in [Zeni's Discord](https://discord.gg/7VAm3twDyy)
 
 --- 
 
@@ -44,7 +42,8 @@ This guide assumes you have an ESmartLock bluetooth lock and have set it up to b
 | ip              | Address to send OSC data to                                 | "127.0.0.1" |
 | listener_port   | Port to listen for OSC data on                              | 9001        |
 | write_port      | Port to send OSC data to                                    | 9000        |
-| mode            | Timer is the only mode atm                                  | ""          |
+| mode            | Testing, Basic, Or Timer                                    | "Timer"     |
+| debugging       | Extra console readouts, mainly for OSC debugging            | false       |
 | lock_type       | Not used yet, maybe for different bluetooth locks later.    | ESmartLock  |
 | esmart_username | Account username for login                                  | ""          |
 | esmart_password | Account password for login                                  | ""          |
@@ -59,24 +58,27 @@ A parameter from VRC can be read to increase the time by x amount. EG: Headpats 
 
 | Value              | Info                                                             | Default |
 |:------------------ | ---------------------------------------------------------------- |:-------:|
-| max                | Max held minutes. How much sand can the hourglass hold?          | 60      |
-| absolute_min       | Will force inc_step until overall time reaches this. 0 disables. | 0       |
-| absolute_max       | If overall time reaches this, inc_step wont work. 0 disables.    | 0       |
+| max                | Maximum time. How much sand can the hourglass hold at a time?    | 60      |
+| absolute_min       | Time will be added if it total time is below this. 0 disables.   | 0       |
+| absolute_max       | If overall time reaches this, inc_step wont work. 0 disables.    | 120     |
 |                    |                                                                  |         |
 | starting_value     | Time in minutes the timer should start at. Random if -1          | -1      |
 | random_min         | Random minimum time                                              | 40      |
 | random_min         | Random maximum time                                              | 60      |
 |                    |                                                                  |         |
 | inc_parameter      | When this Bool is true via OSC, it should increase the timer.    | ""      |
-| inc_step           | Time in minutes to add (int)                                     | 1       |
+| inc_step           | Time in seconds to add (int)                                     | 60      |
 | dec_parameter      | When this Bool is true via OSC, it should decrease the timer.    | ""      |
-| dec_step           | Time in minutes to subtract (int)                                | 1       |
+| dec_step           | Time in seconds to subtract (int)                                | 300     |
+| input_delay        | Minimum cooldown between allowed inputs.                         | 1500    |
 |                    |                                                                  |         |
-| readout_mode       | Method of translating time remaining via OSC. Chart below        | 1       |
+| readout_mode       | Method of translating time remaining via OSC. Chart below        | 0       |
 | readout_parameter  | Readout parameter 1                                              | ""      |
 | readout_parameter2 | Readout parameter 2 (optional)                                   | ""      |
 | readout_interval   | Time in miliseconds between parameter updates.                   | 500     |
-| <br>               |                                                                  |         |
+|                    |                                                                  |         |
+
+<br>
 
 Readout mode determines how data is output from OSCLock. Choose a method that works for you and your avatar. <br> P1 = readout_parameter and P2 = readout_parameter2
 
@@ -111,8 +113,8 @@ Readout mode determines how data is output from OSCLock. Choose a method that wo
 <br>
 
 # Avatar Setup
-Avatar setup is up to the user. You can use any of the readout modes to fit your avatar setup. <br>
-A simple accurate digital timer using readout mode 3 can be found on [Zenith's Booth](https://zenithval.booth.pm/items/4892327)
+Avatar setup is decided by the user. You can use any of the readout modes to fit your avatar setup. <br>
+A simple digital timer using readout mode 3 can be found on at https://zenithval.booth.pm/items/4892327
 
 
 --- 
@@ -121,11 +123,11 @@ A simple accurate digital timer using readout mode 3 can be found on [Zenith's B
 
 # FAQ
 
-### Q: My Parameters aren't working! <br>
+### Q: My newly added parameters aren't working! <br>
 
 - Reset OSC or delete the OSC folder at `C:\Users\(Username)\AppData\LocalLow\VRChat\VRChat` <br>
-- Did you include `/avatar/parameters/` EG: `/avatar/parameters/` <br>
-- A3: If your VRC parameter has spaces, replace the spaces with underscores, EG: `head_pat_sensor` 
+- Did you include `/avatar/parameters/` at the start? EG: `/avatar/parameters/headpat_sensor` <br>
+- If your VRC parameter has spaces, replace the spaces with underscores, EG: `headpat_sensor` 
 
 <br>
 
@@ -157,9 +159,8 @@ Want to:
 
 <br>
 
-<br>
-
 # Credits & Liscense 
 
-App Icon from [Game-icons.net](https://game-icons.net/1x1/delapouite/locked-heart.html) under https://creativecommons.org/licenses/by/3.0/ 
+- SharpOSC [MIT Liscense](https://github.com/tecartlab/SharpOSC/blob/master/License.txt)
+- App Icon  [Game-icons.net](https://game-icons.net/1x1/delapouite/locked-heart.html) under [CC by 3.0](https://creativecommons.org/licenses/by/3.0/)
 
