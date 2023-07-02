@@ -9,6 +9,7 @@ using SharpOSC;
 namespace OSCLock {
     public static class VRChatConnector {
 
+        //App can run without VRChat so this doesn't really serve a purpose.
         //public static bool isVRChatRunning() {
         //    var instances = System.Diagnostics.Process.GetProcessesByName("VRChat");
         //    return instances.Length > 0;
@@ -51,14 +52,23 @@ namespace OSCLock {
                 case ApplicationMode.Timer:
                     OSCTimer.Setup();
                     break;
+
                 //Not implemented yet
                 //case ApplicationMode.Counter: 
                 //    OSCCounter.Setup();
                 //break;
+
+                //case for mistyped mode
+                default:
+                    Console.WriteLine("Invalid mode selected, please check your config file.");
+                    break;
+
+
             }
             
 
-            //todo: add one for avatar change
+            //todo: add one for avatar change' - @Neet
+            //Actually, what would be the purpose of that? @Zeni
         }
 
 

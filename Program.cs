@@ -20,7 +20,7 @@ namespace OSCLock {
             if (File.Exists("app.pass"))
             {
                 isEncrypted = true;
-                //Idk how to really hide this. Too lazy to hide it in RAM either. Very secure, I know.
+                //Idk how to really hide this. Too lazy to hide it in RAM either. Very secure, I know. - Zeni
                 appPassword = Encryption.Read("app.pass", "7b7079bb6379001dce"); 
                 Console.WriteLine("Application Config is encrypted.\n");
                 //Console.WriteLine(appPassword);
@@ -41,8 +41,8 @@ namespace OSCLock {
             Console.WriteLine("S -- prints status of the app and lock");
             Console.WriteLine("U -- Unlock device");
             Console.WriteLine("Q -- Quits the application");
-            Console.WriteLine("{ -- Encrypts Config & Timer files");
-            Console.WriteLine("} -- Decrypts Config & Timer files");
+            if (!isEncrypted)  Console.WriteLine("{ -- Encrypts Config & Timer files\n");
+            else Console.WriteLine("} -- Decrypts Config & Timer files\n");
         }
 
         private static async Task PrintStatus() {
