@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Timers;
 using OSCLock.Configs;
@@ -31,7 +32,11 @@ namespace OSCLock.Logic {
         private static int readout_mode;
         private static string readout_parameter;
         private static string readout_parameter2;
-        
+
+        private static int starting_time;
+        private static int random_min;
+        private static int random_max;
+
         private static DateTime lastAdded = DateTime.Now;
 
         public static async Task OnIncParam(OscMessage message) {
@@ -62,125 +67,132 @@ namespace OSCLock.Logic {
         public static void Setup() {
             var timerConfig = ConfigManager.ApplicationConfig.TimerConfig;
 
-            maxAccumulated = timerConfig.maxTime;
-            Console.WriteLine($"\nmax: {maxAccumulated}");
+            try {
+                maxAccumulated = timerConfig.maxTime;
+                Console.WriteLine($"\nmax: {maxAccumulated}");
 
-            absolute_min = timerConfig.absMin;
-            absolute_max = timerConfig.absMax;
-            Console.WriteLine($"absolute_min: {absolute_min}");
-            Console.WriteLine($"absolute_max: {absolute_max}\n");
+                absolute_min = timerConfig.absMin;
+                absolute_max = timerConfig.absMax;
+                Console.WriteLine($"absolute_min: {absolute_min}");
+                Console.WriteLine($"absolute_max: {absolute_max}\n");
 
-            inc_parameter = timerConfig.inc_parameter;
-            inc_step = timerConfig.inc_step;
+                starting_time = timerConfig.StartTime.startingValue;
+                random_min = timerConfig.StartTime.randomMin;
+                random_max = timerConfig.StartTime.randomMax;
+                Console.WriteLine($"starting_time: {starting_time}");
+                Console.WriteLine($"random_min: {random_min}");
+                Console.WriteLine($"random_max: {random_max}\n");
 
-            //If inc_parameter is NOT null, then add a handler and print the added parameter.
-            if (inc_parameter != "") {
-                VRChatConnector.AddHandler(inc_parameter, OnIncParam);
-                Console.WriteLine($"inc_parameter: {inc_parameter}");
-                Console.WriteLine($"inc_step: {inc_step}\n");
-            }
-            else {
-                Console.WriteLine("inc_parameter not defined.\n");
-            }
+                inc_parameter = timerConfig.inc_parameter;
+                inc_step = timerConfig.inc_step;
 
-
-            dec_parameter = timerConfig.dec_parameter;
-            dec_step = -timerConfig.dec_step;
-
-            //If dec_parameter is NOT null, then add a handler and print the added parameter.
-            if (dec_parameter != "") {
-                VRChatConnector.AddHandler(dec_parameter, OnDecParam);
-                Console.WriteLine($"dec_parameter: {dec_parameter}");
-                Console.WriteLine($"dec_step: {dec_step}\n");
-            }
-            else {
-                Console.WriteLine("dec_parameter not defined.\n");
-            }
-
-            //print the addressHandlers dictionary
-            foreach (var handler in VRChatConnector.addressHandlers) {
-                Console.WriteLine($"Address: {handler.Key} | Value: {handler.Value}");
-            }
-
-            input_delay = timerConfig.input_delay;
-            Console.WriteLine($"input_delay: {input_delay}\n");
-
-            readout_mode = timerConfig.readout_mode;
-            readout_parameter = timerConfig.readout_parameter;
-            readout_parameter2 = timerConfig.readout_parameter2;
-
-            Console.WriteLine($"readout_mode: {readout_mode}");
-            Console.WriteLine($"readout_parameter: {readout_parameter}");
-            Console.WriteLine($"readout_parameter2: {readout_parameter2}\n");
-
-            _timer = new Timer();
-
-            var callbackInterval = timerConfig.readout_interval;
-            if (callbackInterval > 0 && !String.IsNullOrEmpty(timerConfig.readout_parameter)) {
-                _timer.Elapsed += OnProgress;
-            }
-            else callbackInterval = 1000;
-
-            _timer.Interval = callbackInterval;
-            _timer.Elapsed += CheckIfUnlockable;
-            _timer.AutoReset = true;
-
-            var doesFilesExist = File.Exists("timer.start") && File.Exists("timer.end");
-
-            if (doesFilesExist) {
-                try {
-                    if (Program.isEncrypted)
-                    {
-                        StartTime = DateTime.ParseExact(Encryption.Read("timer.start", Program.appPassword), "O", CultureInfo.InvariantCulture);
-                        EndTime = DateTime.ParseExact(Encryption.Read("timer.end", Program.appPassword), "O", CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
-                        StartTime = DateTime.ParseExact(File.ReadAllText("timer.start"), "O", CultureInfo.InvariantCulture);
-                        EndTime = DateTime.ParseExact(File.ReadAllText("timer.end"), "O", CultureInfo.InvariantCulture);
-                    }
-                    
-                    AbsoluteEndTime = StartTime.AddMinutes(absolute_max);
-                    EarlietEndTime = StartTime.AddMinutes(absolute_min);
-                    Program.isAllowedToUnlock = false;
-                    _timer.Start();
+                //If inc_parameter is NOT null, then add a handler and print the added parameter.
+                if (inc_parameter != "") {
+                    VRChatConnector.AddHandler(inc_parameter, OnIncParam);
+                    Console.WriteLine($"inc_parameter: {inc_parameter}");
+                    Console.WriteLine($"inc_step: {inc_step}\n");
                 }
-                catch (Exception e) {
-                    
+                else {
+                    Console.WriteLine("inc_parameter not defined.\n");
+                }
+
+                dec_parameter = timerConfig.dec_parameter;
+                dec_step = -timerConfig.dec_step;
+
+                //If dec_parameter is NOT null, then add a handler and print the added parameter.
+                if (dec_parameter != "") {
+                    VRChatConnector.AddHandler(dec_parameter, OnDecParam);
+                    Console.WriteLine($"dec_parameter: {dec_parameter}");
+                    Console.WriteLine($"dec_step: {dec_step}\n");
+                }
+                else {
+                    Console.WriteLine("dec_parameter not defined.\n");
+                }
+
+                //print the addressHandlers dictionary
+                foreach (var handler in VRChatConnector.addressHandlers) {
+                    Console.WriteLine($"Address: {handler.Key} | Value: {handler.Value}");
+                }
+
+                input_delay = timerConfig.input_delay;
+                Console.WriteLine($"input_delay: {input_delay}\n");
+
+                readout_mode = timerConfig.readout_mode;
+                readout_parameter = timerConfig.readout_parameter;
+                readout_parameter2 = timerConfig.readout_parameter2;
+
+                Console.WriteLine($"readout_mode: {readout_mode}");
+                Console.WriteLine($"readout_parameter: {readout_parameter}");
+                Console.WriteLine($"readout_parameter2: {readout_parameter2}\n");
+
+                _timer = new Timer();
+
+                var callbackInterval = timerConfig.readout_interval;
+                if (callbackInterval > 0 && !String.IsNullOrEmpty(timerConfig.readout_parameter)) {
+                    _timer.Elapsed += OnProgress;
+                }
+                else callbackInterval = 1000;
+
+                _timer.Interval = callbackInterval;
+                _timer.Elapsed += CheckIfUnlockable;
+                _timer.AutoReset = true;
+
+                var doTimerFilesExist = File.Exists("timer.start") && File.Exists("timer.end");
+
+                if (doTimerFilesExist) {
+                    try {
+                        if (Program.isEncrypted) {
+                            StartTime = DateTime.ParseExact(Encryption.Read("timer.start", Program.appPassword), "O", CultureInfo.InvariantCulture);
+                            EndTime = DateTime.ParseExact(Encryption.Read("timer.end", Program.appPassword), "O", CultureInfo.InvariantCulture);
+                        }
+                        else {
+                            StartTime = DateTime.ParseExact(File.ReadAllText("timer.start"), "O", CultureInfo.InvariantCulture);
+                            EndTime = DateTime.ParseExact(File.ReadAllText("timer.end"), "O", CultureInfo.InvariantCulture);
+                        }
+
+                        AbsoluteEndTime = StartTime.AddMinutes(absolute_max);
+                        EarlietEndTime = StartTime.AddMinutes(absolute_min);
+                        Program.isAllowedToUnlock = false;
+                        _timer.Start();
+                    }
+                    catch (Exception e) {
+
+                        StartTime = DateTime.MinValue;
+                        EndTime = DateTime.MinValue;
+                        AbsoluteEndTime = DateTime.MinValue;
+                        EarlietEndTime = DateTime.MinValue;
+
+                        //If the app is encrypted, require the user to start a new timer to enable unlocking again.
+                        if (!Program.isEncrypted) {
+                            Program.isAllowedToUnlock = true;
+                            Console.WriteLine("Failed to restore timer.\n");
+                        }
+                        else {
+                            Program.isAllowedToUnlock = false;
+                            Console.WriteLine("Failed to restore timer.\nEncryption prevents timer file tampering.");
+                        }
+                    }
+                }
+                else {
                     StartTime = DateTime.MinValue;
                     EndTime = DateTime.MinValue;
                     AbsoluteEndTime = DateTime.MinValue;
                     EarlietEndTime = DateTime.MinValue;
 
-                    //If the app is encrypted, require the user to start a new timer to enable unlocking again.
-                    if (!Program.isEncrypted) 
-                    {
+                    if (!Program.isEncrypted) {
                         Program.isAllowedToUnlock = true;
-                        Console.WriteLine("Failed to restore timer.\n");
+                        Console.WriteLine("No timer files found.\n");
                     }
-                    else
-                    {
+                    else {
                         Program.isAllowedToUnlock = false;
-                        Console.WriteLine("Failed to restore timer.\nEncryption prevents timer file tampering.");
+                        Console.WriteLine("No timer files found.\nEncryption prevents timer file tampering.");
                     }
                 }
             }
-            else {
-                StartTime = DateTime.MinValue;
-                EndTime = DateTime.MinValue;
-                AbsoluteEndTime = DateTime.MinValue;
-                EarlietEndTime = DateTime.MinValue;
-
-                if (!Program.isEncrypted)
-                {
-                    Program.isAllowedToUnlock = true;
-                    Console.WriteLine("No timer files found.\n");
-                }
-                else
-                {
-                    Program.isAllowedToUnlock = false;
-                    Console.WriteLine("No timer files found.\nEncryption prevents timer file tampering.");
-                }
+            catch (Exception e) {
+                Console.WriteLine($"Config Initalization failed: {e.Message}\n\n Please check your config file and reboot.");
+                Task.Delay(10000).Wait();
+                Environment.Exit(0);
             }
 
             //Load previous time and check if timer is already running
@@ -279,16 +291,19 @@ namespace OSCLock.Logic {
 
             _timer.Stop();
 
-
             Console.WriteLine("You are about to start a new timer.");
             Console.WriteLine("Unlock will be disabled until the timer reaches 0.");
-            Console.WriteLine("If encrypted, the key can be used as a failsafe.\n");
+            if (Program.isEncrypted) Console.WriteLine("Your backup decrypt key can be used as a failsafe.\n");
+
             //Random disclaimer
             var TimerConfig = ConfigManager.ApplicationConfig.TimerConfig;
-            var startTimeConfig = TimerConfig.StartTime;
-            int startingTime = startTimeConfig.startingValue;
-            if (startTimeConfig.startingValue < 0) {
-                Console.WriteLine($"The time is set to random between {startTimeConfig.randomMin} and {startTimeConfig.randomMax} minutes.");
+
+            //Need to re-initialize this variable because it gets changed by the randomize values.
+            starting_time = TimerConfig.StartTime.startingValue;
+
+
+            if (starting_time < 0) {
+                Console.WriteLine($"The time is set to random between {random_min} and {random_max} minutes.");
             }
 
             if (absolute_min > 0) {
@@ -307,35 +322,35 @@ namespace OSCLock.Logic {
             
             Console.Write("New timer started with ");
 
-            if (startingTime < 0) {
-                var randomTime = new Random().Next(startTimeConfig.randomMin, startTimeConfig.randomMax);
-                startingTime = randomTime;
+            if (starting_time < 0) {
+                var randomTime = new Random().Next(random_min, random_max);
+                starting_time = randomTime;
                 Console.Write("randomly rolled starting time ");
             }
             else Console.Write("configured starting time ");
 
             //Minimum check
-            if (startingTime < absolute_min && absolute_min > 0) {
-                startingTime = absolute_min;
+            if (starting_time < absolute_min && absolute_min > 0) {
+                starting_time = absolute_min;
                 Console.Write("capped by minimum time to ");
             }
             //Maximum check
-            else if (startingTime > maxAccumulated && maxAccumulated > 0) {
-                startingTime = maxAccumulated;
+            else if (starting_time > maxAccumulated && maxAccumulated > 0) {
+                starting_time = maxAccumulated;
 
                 Console.Write("capped by maxtime to ");
             }
             //Absolute max check. This should never really happen... but just in case someone really fumbles the config:
-            else if (startingTime > absolute_max && absolute_max > 0) {
-                startingTime = absolute_max;
+            else if (starting_time > absolute_max && absolute_max > 0) {
+                starting_time = absolute_max;
                 Console.Write("capped by maxtime to ");
             }
             else Console.Write("of ");
             
-            Console.WriteLine($"{startingTime} minutes.\n");
+            Console.WriteLine($"{starting_time} minutes.\n");
 
             StartTime = DateTime.Now;
-            EndTime = StartTime.AddMinutes(startingTime);
+            EndTime = StartTime.AddMinutes(starting_time);
             AbsoluteEndTime = StartTime.AddMinutes(absolute_max);
             EarlietEndTime = StartTime.AddMinutes(absolute_min);
 

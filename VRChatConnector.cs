@@ -79,9 +79,10 @@ namespace OSCLock {
                     AddressHandler handler;
                     if (debugging) Console.WriteLine($"{message.Address}" + $"({message.Arguments[0]})");
                     if (addressHandlers.TryGetValue(message.Address, out handler)) {
-                        if (message.Arguments[0] is true) {
+                        //Better to do the bool true/false check in the handler since basic mode also listens for false.
+                        //if (message.Arguments[0] is true) {
                             await handler(message);
-                        }
+                        //}
                     }
                 }
             }
