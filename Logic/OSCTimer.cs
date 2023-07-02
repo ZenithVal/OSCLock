@@ -19,7 +19,6 @@ namespace OSCLock.Logic {
         private static Timer _timer;
 
         private static int maxAccumulated;
-
         private static int absolute_min;
         private static int absolute_max;
 
@@ -190,8 +189,8 @@ namespace OSCLock.Logic {
                 }
             }
             catch (Exception e) {
-                Console.WriteLine($"Config Initalization failed: {e.Message}\n\n Please check your config file and reboot.");
-                Task.Delay(10000).Wait();
+                Console.WriteLine($"Timer config load failed: {e.Message}\n\nPlease check your config file and reboot.");
+                Task.Delay(5000).Wait();
                 Environment.Exit(0);
             }
 

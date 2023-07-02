@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using OSCLock.Configs;
 using OSCLock.Logic;
@@ -17,10 +18,10 @@ namespace OSCLock {
 
         private static UDPListener oscListener;
         private static UDPSender oscSender;
-        private static bool debugging = ConfigManager.ApplicationConfig.debugging;
-        private static int listener_port = ConfigManager.ApplicationConfig.listener_port;
-        private static int write_port = ConfigManager.ApplicationConfig.write_port;
-        private static string ipAddress = ConfigManager.ApplicationConfig.ipAddress ?? "127.0.0.1";
+        private static bool debugging;
+        private static int listener_port;
+        private static int write_port;
+        private static string ipAddress;
 
         public delegate Task AddressHandler(OscMessage address);
 
@@ -32,16 +33,46 @@ namespace OSCLock {
                 addressHandlers.Clear();
                 Program.isAllowedToUnlock = false;
             }
-            
-            oscListener = new UDPListener(listener_port, OnOscMessage);
-            Console.WriteLine("listener_port: " + listener_port);
 
-            oscSender = new UDPSender(ipAddress, write_port);
-            Console.WriteLine("write_port: " + write_port);
+            //Load VRchat Connector settings.
+            try {
+                listener_port = ConfigManager.ApplicationConfig.listener_port;
+                write_port = ConfigManager.ApplicationConfig.write_port;
+                ipAddress = ConfigManager.ApplicationConfig.ipAddress ?? "127.0.0.1";
+                debugging = ConfigManager.ApplicationConfig.debugging;
 
-            Console.WriteLine($"mode: {ConfigManager.ApplicationConfig.mode}");
-            Console.WriteLine($"debugging: {debugging}");
+                if (ipAddress == "127.0.0.1") Console.WriteLine("ip: LocalHost");
+                //If debugging, display the whole IP.
+                else if (debugging) Console.WriteLine("ip: " + ipAddress);
+                //If not localhost, partially hide the IP. Just in case.
+                else Console.WriteLine("ip: " + ipAddress.Substring(0, 3) + "###.###." + ipAddress.Substring(ipAddress.Length - 3, 3));
 
+                Console.WriteLine("listener_port: " + listener_port);
+                Console.WriteLine("write_port: " + write_port);
+
+                Console.WriteLine($"mode: {ConfigManager.ApplicationConfig.mode}");
+                Console.WriteLine($"debugging: {debugging}");
+            }
+            catch (Exception e) {
+                Console.WriteLine($"Connector config load failed: {e.Message}\n\nPlease check your config file and reboot.");
+                Task.Delay(5000).Wait();
+                Environment.Exit(0);
+            }
+
+            //Boot OSC Listener and Sender
+            try {
+                oscListener = new UDPListener(listener_port, OnOscMessage);
+                oscSender = new UDPSender(ipAddress, write_port);
+
+            }
+            //90% of the time this will fail because the port they attempted to use is already occupied.
+            catch (Exception e) {
+                Console.WriteLine($"\nUDPListener failed: {e.Message}\n\nMake sure you're not attempting to run two apps on the same port.");
+                Task.Delay(5000).Wait();
+                Environment.Exit(0);
+            }
+
+            //Select mode
             switch (ConfigManager.ApplicationConfig.mode) {
                 case ApplicationMode.Testing:
                     Program.isAllowedToUnlock = true;
@@ -58,17 +89,19 @@ namespace OSCLock {
                 //    OSCCounter.Setup();
                 //break;
 
-                //case for mistyped mode
+                //case for invalid mode
                 default:
                     Console.WriteLine("Invalid mode selected, please check your config file.");
+                    Task.Delay(5000).Wait();
+                    Environment.Exit(0);
                     break;
 
 
             }
             
 
-            //todo: add one for avatar change' - @Neet
-            //Actually, what would be the purpose of that? @Zeni
+            //todo: add one for avatar change' - Neet
+            //Actually, what would be the purpose of that? - Zeni
         }
 
 
