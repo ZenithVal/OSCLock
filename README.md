@@ -24,8 +24,6 @@ OSCLock's parameters & timings are fully configurable. <br> Check down in the co
 
 Although the app is built for An ESmartLock in mind, **it doesn't actually require one to function.** If you'd like to entirely skip over the physical device and just use it's timer control functions and readouts, feel free to skip 3-8 in setup.
 
-
-<br>
 <br>
 
 # First Time Setup
@@ -45,14 +43,12 @@ You can get the latest zip [from releases](https://gitlab.com/osclock/osclock/-/
 
 
 <br>
-<br>
 
 # Avatar Setup
 Avatar setup is decided by the user. You can use any of the readout modes to fit your avatar setup. 
 A simple digital timer using readout mode 3 can be found on at https://zenithval.booth.pm/items/4892327
 
 
-<br>
 <br>
 
 # Config - Main
@@ -92,9 +88,8 @@ A simple digital timer using readout mode 3 can be found on at https://zenithval
 | readout_parameter  | Readout parameter 1                                              | ""      |
 | readout_parameter2 | Readout parameter 2 (optional)                                   | ""      |
 | readout_interval   | Time in miliseconds between parameter updates.                   | 500     |
-|                    |                                                                  |         |
 
-<br>
+
 <br>
 
 # Readout modes
@@ -112,10 +107,8 @@ readout_mode determines how data is output from OSCLock. Choose a method that wo
 
 
 <br>
-<br>
 
 # In app Controls
-
 | Value | Info                                            |
 |:----- | ----------------------------------------------- |
 | H     | Prints the help screen                          |
@@ -128,7 +121,6 @@ readout_mode determines how data is output from OSCLock. Choose a method that wo
 
 
 <br>
-<br>
 
 # Encryption
 Encryption uses very basic encryption to obfuscate the config.toml and timer files. After pressing { in the app, you'll be prompted with a password prompt. You can paste from your clipboard if you wish. If encryption is enabled, the timer can not simply be ended early by deleting the timer files. Decryption will force end the current time. 
@@ -138,24 +130,27 @@ It's only "effective" if OSCLock is the only method easily available to open the
 Goes without saying, only use this if you're confident and have confirmed it can open your lock!
 
 
-# FAQ
-
-### Q: My newly added parameters aren't working! <br>
-
-- Reset OSC or delete the OSC folder at `C:\Users\(Username)\AppData\LocalLow\VRChat\VRChat` <br>
-- Did you include `/avatar/parameters/` at the start? EG: `/avatar/parameters/headpat_sensor` <br>
-- If your VRC parameter has spaces, replace the spaces with underscores, EG: `headpat_sensor` 
-
 <br>
 
+# FAQ
 ### Q: What locks does this work with?
-
 Theoretically, this should work with ANY bleueooth Lock that uses the ESmartLock App. <br>
 Look for the white/green color laytout with the ESmartLock Icon. If a specific brand doesnt work please let us know. 
 - [EseeSmart](https://amzn.to/3PuaTuo) 
 - [ELinkSmart](https://amzn.to/3ra1NsM)
-- [Pothunder](https://amzn.to/3r1EJfv) 
+- [Pothunder](https://amzn.to/3r1EJfv)
 - [Dhiedas](https://amzn.to/46t4xBC)
+
+### Q: Why arent my new added parameters working? <br>
+- Reset OSC or delete the OSC folder at `C:\Users\(Username)\AppData\LocalLow\VRChat\VRChat` <br>
+- Did you include `/avatar/parameters/` at the start? EG: `/avatar/parameters/headpat_sensor` <br>
+- If your VRC parameter has spaces, replace the spaces with underscores, EG: `headpat_sensor` 
+
+### Q: Why isn't my timer accute for other players?
+ - Keep in mind VRchat synced Ints/Floats can only represent 128 values. *(Only two accurate 2 decimal places on a -1 to +1 float)*
+ - Readout mode 0 and 1 (0 to +1 or -1 to +1) are only good for reading out minutes. No seconds
+ - You'll need a second parameter for the seconds (other readout modes) or a special avatar setup to make pseudo seconds. IMO, not worth the pain.
+
 
 <br>
 
@@ -173,11 +168,11 @@ Want to:
  - Support difficent brands of bluetooth locks (VERY painful without an API)
  - Make the encryption feature not security theater (Probably never, might be a safety hazard.)
 
+
 <br>
 
 # Credits & Liscense 
 
-- GitLab Mirror: https://gitlab.com/osclock/osclock
 - Original programming before git by @NeetCode. 08/2022
 - SharpOSC [MIT Liscense](https://github.com/tecartlab/SharpOSC/blob/master/License.txt)
 - App Icon  [Game-icons.net](https://game-icons.net/1x1/delapouite/locked-heart.html) under [CC by 3.0](https://creativecommons.org/licenses/by/3.0/)
