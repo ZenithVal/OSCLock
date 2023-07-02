@@ -29,7 +29,7 @@ Although the app is built for An ESmartLock in mind, **it doesn't actually requi
 <br>
 
 # First Time Setup
-You can get the latest zip [from releases](https://github.com/ZenithVal/OSCLock/releases) (On the right side panel) <br> Unzip the entire folder wherever. You can also clone the git and build it yourself. 
+You can get the latest zip [from releases](https://gitlab.com/osclock/osclock/-/releases) (On the right side panel) <br> Unzip the entire folder wherever. You can also clone the git and build it yourself. 
 
 1. Start OSCLock.exe once to generate a config.toml
 2. Exit the application and open the config.toml next to the executable
