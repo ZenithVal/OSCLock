@@ -1,7 +1,8 @@
 # OSCLock
-An OSC timer app that can optionally unlock a bluetooth lock that uses the ESmartLock phone app. It's been well tested it with [this lock.](https://amzn.to/3JAGxmm) A simple use case might be throwing regular keys into a lockbox secured by the bluetooth lock. 
+An OSC timer app that can optionally unlock a bluetooth lock that uses the ESmartLock phone app. It's been well tested it with [this lock.](https://amzn.to/3JAGxmm) 
+<br> A simple use case might be throwing regular keys into a lockbox secured by the bluetooth lock. 
 
-⚠ Keep in mind bluetooth can be unreliable. BE SAFE ⚠
+:warning: Keep in mind bluetooth can be unreliable. BE SAFE :warning:
 
 [[_TOC_]]
 
