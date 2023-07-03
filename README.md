@@ -1,58 +1,39 @@
 # OSCLock
-This app can unlock a bluetooth lock that uses the ESmartLock app. It's been well tested it with [this lock.](https://amzn.to/3JAGxmm) <br> A simple use case might be throwing regular keys into a lockbox secured by the bluetooth lock. <br> Keep in mind bluetooth can be unreliable so **HAVE A BACKUP PLAN!**
+An OSC timer app that can optionally unlock a bluetooth lock that uses the ESmartLock phone app. It's been well tested it with [this lock.](https://amzn.to/3JAGxmm) A simple use case might be throwing regular keys into a lockbox secured by the bluetooth lock. 
 
-<br>
+⚠ Keep in mind bluetooth can be unreliable. BE SAFE ⚠
+
+[[_TOC_]]
 
 # Modes
 OSCLock's parameters & timings are fully configurable. <br> Check down in the config section or the config.toml file.
 
-### Timer:
+### Timer
 - Starts a timer for a specified duration. 
 - While the timer is running, unlock functions of the app are disabled.
 - Specific avatar parameters that can add or remove some time 
 - Will readout a parameter so you can reflect the current timer on your avatar.
 
-### Basic:
+### Basic
  - By default, unlock functions of the app are disabled
  - When a specific parameter is recieved, the app will enable unlock functions.
 
-### Testing: 
+### Testing
  - Unlock functionality is always available. Good for testing your lock.
 
-### Counter:
+### Counter
  - TBD
 
 Although the app is built for An ESmartLock in mind, **it doesn't actually require one to function.** If you'd like to entirely skip over the physical device and just use it's timer control functions and readouts, feel free to skip 3-8 in setup.
 
 <br>
 
-# First Time Setup
-You can get the latest zip [from releases](https://gitlab.com/osclock/osclock/-/releases) (On the right side panel) <br> Unzip the entire folder wherever. You can also clone the git and build it yourself. 
+# Config
 
-1. Start OSCLock.exe once to generate a config.toml
-2. Exit the application and open the config.toml next to the executable
-3. Add your eSmartLock credentials to the config.toml
-4. Start OSCLock
-5. Unlock your lock (Press U)
-6. Once successfully completed, exit the application
-7. In the config.toml, device_password should now be filled in
-8. You can remove your esmart username and password if you'd like.
-9. Configure everything else in the confg.toml to your heart's content.
-10. **HAVE A BACKUP PLAN AND BE SAFE. Bluetooth CAN'T BE TRUSTED.**
+Click > to expand the section.
 
-##### *Skip 3-8 if you don't actually have a physical lock*
+<details><summary>Main Settings</summary>
 
-
-<br>
-
-# Avatar Setup
-Avatar setup is decided by the user. You can use any of the readout modes to fit your avatar setup. 
-A simple digital timer using readout mode 3 can be found on at https://zenithval.booth.pm/items/4892327
-
-
-<br>
-
-# Config - Main
 | Value           | Info                                                        | Default     |
 |:--------------- | ----------------------------------------------------------- |:-----------:|
 | ip              | Address to send OSC data to                                 | "127.0.0.1" |
@@ -64,11 +45,10 @@ A simple digital timer using readout mode 3 can be found on at https://zenithval
 | esmart_username | Account username for login                                  | ""          |
 | esmart_password | Account password for login                                  | ""          |
 | device_password | Lock passcode will be written here after a successful login | ""          |
+</details>
 
+<details><summary>Timer Settings</summary>
 
-<br>
-
-## Config - Timer
 | Value              | Info                                                             | Default |
 |:------------------ | ---------------------------------------------------------------- |:-------:|
 | max                | Maximum time. How much sand can the hourglass hold at a time?    | 60      |
@@ -89,12 +69,14 @@ A simple digital timer using readout mode 3 can be found on at https://zenithval
 | readout_parameter  | Readout parameter 1                                              | ""      |
 | readout_parameter2 | Readout parameter 2 (optional)                                   | ""      |
 | readout_interval   | Time in miliseconds between parameter updates.                   | 500     |
+</details>
 
 
-<br>
+<details><summary>Readout Modes</summary>
 
-# Readout modes
-readout_mode determines how data is output from OSCLock. Choose a method that works for you and your avatar. <br> P1 = readout_parameter and P2 = readout_parameter2
+readout_mode determines how data is output from OSCLock. <br> Choose a method that works for you and your avatar. 
+
+> P1 = readout_parameter and P2 = readout_parameter2
 
 | readout_mode | Use of Readout parameters                                      |
 |:------------ | -------------------------------------------------------------- |
@@ -105,9 +87,28 @@ readout_mode determines how data is output from OSCLock. Choose a method that wo
 | 4            | P1, float -1 to +1 for minutes. P2, int 1:1 with seconds       |
 | 5            | P1 & P2, ints 1:1 minutes and seconds respectively             |
 | 6            | P1, int 1:1 mins/seconds. P2, bool determines min/sec data     |
+</details>
+
+# Setup
+You can get the latest zip [from releases](https://gitlab.com/osclock/osclock/-/releases) (On the right side panel) <br> Unzip the entire folder wherever. You can also clone the git and build it yourself. 
+
+1. Start OSCLock.exe once to generate a config.toml
+2. Exit the application and open the config.toml next to the executable
+3. Add your eSmartLock credentials to the config.toml
+4. Start OSCLock
+5. Unlock your lock (Press U)
+6. Once successfully completed, exit the application
+7. In the config.toml, device_password should now be filled in
+8. You can remove your esmart username and password if you'd like.
+9. Configure everything else in the confg.toml to your heart's content.
+10. **HAVE A BACKUP PLAN AND BE SAFE. Bluetooth CAN'T BE TRUSTED.**
+
+*Skip 3-8 if you don't actually have a physical lock*
 
 
-<br>
+# Avatar Setup
+Avatar setup is decided by the user. You can use any of the readout modes to fit your avatar setup. A simple digital timer using readout mode 3 can be found on at https://zenithval.booth.pm/items/4892327
+
 
 # In app Controls
 | Value | Info                                            |
@@ -120,19 +121,21 @@ readout_mode determines how data is output from OSCLock. Choose a method that wo
 | {     | Encrypts the application config with a password |
 | }     | Decrypts the application config with a password |
 
+<details><summary>Encryption</summary>
 
-<br>
-
-# Encryption
-Encryption uses very basic (and easily breakable) encryption to obfuscate the config.toml and timer files. After pressing { in the app, you'll be prompted to enter a password. If encryption is enabled, the timer can not simply be ended early by deleting the timer files. Decryption will force end the current time. 
+This uses very basic encryption to obfuscate the config.toml and timer files. After pressing { in the app, you'll be prompted to enter a password. If encryption is enabled, the timer can not simply be ended early by deleting the timer files. Decryption will force end the current time. 
 
 A fun way to use this might be encrypting the app with a code you don't remember and giving it to someone you trust. Goes without saying, **only use this if you're confident and have confirmed it can open your lock and you're BEING SAFE.**
+
+It's hidden in the app interface but the { and } buttons still function. <br>
+
+</details>
 
 
 <br>
 
 # FAQ
-### Q: How safe is this?
+### How safe is this?
 - **For like the 3rd time, IT'S NOT.** PLEASE exercise caution.
 - **Do not put the lock on anything that could put YOU in danger.** 
 - Bluetooth is unreliable as heck. It'll drop randomly sometimes.
@@ -141,7 +144,7 @@ A fun way to use this might be encrypting the app with a code you don't remember
 - **HAVE. A. BACKUP. PLAN.**
 
 
-### Q: What locks does this work with?
+### What locks does it work with?
 Theoretically, this should work with ANY bleueooth Lock that uses the ESmartLock App. <br>
 Look for the white/green color laytout with the ESmartLock Icon. If a specific brand doesnt work please let us know. 
 - [EseeSmart](https://amzn.to/3PuaTuo) 
@@ -149,12 +152,12 @@ Look for the white/green color laytout with the ESmartLock Icon. If a specific b
 - [Pothunder](https://amzn.to/3r1EJfv)
 - [Dhiedas](https://amzn.to/46t4xBC)
 
-### Q: Why arent my new added parameters working? <br>
+### Why arent my new added parameters working? <br>
 - Reset OSC or delete the OSC folder at `C:\Users\(Username)\AppData\LocalLow\VRChat\VRChat` <br>
 - Did you include `/avatar/parameters/` at the start? EG: `/avatar/parameters/headpat_sensor` <br>
 - If your VRC parameter has spaces, replace the spaces with underscores, EG: `headpat_sensor` 
 
-### Q: Why isn't my timer accute for other players?
+### Why isn't my timer accute for others?
  - Keep in mind VRchat synced Ints/Floats can only represent 128 values. *(Only two accurate 2 decimal places on a -1 to +1 float)*
  - Readout mode 0 and 1 (0 to +1 or -1 to +1) are only good for reading out minutes. No seconds
  - You'll need a second parameter for the seconds (other readout modes) or a special avatar setup to make pseudo seconds. IMO, not worth the pain.
@@ -163,7 +166,7 @@ Look for the white/green color laytout with the ESmartLock Icon. If a specific b
 <br>
 
 # Roadmap
-The code as it is right now was only ever really meant to be a draft but we all know how that goes. <br> At some point it'll probably be refactored, optimized, and, modularized to make it easier to add features.
+The code as it is right now was only ever really meant to be a draft but we all know how that goes. At some point it'll probably be refactored, optimized, and, modularized to make it easier to add features.
 
 Want to:
  - The above
@@ -179,7 +182,7 @@ Want to:
 
 <br>
 
-# Credits & Liscense 
+# Credits & Licenses
 
 - Prior programming before git by @NeetCode. 08/2022
 - SharpOSC [MIT Liscense](https://github.com/tecartlab/SharpOSC/blob/master/License.txt)
