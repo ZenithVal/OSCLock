@@ -151,19 +151,10 @@ namespace OSCLock {
             string appPassPath = "app.pass";
             Encryption.Write(appPassPath, password, "7b7079bb6379001dce"); //Really secret, I know.
 
-            //Old Expanded version
-            //string encryptedAppPass = Encrypt(password, "7b7079bb6379001dce");
-            //File.WriteAllText(appPassPath, encryptedAppPass);
-
             //Encrypt the config.toml file with the password
             string configPath = "config.toml";
             string configData = File.ReadAllText(configPath);
             Encryption.Write(configPath, configData, password);
-
-            //Old Expanded version
-            //string encryptedConfig = Encrypt(configData, password);
-            //File.WriteAllText(configPath, encryptedConfig);
-
 
             //Encrypt the existing timer.end and timer.start files, IF THEY EXIST.
             var timersExist = File.Exists("timer.start") && File.Exists("timer.end");

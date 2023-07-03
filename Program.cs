@@ -16,7 +16,7 @@ namespace OSCLock {
 
         public static async Task Main(string[] args) {
 
-            Console.WriteLine("OSCLock Version v1.0 - 7/1/23\n");
+            Console.WriteLine("OSCLock Version v1.0\n");
 
             if (File.Exists("app.pass"))
             {
@@ -29,24 +29,32 @@ namespace OSCLock {
 
             VRChatConnector.Start();
             //Console.WriteLine("Going to home screen...");
-            Thread.Sleep(2000);
-            
+            //Thread.Sleep(500);
+
+            //Delay for reading the config readout if in debug mode.
+            if (VRChatConnector.debugging) Thread.Sleep(1500);
+
             await CmdPrompt();
         }
 
 
         public static async Task PrintHelp() {
-            Console.WriteLine("=== HELP SCREEN ===");
-            Console.WriteLine("H -- prints this menu");
-            Console.WriteLine("T -- starts a new timer");
-            Console.WriteLine("S -- prints status of the app and lock");
-            Console.WriteLine("U -- Unlock device");
-            Console.WriteLine("Q -- Quits the application");
-            if (isEncrypted) Console.WriteLine("} -- Decrypts Config & Timer files\n");
+            Console.WriteLine("■■■■■■■ HELP SCREEN ■■■■■■■");
+            
+
+            Console.WriteLine("  H -- Prints this menu");
+            Console.WriteLine("  T -- Starts a new timer");
+            Console.WriteLine("  S -- Status of app & lock");
+            Console.WriteLine("  U -- Unlock device");
+            Console.WriteLine("  Q -- Quits the app");
+            if (isEncrypted) Console.WriteLine("} -- Decrypts Config & Timer files");
 
             //Decided to not inform the user about accessing encryption, since it's documented in the readme.
             //if (!isEncrypted)  Console.WriteLine("{ -- Encrypts Config & Timer files\n");
             //else Console.WriteLine("} -- Decrypts Config & Timer files\n");
+
+            //Bumper
+            Console.WriteLine("");
         }
 
         private static async Task PrintStatus() {
@@ -65,10 +73,10 @@ namespace OSCLock {
         private static ESmartLock connectedLock;
         public static async Task UnlockDevice() {
             if (!isAllowedToUnlock) {
-                Console.WriteLine("You are not allowed to unlock yet!\n");
+                ColorConsole.WithYellowText.WriteLine("You are not allowed to unlock yet!\n");
 
                 if (isEncrypted && OSCTimer.HasTimeElapsed()) {
-                    Console.WriteLine("Encryption requires a complete timer to allow unlocking.");
+                    ColorConsole.WithYellowText.WriteLine("Encryption requires a complete timer to allow unlocking.");
                     Thread.Sleep(1500);
                     Console.Clear();
                     await PrintHelp();
@@ -113,7 +121,7 @@ namespace OSCLock {
 
             if (isEncrypted)
             {
-                Console.WriteLine("Application is already encrypted!\n");
+                ColorConsole.WithYellowText.WriteLine("Application is already encrypted!\n");
                 await PrintHelp();
                 return;
             }
@@ -128,7 +136,7 @@ namespace OSCLock {
         {
             if (!isEncrypted)
             {
-                Console.WriteLine("Application is already decrypted!\n");
+                ColorConsole.WithYellowText.WriteLine("Application is already decrypted!\n");
                 await PrintHelp();
                 return;
             }
@@ -174,7 +182,7 @@ namespace OSCLock {
                        await DecryptApp();
                         break;
                     default:
-                        Console.WriteLine($"Unknown command {Key}");
+                        ColorConsole.WithRedText.WriteLine($"Unknown command {Key}");
                         await PrintHelp();
                         break;
                 }

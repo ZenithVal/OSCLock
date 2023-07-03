@@ -74,7 +74,7 @@ namespace OSCLock.Configs {
                     InitConfig();
                     Console.WriteLine("SUCCESS");
                 } catch (Exception w) {
-                    Console.WriteLine("FAILED!!" + e, e);
+                    Console.WriteLine("FAILED!!" + w, w);
                 }
             }
         }

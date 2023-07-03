@@ -47,7 +47,7 @@ namespace OSCLock.Logic {
                     lastAdded = DateTime.Now.AddMilliseconds(input_delay);
                 }
                 else {
-                    Console.WriteLine($"Restricted by input delay until: " + lastAdded);
+                    ColorConsole.WithYellowText.WriteLine($"Restricted by input delay until: " + lastAdded);
                 }
             }
             else if (shouldAdd) {
@@ -165,11 +165,11 @@ namespace OSCLock.Logic {
                         //If the app is encrypted, require the user to start a new timer to enable unlocking again.
                         if (!Program.isEncrypted) {
                             Program.isAllowedToUnlock = true;
-                            Console.WriteLine("Failed to restore timer.\n");
+                            ColorConsole.WithYellowText.WriteLine("Failed to restore timer.\n");
                         }
                         else {
                             Program.isAllowedToUnlock = false;
-                            Console.WriteLine("Failed to restore timer.\nEncryption prevents timer tampering.");
+                            ColorConsole.WithRedText.WriteLine("Failed to restore timer.\nEncryption prevents timer tampering.");
                         }
                     }
                 }
@@ -185,12 +185,13 @@ namespace OSCLock.Logic {
                     }
                     else {
                         Program.isAllowedToUnlock = false;
-                        Console.WriteLine("No timer files found.\nEncryption prevents timer file tampering.");
+                        ColorConsole.WithRedText.WriteLine("No timer files found.\nEncryption prevents timer file tampering.");
                     }
                 }
             }
             catch (Exception e) {
-                ColorConsole.WithRedText.WriteLine($"Timer config load failed: {e.Message}\n\nPlease check your config file and reboot.");
+                ColorConsole.WithRedText.WriteLine($"Timer config load failed: {e.Message}");
+                Console.WriteLine("\n\nPlease check your config file and reboot.");
                 Task.Delay(5000).Wait();
                 Environment.Exit(0);
             }
@@ -204,7 +205,7 @@ namespace OSCLock.Logic {
             var newTimeSpan = (int)(EndTime.AddSeconds(timeToAdd) - DateTime.Now).TotalMinutes;
 
             if (newTimeSpan > maxTime) {
-                Console.WriteLine("Reached timer device cap");
+                ColorConsole.WithYellowText.WriteLine("Reached timer device cap");
                 //If the new time span is greater than the max time, we need to remove the difference from the minutes to add
                 timeToAdd -= (newTimeSpan - maxTime);
              }
@@ -215,7 +216,7 @@ namespace OSCLock.Logic {
                 //Checking if going past absolute max
                 if (newEndTime > AbsoluteEndTime) {
                     newEndTime = AbsoluteEndTime;
-                    Console.WriteLine("Reached overall maximum time limit");
+                    ColorConsole.WithYellowText.WriteLine("Reached overall maximum time limit");
                 }
             }
             
@@ -244,17 +245,17 @@ namespace OSCLock.Logic {
 
                     if (absolute_min > 0 && EarlietEndTime > currentTime)
                     { //Endtime in past, but minimum time has not passed
-                        Console.WriteLine("Absolute minimum time has not yet elapsed, ");
+                    ColorConsole.WithYellowText.WriteLine("Absolute minimum time has not yet elapsed, ");
                         
                         //Going to use ceiling instead of floor to prevent the timer from having to fire minimum warning twice in rare cases.
                         var timeDiff = Math.Ceiling((EarlietEndTime - currentTime).TotalSeconds);
                         var timeDiffMinutes = Math.Round(timeDiff / 60.0);
 
                         if (timeDiff < 60) {
-                        Console.WriteLine($"atleast {timeDiff} more seconds must pass, ");
+                        ColorConsole.WithYellowText.WriteLine($"atleast {timeDiff} more seconds must pass, ");
                         }
                         else {
-                        Console.WriteLine($"atleast {timeDiffMinutes} more minute(s) must pass, ");
+                        ColorConsole.WithYellowText.WriteLine($"atleast {timeDiffMinutes} more minute(s) must pass, ");
                         }
 
                         //Makes sure we don't go past the max accumulated time. 
@@ -285,14 +286,16 @@ namespace OSCLock.Logic {
 
         public static async Task Start() {
             if (!HasTimeElapsed()) {
-                Console.WriteLine("Cannot start a new timer, you still have " + (int) GetTimeLeftTotal() + " minutes left of current timer.");
+                ColorConsole.WithRedText.WriteLine("Cannot start a new timer, you still have " + (int) GetTimeLeftTotal() + " minutes left of current timer.");
                 return;
             }
 
             _timer.Stop();
 
-            ColorConsole.WithRedText.WriteLine("You are about to start a new timer.");
-            ColorConsole.WithRedText.WriteLine("Unlock will be disabled until the timer reaches 0.\n");
+            ColorConsole.WithRedText.WriteLine("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■");
+            ColorConsole.WithRedText.WriteLine("      You are about to start a new timer");
+            ColorConsole.WithRedText.WriteLine(" Unlock will be disabled until the timer reaches 0");
+            ColorConsole.WithRedText.WriteLine("■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■\n");
 
             if (Program.isEncrypted) Console.WriteLine("Your decrypt key can be used as a failsafe to end the timer.\n");
 
@@ -312,7 +315,7 @@ namespace OSCLock.Logic {
             }
            
 
-            Console.Write("Press 'y', to proceed or any other key to quit");
+            Console.Write("  Press 'y', to proceed or any other key to quit");
             var key = Console.ReadKey().Key;
             if (key != ConsoleKey.Y) {
                 Console.Clear();

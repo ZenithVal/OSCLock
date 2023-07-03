@@ -19,7 +19,7 @@ namespace OSCLock {
 
         private static UDPListener oscListener;
         private static UDPSender oscSender;
-        private static bool debugging;
+        public static bool debugging;
         private static int listener_port;
         private static int write_port;
         private static string ipAddress;
