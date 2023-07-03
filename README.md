@@ -2,7 +2,7 @@
 An OSC timer app that can optionally unlock a bluetooth lock that uses the ESmartLock phone app. It's been well tested it with [this lock.](https://amzn.to/3JAGxmm) 
 <br> A simple use case might be throwing regular keys into a lockbox secured by the bluetooth lock. 
 
-:warning: Keep in mind bluetooth can be unreliable. BE SAFE :warning:
+ ⚠ Keep in mind bluetooth can be unreliable. BE SAFE  ⚠
 
 [[_TOC_]]
 
@@ -31,7 +31,7 @@ Although the app is built for An ESmartLock in mind, **it doesn't actually requi
 
 # Config
 
-Click > to expand the section.
+Tables containing information on all available settings you can change in the config.toml files. <br> Click a > to expand the section.
 
 <details><summary>Main Settings</summary>
 
@@ -89,6 +89,9 @@ readout_mode determines how data is output from OSCLock. <br> Choose a method th
 | 5            | P1 & P2, ints 1:1 minutes and seconds respectively             |
 | 6            | P1, int 1:1 mins/seconds. P2, bool determines min/sec data     |
 </details>
+
+
+<br>
 
 # Setup
 You can get the latest zip [from releases](https://gitlab.com/osclock/osclock/-/releases) (On the right side panel) <br> Unzip the entire folder wherever. You can also clone the git and build it yourself. 
