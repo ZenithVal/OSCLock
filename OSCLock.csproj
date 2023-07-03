@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -35,11 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-
   <PropertyGroup>
     <ApplicationIcon>Heart.ico</ApplicationIcon>
   </PropertyGroup>
-  
   <ItemGroup>
     <Reference Include="FluentColorConsole, Version=2.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\FluentColorConsole.2.0.1\lib\netstandard2.0\FluentColorConsole.dll</HintPath>
@@ -50,7 +46,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SharpOSC">
-      <HintPath>..\Repo\thirdparty\oscsharp\SharpOSC.dll</HintPath>
+      <HintPath>References\SharpOSC\SharpOSC.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -97,7 +93,6 @@
       <HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.19041.0\Windows.winmd</HintPath>
     </Reference>
   </ItemGroup>
-
   <ItemGroup>
     <Compile Include="Encryption.cs" />
     <Compile Include="ESmartLockAPI.cs" />
@@ -123,26 +118,19 @@
     <Compile Include="Logic\OSCTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="Heart.ico" />
     <Content Include="README.md" />
-    <Content Include="thirdparty\oscsharp\SharpOSC.dll" />
-    <Content Include="thirdparty\oscsharp\SharpOSC.pdb" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\System.Runtime.WindowsRuntime.5.0.0-preview.5.20278.1\build\net461\System.Runtime.WindowsRuntime.targets" Condition="Exists('packages\System.Runtime.WindowsRuntime.5.0.0-preview.5.20278.1\build\net461\System.Runtime.WindowsRuntime.targets')" />
-  
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <Error Condition="!Exists('packages\System.Runtime.WindowsRuntime.5.0.0-preview.5.20278.1\build\net461\System.Runtime.WindowsRuntime.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\System.Runtime.WindowsRuntime.5.0.0-preview.5.20278.1\build\net461\System.Runtime.WindowsRuntime.targets'))" />
   </Target>
-
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.
     <Target Name="BeforeBuild">
@@ -150,5 +138,4 @@
     <Target Name="AfterBuild">
     </Target>
     -->
-    
 </Project>
