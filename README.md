@@ -156,7 +156,7 @@ Look for the white/green color laytout with the ESmartLock Icon. If a specific b
 - [Pothunder](https://amzn.to/3r1EJfv)
 - [Dhiedas](https://amzn.to/46t4xBC)
 
-### Why arent my new added parameters working? <br>
+### Why arent my newly added parameters working? <br>
 - Reset OSC or delete the OSC folder at `C:\Users\(Username)\AppData\LocalLow\VRChat\VRChat` <br>
 - Did you include `/avatar/parameters/` at the start? EG: `/avatar/parameters/headpat_sensor` <br>
 - If your VRC parameter has spaces, replace the spaces with underscores, EG: `headpat_sensor` 
