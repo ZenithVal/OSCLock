@@ -1,5 +1,5 @@
 # OSCLock
-This app can unlock a bluetooth lock that uses the ESmartLock app. It's been well tested it with [this lock.](https://amzn.to/3JAGxmm) <br> A simple use case might be throwing regular keys into a lockbox secured by the bluetooth lock. <br> We take no responsibility for unsafe usage and provide no warranty. Always a backup plan!
+This app can unlock a bluetooth lock that uses the ESmartLock app. It's been well tested it with [this lock.](https://amzn.to/3JAGxmm) <br> A simple use case might be throwing regular keys into a lockbox secured by the bluetooth lock. <br> Keep in mind bluetooth can be unreliable so **HAVE A BACKUP PLAN!**
 
 <br>
 
@@ -38,6 +38,7 @@ You can get the latest zip [from releases](https://gitlab.com/osclock/osclock/-/
 7. In the config.toml, device_password should now be filled in
 8. You can remove your esmart username and password if you'd like.
 9. Configure everything else in the confg.toml to your heart's content.
+10. **HAVE A BACKUP PLAN AND BE SAFE. Bluetooth CAN'T BE TRUSTED.**
 
 ##### *Skip 3-8 if you don't actually have a physical lock*
 
@@ -123,16 +124,23 @@ readout_mode determines how data is output from OSCLock. Choose a method that wo
 <br>
 
 # Encryption
-Encryption uses very basic encryption to obfuscate the config.toml and timer files. After pressing { in the app, you'll be prompted with a password prompt. You can paste from your clipboard if you wish. If encryption is enabled, the timer can not simply be ended early by deleting the timer files. Decryption will force end the current time. 
+Encryption uses very basic (and easily breakable) encryption to obfuscate the config.toml and timer files. After pressing { in the app, you'll be prompted to enter a password. If encryption is enabled, the timer can not simply be ended early by deleting the timer files. Decryption will force end the current time. 
 
-It's only "effective" if OSCLock is the only method easily available to open the lock. You can do this by not keeping the eSmartLock app or not memorizing the login and logging out. Encrypt OSCLock with a code impossible to remember, maybe print it or DM it to someone you trust to send back to you if needed.
-
-Goes without saying, only use this if you're confident and have confirmed it can open your lock!
+A fun way to use this might be encrypting the app with a code you don't remember and giving it to someone you trust. Goes without saying, **only use this if you're confident and have confirmed it can open your lock and you're BEING SAFE.**
 
 
 <br>
 
 # FAQ
+### Q: How safe is this?
+- **For like the 3rd time, IT'S NOT.** PLEASE exercise caution.
+- **Do not put the lock on anything that could put YOU in danger.** 
+- Bluetooth is unreliable as heck. It'll drop randomly sometimes.
+- Remember you can't open the lock without clicking the unlock button!
+- You charged the lock, right?
+- **HAVE. A. BACKUP. PLAN.**
+
+
 ### Q: What locks does this work with?
 Theoretically, this should work with ANY bleueooth Lock that uses the ESmartLock App. <br>
 Look for the white/green color laytout with the ESmartLock Icon. If a specific brand doesnt work please let us know. 
@@ -173,6 +181,6 @@ Want to:
 
 # Credits & Liscense 
 
-- Original programming before git by @NeetCode. 08/2022
+- Prior programming before git by @NeetCode. 08/2022
 - SharpOSC [MIT Liscense](https://github.com/tecartlab/SharpOSC/blob/master/License.txt)
 - App Icon  [Game-icons.net](https://game-icons.net/1x1/delapouite/locked-heart.html) under [CC by 3.0](https://creativecommons.org/licenses/by/3.0/)
