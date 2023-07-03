@@ -6,6 +6,7 @@ using OSCLock.Bluetooth;
 using OSCLock.Configs;
 using OSCLock.Logic;
 using System.IO;
+using FluentColorConsole;
 
 namespace OSCLock {
     internal class Program {
@@ -41,8 +42,11 @@ namespace OSCLock {
             Console.WriteLine("S -- prints status of the app and lock");
             Console.WriteLine("U -- Unlock device");
             Console.WriteLine("Q -- Quits the application");
-            if (!isEncrypted)  Console.WriteLine("{ -- Encrypts Config & Timer files\n");
-            else Console.WriteLine("} -- Decrypts Config & Timer files\n");
+            if (isEncrypted) Console.WriteLine("} -- Decrypts Config & Timer files\n");
+
+            //Decided to not inform the user about accessing encryption, since it's documented in the readme.
+            //if (!isEncrypted)  Console.WriteLine("{ -- Encrypts Config & Timer files\n");
+            //else Console.WriteLine("} -- Decrypts Config & Timer files\n");
         }
 
         private static async Task PrintStatus() {
@@ -95,14 +99,14 @@ namespace OSCLock {
         private static async Task StartTimer() {
             if (ConfigManager.ApplicationConfig.mode == ApplicationMode.Timer) {
                 await OSCTimer.Start();
-            } else Console.WriteLine("Not operating in timer mode, change mode in config and restart");
+            } else ColorConsole.WithYellowText.WriteLine("Not operating in timer mode, change mode in config and restart");
         }
 
         private static async Task EncryptApp() { 
 
             //if OSCTimer.HasTimeElapsed is false, don't allow encryption
             if (!OSCTimer.HasTimeElapsed()) {
-                Console.WriteLine("A timer is already running, you need to finish that before attempting encryption.\n");
+                ColorConsole.WithYellowText.WriteLine("A timer is already running, you need to finish that before attempting encryption.\n");
                 await PrintHelp();
                 return;
             }

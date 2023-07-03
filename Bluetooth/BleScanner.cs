@@ -67,7 +67,7 @@ namespace OSCLock.Bluetooth {
                 }
             }
             catch (Exception e) {
-                Console.WriteLine("Failed on deiscovery " + e);
+                Console.WriteLine("Failed on discovery " + e);
             }
         }
 
@@ -118,7 +118,7 @@ namespace OSCLock.Bluetooth {
                 }
             }
             catch (Exception e) {
-                Console.WriteLine("Failed on deiscovery " + e);
+                Console.WriteLine("Failed on discovery " + e);
             }
         }
     }

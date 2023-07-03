@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using FluentColorConsole;
 using OSCLock.Configs;
 using OSCLock.Logic;
 using SharpOSC;
@@ -54,7 +55,7 @@ namespace OSCLock {
                 Console.WriteLine($"debugging: {debugging}");
             }
             catch (Exception e) {
-                Console.WriteLine($"Connector config load failed: {e.Message}\n\nPlease check your config file and reboot.");
+                ColorConsole.WithRedText.WriteLine($"Connector config load failed: {e.Message}\n\nPlease check your config file and reboot.");
                 Task.Delay(5000).Wait();
                 Environment.Exit(0);
             }
@@ -67,7 +68,9 @@ namespace OSCLock {
             }
             //90% of the time this will fail because the port they attempted to use is already occupied.
             catch (Exception e) {
-                Console.WriteLine($"\nUDPListener failed: {e.Message}\n\nMake sure you're not attempting to run two apps on the same port.");
+                Console.WriteLine($"\nUDPListener failed: {e.Message}\n\n");
+                ColorConsole.WithRedText.WriteLine("Make sure you're not attempting to run two apps on the same port.");
+
                 Task.Delay(5000).Wait();
                 Environment.Exit(0);
             }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using FluentColorConsole;
 using OSCLock.Logic;
 
 //This is mostly just fun security theater. Strings are not protected in memory, and you have access to the source code anyway.
@@ -33,7 +34,7 @@ namespace OSCLock {
             }
             catch (Exception e)
             {
-                Console.WriteLine("Failed to write encrypted file" + e.Message);
+                ColorConsole.WithRedText.WriteLine("Failed to write encrypted file" + e.Message);
             }
         }
 

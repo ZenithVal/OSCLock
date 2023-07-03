@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Timers;
+using FluentColorConsole;
 using OSCLock.Configs;
 using SharpOSC;
 using Windows.Devices.Printers;
@@ -168,7 +169,7 @@ namespace OSCLock.Logic {
                         }
                         else {
                             Program.isAllowedToUnlock = false;
-                            Console.WriteLine("Failed to restore timer.\nEncryption prevents timer file tampering.");
+                            Console.WriteLine("Failed to restore timer.\nEncryption prevents timer tampering.");
                         }
                     }
                 }
@@ -189,7 +190,7 @@ namespace OSCLock.Logic {
                 }
             }
             catch (Exception e) {
-                Console.WriteLine($"Timer config load failed: {e.Message}\n\nPlease check your config file and reboot.");
+                ColorConsole.WithRedText.WriteLine($"Timer config load failed: {e.Message}\n\nPlease check your config file and reboot.");
                 Task.Delay(5000).Wait();
                 Environment.Exit(0);
             }
@@ -232,7 +233,7 @@ namespace OSCLock.Logic {
                 
             }
             catch (Exception e) {
-                Console.WriteLine("Failed to update endtime file" + e.Message);
+                ColorConsole.WithRedText.WriteLine("Failed to update endtime file" + e.Message);
             }
         }
 
@@ -290,9 +291,10 @@ namespace OSCLock.Logic {
 
             _timer.Stop();
 
-            Console.WriteLine("You are about to start a new timer.");
-            Console.WriteLine("Unlock will be disabled until the timer reaches 0.");
-            if (Program.isEncrypted) Console.WriteLine("Your backup decrypt key can be used as a failsafe.\n");
+            ColorConsole.WithRedText.WriteLine("You are about to start a new timer.");
+            ColorConsole.WithRedText.WriteLine("Unlock will be disabled until the timer reaches 0.\n");
+
+            if (Program.isEncrypted) Console.WriteLine("Your decrypt key can be used as a failsafe to end the timer.\n");
 
             //Random disclaimer
             var TimerConfig = ConfigManager.ApplicationConfig.TimerConfig;
@@ -302,13 +304,14 @@ namespace OSCLock.Logic {
 
 
             if (starting_time < 0) {
-                Console.WriteLine($"The time is set to random between {random_min} and {random_max} minutes.");
+                ColorConsole.WithYellowText.WriteLine($"The time is set to random between {random_min} and {random_max} minutes.");
             }
 
             if (absolute_min > 0) {
-                Console.WriteLine("There is a minimum time of " + absolute_min + " minutes set.");
+                ColorConsole.WithYellowText.WriteLine("There is a minimum time of " + absolute_min + " minutes set.");
             }
-            
+           
+
             Console.Write("Press 'y', to proceed or any other key to quit");
             var key = Console.ReadKey().Key;
             if (key != ConsoleKey.Y) {
@@ -331,18 +334,18 @@ namespace OSCLock.Logic {
             //Minimum check
             if (starting_time < absolute_min && absolute_min > 0) {
                 starting_time = absolute_min;
-                Console.Write("capped by minimum time to ");
+                ColorConsole.WithYellowText.Write("capped by minimum time to ");
             }
             //Maximum check
             else if (starting_time > maxAccumulated && maxAccumulated > 0) {
                 starting_time = maxAccumulated;
 
-                Console.Write("capped by maxtime to ");
+                ColorConsole.WithYellowText.Write("capped by maxtime to ");
             }
             //Absolute max check. This should never really happen... but just in case someone really fumbles the config:
             else if (starting_time > absolute_max && absolute_max > 0) {
                 starting_time = absolute_max;
-                Console.Write("capped by maxtime to ");
+                ColorConsole.WithYellowText.Write("capped by maxtime to ");
             }
             else Console.Write("of ");
             
@@ -374,7 +377,7 @@ namespace OSCLock.Logic {
 
         private static async void CheckIfUnlockable(object sender, ElapsedEventArgs elapsedEventArgs) {
             if (HasTimeElapsed()) {
-                Console.WriteLine("\nTime is up, Marking as unlockable and stopping timer");
+                ColorConsole.WithGreenText.WriteLine("\nTime is up, Marking as unlockable and stopping timer");
 
                 _timer.Stop();
 
@@ -392,7 +395,7 @@ namespace OSCLock.Logic {
         public static async Task ForceEnd()
         {
                 Console.Clear();
-                Console.WriteLine("Ending Timer.");
+                ColorConsole.WithGreenText.WriteLine("Ending Timer.");
 
                 _timer.Stop();
                 EndTime = DateTime.Now;
@@ -492,7 +495,7 @@ namespace OSCLock.Logic {
             }
             catch (Exception e)
             {
-                Console.WriteLine("Failed to write vrchat readout parameter" + e.Message);
+                ColorConsole.WithRedText.WriteLine("Failed to write vrchat readout parameter" + e.Message);
             }
         }
     }

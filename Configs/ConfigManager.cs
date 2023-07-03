@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using FluentColorConsole;
 using Tomlet;
 using Tomlet.Models;
 
@@ -44,7 +45,7 @@ namespace OSCLock.Configs {
                 ApplicationConfig = TomletMain.To<MainConfig>(lastDocument);
             }
             catch (Exception e) {
-                Console.WriteLine("FAILED TO READ CONFIG FILE!" + e, e);
+                ColorConsole.WithRedText.WriteLine("FAILED TO READ CONFIG FILE!" + e, e);
                 Thread.Sleep(5000);
             }
 
