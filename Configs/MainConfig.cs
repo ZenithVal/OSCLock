@@ -4,34 +4,26 @@ using Tomlet.Models;
 namespace OSCLock.Configs {
     public class MainConfig {
         [TomlProperty("ip")]
-        public string vrchatAddress { get; set; }
+        public string ipAddress { get; set; }
 
         [TomlProperty("listener_port")]
-        public int port { get; set; }
+        public int listener_port { get; set; }
 
         [TomlProperty("write_port")]
-        public int vrchatPort { get; set; }
-
-        [TomlPrecedingComment("\n--- Eseesmart lock Login ---\nIf you have your lock bound to the app/cloud, we must get the device's password from the cloud for now\n\nFor this the username and password of an account the lock is shared with is required.")]
-        [TomlProperty("esmart_username")]
-        public string apiUsername { get; set; }
-
-        [TomlProperty("esmart_password")]
-        [TomlInlineComment("Leave blank if not using a cloud/app bound esmartlock")]
-        public string apiPassword { get; set; }
-
-        [TomlProperty("device_password")]
-        [TomlInlineComment("The password to the device, gotten from the cloud after a successful login.")]
-        public string DevicePassword { get; set; }
+        public int write_port { get; set; }
 
         [TomlProperty("Mode")]
-        public ApplicationMode Mode { get; set; }
+        public ApplicationMode mode { get; set; }
+
+        [TomlProperty("Debugging")]
+        public bool debugging { get; set; }
+
+        [TomlProperty("Credentials for ESmartLock")]
+        public ESmartCredentials ESmartConfig { get; set; }
         
-        [TomlPrecedingComment("")]
         [TomlProperty("Basic")]
         public BasicMode BasicConfig { get; set; }
         
-        [TomlPrecedingComment("")]
         [TomlProperty("Timer")]
         public TimerMode TimerConfig { get; set; }
     }

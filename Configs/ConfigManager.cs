@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using FluentColorConsole;
 using Tomlet;
 using Tomlet.Models;
 
@@ -44,7 +45,7 @@ namespace OSCLock.Configs {
                 ApplicationConfig = TomletMain.To<MainConfig>(lastDocument);
             }
             catch (Exception e) {
-                Console.WriteLine("FAILED TO READ CONFIG FILE!" + e, e);
+                ColorConsole.WithRedText.WriteLine("FAILED TO READ CONFIG FILE!" + e, e);
                 Thread.Sleep(5000);
             }
 
@@ -73,7 +74,7 @@ namespace OSCLock.Configs {
                     InitConfig();
                     Console.WriteLine("SUCCESS");
                 } catch (Exception w) {
-                    Console.WriteLine("FAILED!!" + e, e);
+                    Console.WriteLine("FAILED!!" + w, w);
                 }
             }
         }
@@ -82,31 +83,41 @@ namespace OSCLock.Configs {
             File.Delete(CONFIG_FILE);
             File.Delete("app.pass");
             File.WriteAllText(CONFIG_FILE, TomletMain.TomlStringFrom(new MainConfig {
-                port = 9001,
-                vrchatPort = 9000,
-                vrchatAddress = "127.0.0.1",
-                apiUsername = "",
-                apiPassword = "",
-                DevicePassword = "",
-                
-                Mode = ApplicationMode.Testing,
+
+                ipAddress = "127.0.0.1",
+                listener_port = 9001,
+                write_port = 9000,
+
+                mode = ApplicationMode.Timer,
+                debugging = false,
+
+                ESmartConfig = new ESmartCredentials
+                {
+                    apiUsername = "",
+                    apiPassword = "",
+                    DevicePassword = "",
+                },
+
                 
                 BasicConfig = new BasicMode {
                     parameter = "/avatar/parameters/unlock"
                 },
 
                 TimerConfig = new TimerMode {
-                    maxTime = 240,
-                    absMin = 20,
+                    maxTime = 60,
+                    absMin = 0,
+                    absMax = 120,
                     StartTime = new DefaultTime {
                         startingValue = -1,
                         randomMin = 10,
                         randomMax = 20
                     },
                     inc_parameter = "/avatar/parameters/timer_inc",
-                    inc_step = 20,
+                    inc_step = 60,
                     dec_parameter = "/avatar/parameters/timer_dec",
-                    dec_step = 5,
+                    dec_step = 300,
+
+                    input_delay = 1500,
 
                     readout_mode = 0,
                     readout_parameter = "/avatar/parameters/timer_readout",

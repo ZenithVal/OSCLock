@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using FluentColorConsole;
 using OSCLock.Configs;
 using OSCLock.Logic;
 using SharpOSC;
-using Windows.Security.Cryptography.Core;
+
 
 namespace OSCLock {
     public static class VRChatConnector {
 
+        //App can run without VRChat so this doesn't really serve a purpose.
         //public static bool isVRChatRunning() {
         //    var instances = System.Diagnostics.Process.GetProcessesByName("VRChat");
         //    return instances.Length > 0;
@@ -19,13 +19,14 @@ namespace OSCLock {
 
         private static UDPListener oscListener;
         private static UDPSender oscSender;
-        private static int listenerPort = ConfigManager.ApplicationConfig.port;
-        private static int senderPort = ConfigManager.ApplicationConfig.vrchatPort;
-        private static string recipientAddress = ConfigManager.ApplicationConfig.vrchatAddress ?? "127.0.0.1";
+        public static bool debugging;
+        private static int listener_port;
+        private static int write_port;
+        private static string ipAddress;
 
         public delegate Task AddressHandler(OscMessage address);
 
-        private static Dictionary<string, AddressHandler> addressHandlers = new Dictionary<string, AddressHandler>();
+        public static Dictionary<string, AddressHandler> addressHandlers = new Dictionary<string, AddressHandler>();
 
         public static void Start() {
             if (oscListener != null) {
@@ -33,47 +34,92 @@ namespace OSCLock {
                 addressHandlers.Clear();
                 Program.isAllowedToUnlock = false;
             }
+
+            //Load VRchat Connector settings.
+            try {
+                listener_port = ConfigManager.ApplicationConfig.listener_port;
+                write_port = ConfigManager.ApplicationConfig.write_port;
+                ipAddress = ConfigManager.ApplicationConfig.ipAddress ?? "127.0.0.1";
+                debugging = ConfigManager.ApplicationConfig.debugging;
+
+                if (ipAddress == "127.0.0.1") Console.WriteLine("ip: LocalHost");
+                //If debugging, display the whole IP.
+                else if (debugging) Console.WriteLine("ip: " + ipAddress);
+                //If not localhost, partially hide the IP. Just in case.
+                else Console.WriteLine("ip: " + ipAddress.Substring(0, 3) + "###.###." + ipAddress.Substring(ipAddress.Length - 3, 3));
+
+                Console.WriteLine("listener_port: " + listener_port);
+                Console.WriteLine("write_port: " + write_port);
+
+                Console.WriteLine($"mode: {ConfigManager.ApplicationConfig.mode}");
+                Console.WriteLine($"debugging: {debugging}");
+            }
+            catch (Exception e) {
+                ColorConsole.WithRedText.WriteLine($"Connector config load failed: {e.Message}\n\nPlease check your config file and reboot.");
+                Task.Delay(5000).Wait();
+                Environment.Exit(0);
+            }
+
+            //Boot OSC Listener and Sender
+            try {
+                oscListener = new UDPListener(listener_port, OnOscMessage);
+                oscSender = new UDPSender(ipAddress, write_port);
+
+            }
+            //90% of the time this will fail because the port they attempted to use is already occupied.
+            catch (Exception e) {
+                Console.WriteLine($"\nUDPListener failed: {e.Message}\n\n");
+                ColorConsole.WithRedText.WriteLine("Make sure you're not attempting to run two apps on the same port.");
+
+                Task.Delay(5000).Wait();
+                Environment.Exit(0);
+            }
+
+            //Select mode
+            switch (ConfigManager.ApplicationConfig.mode) {
+                case ApplicationMode.Testing:
+                    Program.isAllowedToUnlock = true;
+                    break;
+                case ApplicationMode.Basic:
+                    OSCBasic.Setup();
+                    break;
+                case ApplicationMode.Timer:
+                    OSCTimer.Setup();
+                    break;
+
+                //Not implemented yet
+                //case ApplicationMode.Counter: 
+                //    OSCCounter.Setup();
+                //break;
+
+                //case for invalid mode
+                default:
+                    Console.WriteLine("Invalid mode selected, please check your config file.");
+                    Task.Delay(5000).Wait();
+                    Environment.Exit(0);
+                    break;
+
+
+            }
             
-            oscListener = new UDPListener(listenerPort, OnOscMessage);
-            Console.WriteLine("listener_port: " + listenerPort);
 
-            oscSender = new UDPSender(recipientAddress, senderPort);
-
-            Console.WriteLine("write_port: " + senderPort);
-
-            //Disabled other modes, as they are not used.
-            OSCTimer.Setup();
-
-            //switch (ConfigManager.ApplicationConfig.Mode) {
-            //    case ApplicationMode.Testing:
-            //        Program.isAllowedToUnlock = true;
-            //        break;
-            //    case ApplicationMode.Basic:
-            //        OSCBasic.Setup();
-            //        break;
-            //    case ApplicationMode.Timer:
-            //        OSCTimer.Setup();
-            //        break;
-            //}
-
-            //todo: add one for avatar change
+            //todo: add one for avatar change' - Neet
+            //Actually, what would be the purpose of that? - Zeni
         }
 
 
         private static async void OnOscMessage(OscPacket packet) {
+            if (debugging) Console.WriteLine("Package recieved: " + packet);
             try {
                 if (packet is OscMessage message) {
                     AddressHandler handler;
-                    if (addressHandlers.TryGetValue(message.Address, out handler)) 
-                    {
-                        if (message.Arguments[0] is true)
-                        {
+                    if (debugging) Console.WriteLine($"{message.Address}" + $"({message.Arguments[0]})");
+                    if (addressHandlers.TryGetValue(message.Address, out handler)) {
+                        //Better to do the bool true/false check in the handler since basic mode also listens for false.
+                        //if (message.Arguments[0] is true) {
                             await handler(message);
-                        }
-                        //Checks if the message recieved (only bother accepting true messages.)
+                        //}
                     }
-
-                    //Console.WriteLine($"{message.Address} Recieved");
                 }
             }
             catch (InvalidCastException e) {
@@ -86,9 +132,10 @@ namespace OSCLock {
 
         public static void AddHandler(string addr, AddressHandler handler) {
             addressHandlers[addr] = handler;
-            //Console.WriteLine($"Installed OSC handler for address {addr}");
+            if (debugging) Console.WriteLine($"Installed OSC handler for address {addr}");
         }
 
+        //Might need a queue here, as it might be possible to send too many messages at once.
         public static void SendToVRChat(OscMessage message) {
             try {
                 oscSender.Send(message);

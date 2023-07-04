@@ -4,42 +4,47 @@ using Tomlet.Attributes;
 namespace OSCLock.Configs {
     public class TimerMode {
         [TomlProperty("max")]
-        //[TomlInlineComment("Max minutes. How much sand can the hourglass hold? ")]
+        [TomlInlineComment("Max minutes at a given moment. How much sand can the hourglass hold at a time?")]
         public int maxTime { get; set; }
 
         [TomlProperty("absolute_min")]
-        //[TomlInlineComment("Miniumum time that must pass before the system can unlock. Minimum Sand")]
+        [TomlInlineComment("(Minutes). Time will be added if it total time is below this. 0 disables.")]
         public int absMin { get; set; }
 
         [TomlProperty("absolute_max")]
-        //[TomlInlineComment("If the total time has reached this, it can not increase. How much total sand is there?")]
+        [TomlInlineComment("(Minutes) If overall time reaches this, inc_step wont work. 0 disables.")]
         public int absMax { get; set; }
 
-        [TomlProperty("StartingTime")]
+        //Time Section
+        [TomlProperty("startingTime")]
         public DefaultTime StartTime { get; set; }
 
-        [TomlPrecedingComment("\n--- Incoming OSC Parameters ---")]
-        //[TomlInlineComment("When this Bool is true, it should increase the timer once by inc_step.")]
+        [TomlPrecedingComment("--- Incoming OSC Parameters ---")]
+        [TomlInlineComment("When this Bool is true, it should increase the timer once by inc_step.")]
         public string inc_parameter { get; set; }
 
-        //[TomlInlineComment("Time in whole minutes to add when inc_parameter true recieved")]
+        //Should make this a float and allow seconds to be added.
+        [TomlInlineComment("Seconds added per dec_step")]
         public int inc_step { get; set; }
 
-        //[TomlInlineComment("When this Bool is true, it should decrease the timer by dec_step.")]
+        [TomlInlineComment("When this bool is true, decrease time once by dec_step")]
         public string dec_parameter { get; set; }
 
-        //[TomlInlineComment("Time in whole minutes to remove when dec_parameter true recieved")]
+        //Should make this a float and allow seconds to be added.
+        [TomlInlineComment("Seconds removed per dec_step")]
         public int dec_step { get; set; }
 
+        [TomlInlineComment("Cooldown (miliseconds) between allowed inputs, 0 to disable.")]
+        public int input_delay { get; set; }
 
-        [TomlPrecedingComment("\n-- Outgoing OSC Parameters ---")]
+
+        [TomlPrecedingComment("-- Outgoing OSC Parameters ---")]
         public int readout_mode { get; set; }
         public string readout_parameter { get; set; }
         public string readout_parameter2 { get; set; }
 
 
-
-        //[TomlInlineComment("Time In miliseconds between messages")]
+        [TomlInlineComment("Time (miliseconds) between outgoing messages")]
         public int readout_interval { get; set; }
 
     }

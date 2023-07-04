@@ -3,6 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using FluentColorConsole;
 using OSCLock.Logic;
 
 //This is mostly just fun security theater. Strings are not protected in memory, and you have access to the source code anyway.
@@ -33,7 +34,7 @@ namespace OSCLock {
             }
             catch (Exception e)
             {
-                Console.WriteLine("Failed to write encrypted file" + e.Message);
+                ColorConsole.WithRedText.WriteLine("Failed to write encrypted file" + e.Message);
             }
         }
 
@@ -150,19 +151,10 @@ namespace OSCLock {
             string appPassPath = "app.pass";
             Encryption.Write(appPassPath, password, "7b7079bb6379001dce"); //Really secret, I know.
 
-            //Old Expanded version
-            //string encryptedAppPass = Encrypt(password, "7b7079bb6379001dce");
-            //File.WriteAllText(appPassPath, encryptedAppPass);
-
             //Encrypt the config.toml file with the password
             string configPath = "config.toml";
             string configData = File.ReadAllText(configPath);
             Encryption.Write(configPath, configData, password);
-
-            //Old Expanded version
-            //string encryptedConfig = Encrypt(configData, password);
-            //File.WriteAllText(configPath, encryptedConfig);
-
 
             //Encrypt the existing timer.end and timer.start files, IF THEY EXIST.
             var timersExist = File.Exists("timer.start") && File.Exists("timer.end");
@@ -196,7 +188,7 @@ namespace OSCLock {
 
             }
 
-            Console.WriteLine("Password:");
+            Console.WriteLine("Password: ");
             string password = Console.ReadLine();
 
             //If the passwords do not match, boot the to the main screen.

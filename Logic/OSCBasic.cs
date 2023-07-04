@@ -6,8 +6,14 @@ using SharpOSC;
 namespace OSCLock.Logic {
     public static class OSCBasic {
         public static async Task onUnlockParameter(OscMessage message) {
-            bool writtenBool = (bool) message.Arguments[0];
-            Program.isAllowedToUnlock = writtenBool;
+            try {
+                bool writtenBool = (bool)message.Arguments[0];
+                Program.isAllowedToUnlock = writtenBool;
+                Console.WriteLine($"Unlock Parameter Recieved: {writtenBool}");
+            }
+            catch (Exception e) {
+                Console.WriteLine($"Error reading parameter: {e}");
+            }
         }
 
         public static void Setup() {

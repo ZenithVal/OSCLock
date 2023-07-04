@@ -45,7 +45,7 @@ namespace OSCLock.Bluetooth {
          */
         private async Task<string> GetDevicePassword() {
             if (isCloudSetup) {
-                if (string.IsNullOrEmpty(ConfigManager.ApplicationConfig.DevicePassword)) {
+                if (string.IsNullOrEmpty(ConfigManager.ApplicationConfig.ESmartConfig.DevicePassword)) {
                     Console.WriteLine("Device password unknown, grabbing from api... logging in...");
                     var loginToken = await ESmartLockAPI.Login();
                     if (loginToken.StartsWith("ERROR"))
@@ -55,11 +55,11 @@ namespace OSCLock.Bluetooth {
                         return "ERROR_NO_PASS";
                     
                     Console.WriteLine("Retrived device password from cloud, saving it to config");
-                    ConfigManager.ApplicationConfig.DevicePassword = devicePassword;
+                    ConfigManager.ApplicationConfig.ESmartConfig.DevicePassword = devicePassword;
                     ConfigManager.Save();
                 }
 
-                return ConfigManager.ApplicationConfig.DevicePassword;
+                return ConfigManager.ApplicationConfig.ESmartConfig.DevicePassword;
             }
             else return "123456";
         }
@@ -221,7 +221,8 @@ namespace OSCLock.Bluetooth {
             }
             catch (Exception e) {
                 //Console.WriteLine("Error while reading from device " + e, e);
-                Console.WriteLine("There was an error, but the lock opened, PROBABLY? Good luck if it didn't.");
+                Console.WriteLine(e);
+                Console.WriteLine("\n\nThere was an error which is usually expected but the lock should've opened. \nPlease let the creators know if it didn't!");
                 CurrentPacket_TOTALSIZE = 0;
                 CurrentPacket_DATA = null;
                 DATA_LENGTH = 0;

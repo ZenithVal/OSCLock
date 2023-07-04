@@ -105,7 +105,7 @@ public class BleLoginInfo
         // Alarm
         if (protocolVersion >= 7)
         {
-            Console.WriteLine("DEBUG::");
+            Console.WriteLine("DEBUG: ");
             Console.WriteLine(string.Join(", ",var0));
             alarmSup = var0[38];
             if (alarmSup == 1)
@@ -123,7 +123,7 @@ public class BleLoginInfo
         // Default value is 0
         if (protocolVersion >= 8)
         {
-            Console.WriteLine("DEBUG::");
+            Console.WriteLine("DEBUG: ");
             Console.WriteLine(string.Join(", ",var0));
             // supportsFingerPrints = var0[40];
             fgpPageSup = var0[40];

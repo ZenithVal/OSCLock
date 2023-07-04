@@ -6,6 +6,7 @@ using OSCLock.Bluetooth;
 using OSCLock.Configs;
 using OSCLock.Logic;
 using System.IO;
+using FluentColorConsole;
 
 namespace OSCLock {
     internal class Program {
@@ -15,12 +16,12 @@ namespace OSCLock {
 
         public static async Task Main(string[] args) {
 
-            Console.WriteLine("OSCLock Version v1.0 - 6/27/23\n");
+            Console.WriteLine("OSCLock Version v1.0\n");
 
             if (File.Exists("app.pass"))
             {
                 isEncrypted = true;
-                //Idk how to really hide this. Too lazy to hide it in RAM either. Very secure, I know.
+                //Idk how to really hide this. Too lazy to hide it in RAM either. Very secure, I know. - Zeni
                 appPassword = Encryption.Read("app.pass", "7b7079bb6379001dce"); 
                 Console.WriteLine("Application Config is encrypted.\n");
                 //Console.WriteLine(appPassword);
@@ -28,27 +29,39 @@ namespace OSCLock {
 
             VRChatConnector.Start();
             //Console.WriteLine("Going to home screen...");
-            Thread.Sleep(2000);
-            
+            //Thread.Sleep(500);
+
+            //Delay for reading the config readout if in debug mode.
+            if (VRChatConnector.debugging) Thread.Sleep(1500);
+
             await CmdPrompt();
         }
 
 
         public static async Task PrintHelp() {
-            Console.WriteLine("=== HELP SCREEN ===");
-            Console.WriteLine("H -- prints this menu");
-            Console.WriteLine("T -- starts a new timer");
-            Console.WriteLine("S -- prints status of the app and lock");
-            Console.WriteLine("U -- Unlock device");
-            Console.WriteLine("Q -- Quits the application");
-            Console.WriteLine("{ -- Encrypts Config & Timer files");
-            Console.WriteLine("} -- Decrypts Config & Timer files");
+            Console.WriteLine("■■■■■■■ HELP SCREEN ■■■■■■■");
+            
+
+            Console.WriteLine("  H -- Prints this menu");
+            Console.WriteLine("  T -- Starts a new timer");
+            Console.WriteLine("  S -- Status of app & lock");
+            Console.WriteLine("  U -- Unlock device");
+            Console.WriteLine("  Q -- Quits the app");
+            if (isEncrypted) Console.WriteLine("} -- Decrypts Config & Timer files");
+
+            //Decided to not inform the user about accessing encryption, since it's documented in the readme.
+            //if (!isEncrypted)  Console.WriteLine("{ -- Encrypts Config & Timer files\n");
+            //else Console.WriteLine("} -- Decrypts Config & Timer files\n");
+
+            //Bumper
+            Console.WriteLine("");
         }
 
         private static async Task PrintStatus() {
             var appConfig = ConfigManager.ApplicationConfig;
-            Console.WriteLine($"Operating in {appConfig.Mode} mode.");
-            if (appConfig.Mode == ApplicationMode.Timer) {
+            Console.WriteLine($"Operating in {appConfig.mode} mode.");
+
+            if (appConfig.mode == ApplicationMode.Timer) {
                 Console.WriteLine("Time left: " + (int)OSCTimer.GetTimeLeftTotal() + " minutes \n");
             }
 
@@ -60,10 +73,16 @@ namespace OSCLock {
         private static ESmartLock connectedLock;
         public static async Task UnlockDevice() {
             if (!isAllowedToUnlock) {
-                Console.WriteLine("You are not allowed to unlock yet!");
-                await PrintStatus();
+                ColorConsole.WithYellowText.WriteLine("You are not allowed to unlock yet!\n");
 
-                Thread.Sleep(1000);
+                if (isEncrypted && OSCTimer.HasTimeElapsed()) {
+                    ColorConsole.WithYellowText.WriteLine("Encryption requires a complete timer to allow unlocking.");
+                    Thread.Sleep(1500);
+                    Console.Clear();
+                    await PrintHelp();
+                }
+                
+                else await PrintStatus();
                 return;
             }
 
@@ -79,29 +98,30 @@ namespace OSCLock {
             
             Console.WriteLine("Removing lock as it turned of by now\n");
             connectedLock = null;
-            Thread.Sleep(1000);
+
+            Thread.Sleep(1500);
             Console.Clear();
             await PrintHelp();
         }
 
         private static async Task StartTimer() {
-            if (ConfigManager.ApplicationConfig.Mode == ApplicationMode.Timer) {
+            if (ConfigManager.ApplicationConfig.mode == ApplicationMode.Timer) {
                 await OSCTimer.Start();
-            } else Console.WriteLine("Not operating in timer mode, change mode in config and restart");
+            } else ColorConsole.WithYellowText.WriteLine("Not operating in timer mode, change mode in config and restart");
         }
 
         private static async Task EncryptApp() { 
 
             //if OSCTimer.HasTimeElapsed is false, don't allow encryption
             if (!OSCTimer.HasTimeElapsed()) {
-                Console.WriteLine("A timer is already running, you need to finish that before attempting encryption.\n");
+                ColorConsole.WithYellowText.WriteLine("A timer is already running, you need to finish that before attempting encryption.\n");
                 await PrintHelp();
                 return;
             }
 
             if (isEncrypted)
             {
-                Console.WriteLine("Application is already encrypted!\n");
+                ColorConsole.WithYellowText.WriteLine("Application is already encrypted!\n");
                 await PrintHelp();
                 return;
             }
@@ -116,7 +136,7 @@ namespace OSCLock {
         {
             if (!isEncrypted)
             {
-                Console.WriteLine("Application is already decrypted!\n");
+                ColorConsole.WithYellowText.WriteLine("Application is already decrypted!\n");
                 await PrintHelp();
                 return;
             }
@@ -162,7 +182,7 @@ namespace OSCLock {
                        await DecryptApp();
                         break;
                     default:
-                        Console.WriteLine($"Unknown command {Key}");
+                        ColorConsole.WithRedText.WriteLine($"Unknown command {Key}");
                         await PrintHelp();
                         break;
                 }
