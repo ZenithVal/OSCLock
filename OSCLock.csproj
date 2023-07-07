@@ -34,7 +34,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Heart.ico</ApplicationIcon>
+    <ApplicationIcon>References\Heart.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Win32Resource>
+    </Win32Resource>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FluentColorConsole, Version=2.0.0.1, Culture=neutral, processorArchitecture=MSIL">
@@ -119,8 +123,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Heart.ico" />
+    <Content Include="References\Heart.ico" />
     <Content Include="README.md" />
+    <Content Include="References\SharpOSC\SharpOSC.dll" />
+    <Content Include="References\SharpOSC\SharpOSC.pdb" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
