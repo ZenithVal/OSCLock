@@ -47,11 +47,11 @@ namespace OSCLock {
             Console.WriteLine("  S -- Status of app & lock");
             Console.WriteLine("  U -- Unlock device");
             Console.WriteLine("  Q -- Quits the app");
-            if (isEncrypted) Console.WriteLine("} -- Decrypts Config & Timer files");
+            if (isEncrypted) Console.WriteLine("  } -- Decrypts files");
 
             //Decided to not inform the user about accessing encryption, since it's documented in the readme.
             //if (!isEncrypted)  Console.WriteLine("{ -- Encrypts Config & Timer files\n");
-            //else Console.WriteLine("} -- Decrypts Config & Timer files\n");
+            //else Console.WriteLine("} -- Decrypts Config & Timer filesu\n");
 
             //Bumper
             Console.WriteLine("");
