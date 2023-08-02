@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentColorConsole;
 using OSCLock.Configs;
@@ -46,14 +45,13 @@ namespace OSCLock {
             }
             catch (Exception e) {
                 ColorConsole.WithRedText.WriteLine($"Connector config load failed: {e.Message}\n\nPlease check your config file and reboot.");
-                Task.Delay(5000).Wait();
+                Task.Delay(10000).Wait();
                 Environment.Exit(0);
             }
 
             if (oscQuery) {
                 try {
-                    write_port = Extensions.GetAvailableTcpPort();
-                    listener_port = Extensions.GetAvailableUdpPort();
+                    listener_port = Extensions.GetAvailableTcpPort();
 
                     var oscQuery = new OSCQueryServiceBuilder()
                         .WithDefaults()
@@ -64,7 +62,7 @@ namespace OSCLock {
                 }
                 catch (Exception e) {
                     ColorConsole.WithRedText.WriteLine($"OSCQuery failed: {e.Message}\n\n");
-                    Task.Delay(5000).Wait();
+                    Task.Delay(10000).Wait();
                     Environment.Exit(0);
                 }
 
@@ -129,7 +127,6 @@ namespace OSCLock {
 
             }
         }
-
 
         private static async void OnOscMessage(OscPacket packet) {
             if (debugging) Console.WriteLine("Package recieved: " + packet);

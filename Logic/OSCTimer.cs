@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Timers;
 using FluentColorConsole;
 using OSCLock.Configs;
 using SharpOSC;
-using Windows.Devices.Printers;
-using Windows.Foundation.Metadata;
-using Windows.System.Profile;
+using VRC.OSCQuery;
 
 namespace OSCLock.Logic {
     public static class OSCTimer {
@@ -91,6 +88,12 @@ namespace OSCLock.Logic {
                     VRChatConnector.AddHandler(inc_parameter, OnIncParam);
                     Console.WriteLine($"inc_parameter: {inc_parameter}");
                     Console.WriteLine($"inc_step: {inc_step}\n");
+
+                    //if oscquery we need to add an endpoint for inc
+                    if (ConfigManager.ApplicationConfig.oscQuery) {
+                        //OSCQueryService.AddEndpoint()
+
+                    }
                 }
                 else {
                     Console.WriteLine("inc_parameter not defined.\n");
@@ -104,6 +107,11 @@ namespace OSCLock.Logic {
                     VRChatConnector.AddHandler(dec_parameter, OnDecParam);
                     Console.WriteLine($"dec_parameter: {dec_parameter}");
                     Console.WriteLine($"dec_step: {dec_step}\n");
+
+                    //if oscquery we need to add an endpoint for dec
+                    if (ConfigManager.ApplicationConfig.oscQuery) {
+                        //TODO:
+                    }
                 }
                 else {
                     Console.WriteLine("dec_parameter not defined.\n");
