@@ -3,6 +3,10 @@ using Tomlet.Models;
 
 namespace OSCLock.Configs {
     public class MainConfig {
+        [TomlProperty("OSCQuery")]
+        [TomlInlineComment("Enable OSCQuery; Custom Port/IP settings will be ignored.")]
+        public bool oscQuery { get; set; }
+        
         [TomlProperty("ip")]
         public string ipAddress { get; set; }
 

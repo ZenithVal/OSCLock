@@ -6,7 +6,7 @@ using FluentColorConsole;
 using OSCLock.Configs;
 using OSCLock.Logic;
 using SharpOSC;
-
+using VRC.OSCQuery;
 
 namespace OSCLock {
     public static class VRChatConnector {
@@ -20,6 +20,7 @@ namespace OSCLock {
         private static UDPListener oscListener;
         private static UDPSender oscSender;
         public static bool debugging;
+        private static bool oscQuery;
         private static int listener_port;
         private static int write_port;
         private static string ipAddress;
@@ -37,22 +38,11 @@ namespace OSCLock {
 
             //Load VRchat Connector settings.
             try {
+                oscQuery = ConfigManager.ApplicationConfig.oscQuery;
                 listener_port = ConfigManager.ApplicationConfig.listener_port;
                 write_port = ConfigManager.ApplicationConfig.write_port;
                 ipAddress = ConfigManager.ApplicationConfig.ipAddress ?? "127.0.0.1";
                 debugging = ConfigManager.ApplicationConfig.debugging;
-
-                if (ipAddress == "127.0.0.1") Console.WriteLine("ip: LocalHost");
-                //If debugging, display the whole IP.
-                else if (debugging) Console.WriteLine("ip: " + ipAddress);
-                //If not localhost, partially hide the IP. Just in case.
-                else Console.WriteLine("ip: " + ipAddress.Substring(0, 3) + "###.###." + ipAddress.Substring(ipAddress.Length - 3, 3));
-
-                Console.WriteLine("listener_port: " + listener_port);
-                Console.WriteLine("write_port: " + write_port);
-
-                Console.WriteLine($"mode: {ConfigManager.ApplicationConfig.mode}");
-                Console.WriteLine($"debugging: {debugging}");
             }
             catch (Exception e) {
                 ColorConsole.WithRedText.WriteLine($"Connector config load failed: {e.Message}\n\nPlease check your config file and reboot.");
@@ -60,13 +50,50 @@ namespace OSCLock {
                 Environment.Exit(0);
             }
 
+            if (oscQuery) {
+                try {
+                    write_port = Extensions.GetAvailableTcpPort();
+                    listener_port = Extensions.GetAvailableUdpPort();
+
+                    var oscQuery = new OSCQueryServiceBuilder()
+                        .WithDefaults()
+                        .WithTcpPort(write_port)
+                        .WithUdpPort(listener_port)
+                        .WithServiceName("OSCLock")
+                        .Build();
+                }
+                catch (Exception e) {
+                    ColorConsole.WithRedText.WriteLine($"OSCQuery failed: {e.Message}\n\n");
+                    Task.Delay(5000).Wait();
+                    Environment.Exit(0);
+                }
+
+            }
+
+            //Config readout
+            Console.WriteLine($"OSCQuery: {oscQuery}");
+
+            if (ipAddress == "127.0.0.1") Console.WriteLine("ip: LocalHost");
+                //If debugging, display the whole IP.
+                else if (debugging) Console.WriteLine("ip: " + ipAddress);
+                //If not localhost, partially hide the IP. Just in case.
+                else Console.WriteLine("ip: " + ipAddress.Substring(0, 3) + "###.###." + ipAddress.Substring(ipAddress.Length - 3, 3));
+
+            Console.WriteLine("listener_port: " + listener_port);
+            Console.WriteLine("write_port: " + write_port);
+
+            Console.WriteLine($"mode: {ConfigManager.ApplicationConfig.mode}");
+            Console.WriteLine($"debugging: {debugging}");
+
+            Task.Delay(5000).Wait();
+
             //Boot OSC Listener and Sender
             try {
                 oscListener = new UDPListener(listener_port, OnOscMessage);
                 oscSender = new UDPSender(ipAddress, write_port);
 
             }
-            //90% of the time this will fail because the port they attempted to use is already occupied.
+            //Usually this only fails if the port it attempted to use was occupied by another app.
             catch (Exception e) {
                 Console.WriteLine($"\nUDPListener failed: {e.Message}\n\n");
                 ColorConsole.WithRedText.WriteLine("Make sure you're not attempting to run two apps on the same port.");
@@ -101,10 +128,6 @@ namespace OSCLock {
 
 
             }
-            
-
-            //todo: add one for avatar change' - Neet
-            //Actually, what would be the purpose of that? - Zeni
         }
 
 

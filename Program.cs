@@ -152,15 +152,7 @@ namespace OSCLock {
 
             do {
                 Console.Clear();
-                //Swithc statements for the possible UI options
-                //S - await PrintStatus();
-                //H - await PrintHelp();
-                //T - await StartTimer();
-                //U - await UnlockDevice();
-                //F7 - await EncryptApp();
-                //F8 - await DecryptApp();
-                //Q - Quit
-                //Default - Console.WriteLine($"Unknown command {Key}"); and PrintHelp();
+                //Switch statements for the possible UI options
 
                 switch (Key) {
                     case 's':
