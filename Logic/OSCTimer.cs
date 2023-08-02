@@ -85,7 +85,7 @@ namespace OSCLock.Logic {
 
                 if (inc_parameter != "") {
                     if (ConfigManager.ApplicationConfig.oscQuery) {
-                        VRChatConnector.ModifyEndPoint(true, inc_parameter, "b", Attributes.AccessValues.ReadWrite, "OSCLock Inc Param");
+                        VRChatConnector.ModifyEndPoint(true, inc_parameter, "b", Attributes.AccessValues.WriteOnly, "OSCLock Inc Param");
                     }
                     VRChatConnector.AddHandler(inc_parameter, OnIncParam);
                     Console.WriteLine($"inc_parameter: {inc_parameter}");
@@ -100,7 +100,7 @@ namespace OSCLock.Logic {
 
                 if (dec_parameter != "") {
                     if (ConfigManager.ApplicationConfig.oscQuery) {
-                        VRChatConnector.ModifyEndPoint(true, dec_parameter, "b", Attributes.AccessValues.ReadWrite, "OSCLock Dec Param");
+                        VRChatConnector.ModifyEndPoint(true, dec_parameter, "b", Attributes.AccessValues.WriteOnly, "OSCLock Dec Param");
                     }
                     VRChatConnector.AddHandler(dec_parameter, OnDecParam);
                     Console.WriteLine($"dec_parameter: {dec_parameter}");

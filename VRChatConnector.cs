@@ -7,6 +7,7 @@ using OSCLock.Configs;
 using OSCLock.Logic;
 using SharpOSC;
 using VRC.OSCQuery;
+using static VRC.OSCQuery.Attributes;
 
 namespace OSCLock {
     public static class VRChatConnector {
@@ -27,7 +28,7 @@ namespace OSCLock {
 
         public delegate Task AddressHandler(OscMessage address);
 
-        private static OSCQueryService _oscQueryService;
+        public static OSCQueryService _oscQueryService;
 
         public static Dictionary<string, AddressHandler> addressHandlers = new Dictionary<string, AddressHandler>();
 
@@ -55,23 +56,28 @@ namespace OSCLock {
             if (oscQuery) {
                 try {
                     listener_port = Extensions.GetAvailableUdpPort();
-                    write_port = Extensions.GetAvailableUdpPort();
 
-                    var http_port = Extensions.GetAvailableTcpPort();
+                    //TODO: Query VRChat for the write port.
+                    //write_port = 
 
+
+                    //This works but it just gets EVERYTHING. Pain.
                     _oscQueryService = new OSCQueryServiceBuilder()
-                        .WithDefaults()
-                        .WithUdpPort(listener_port)
-                        .WithTcpPort(http_port)
                         .WithServiceName("OSCLock")
+                        .WithUdpPort(listener_port)
+
+                        .WithTcpPort(Extensions.GetAvailableTcpPort())
                         .StartHttpServer()
+
+                        .WithDiscovery(new MeaModDiscovery())
+                        .AdvertiseOSC()
+                        .AdvertiseOSCQuery()
                         .Build();
 
-                    ipAddress = _oscQueryService.HostIP.ToString();
                 }
                 catch (Exception e) {
                     ColorConsole.WithRedText.WriteLine($"OSCQuery failed: {e.Message}\n\n");
-                    Task.Delay(10000).Wait();
+                    Task.Delay(5000).Wait();
                     Environment.Exit(0);
                 }
 
@@ -91,8 +97,6 @@ namespace OSCLock {
 
             Console.WriteLine($"mode: {ConfigManager.ApplicationConfig.mode}");
             Console.WriteLine($"debugging: {debugging}");
-
-            Task.Delay(5000).Wait();
 
             //Boot OSC Listener and Sender
             try {
@@ -138,7 +142,7 @@ namespace OSCLock {
         }
 
         public static void ModifyEndPoint(bool add, string address, string type, Attributes.AccessValues accessValue, string description) {
-            if (add) _oscQueryService.AddEndpoint(address, type, accessValue, null, description);
+            if (add) _oscQueryService.AddEndpoint(address, type, accessValue, new object[] {false}, description);
             else _oscQueryService.RemoveEndpoint(address);
         }
         
@@ -149,10 +153,7 @@ namespace OSCLock {
                     AddressHandler handler;
                     if (debugging) Console.WriteLine($"{message.Address}" + $"({message.Arguments[0]})");
                     if (addressHandlers.TryGetValue(message.Address, out handler)) {
-                        //Better to do the bool true/false check in the handler since basic mode also listens for false.
-                        //if (message.Arguments[0] is true) {
-                            await handler(message);
-                        //}
+                    await handler(message);
                     }
                 }
             }
