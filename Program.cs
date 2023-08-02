@@ -7,6 +7,7 @@ using OSCLock.Configs;
 using OSCLock.Logic;
 using System.IO;
 using FluentColorConsole;
+using VRC.OSCQuery;
 
 namespace OSCLock {
     internal class Program {
@@ -181,6 +182,10 @@ namespace OSCLock {
 
                 Console.Write(">");
             } while ((Key = Console.ReadKey().KeyChar.ToString().ToLower().ToCharArray().First()) != 'q');
+        }
+
+        private static void Exit() {
+            VRChatConnector.oscQueryDispose();
         }
     }
 }

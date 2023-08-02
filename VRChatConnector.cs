@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using FluentColorConsole;
 using OSCLock.Configs;
@@ -26,6 +27,8 @@ namespace OSCLock {
 
         public delegate Task AddressHandler(OscMessage address);
 
+        private static OSCQueryService _oscQueryService;
+
         public static Dictionary<string, AddressHandler> addressHandlers = new Dictionary<string, AddressHandler>();
 
         public static void Start() {
@@ -51,14 +54,20 @@ namespace OSCLock {
 
             if (oscQuery) {
                 try {
-                    listener_port = Extensions.GetAvailableTcpPort();
+                    listener_port = Extensions.GetAvailableUdpPort();
+                    write_port = Extensions.GetAvailableUdpPort();
 
-                    var oscQuery = new OSCQueryServiceBuilder()
+                    var http_port = Extensions.GetAvailableTcpPort();
+
+                    _oscQueryService = new OSCQueryServiceBuilder()
                         .WithDefaults()
-                        .WithTcpPort(write_port)
                         .WithUdpPort(listener_port)
+                        .WithTcpPort(http_port)
                         .WithServiceName("OSCLock")
+                        .StartHttpServer()
                         .Build();
+
+                    ipAddress = _oscQueryService.HostIP.ToString();
                 }
                 catch (Exception e) {
                     ColorConsole.WithRedText.WriteLine($"OSCQuery failed: {e.Message}\n\n");
@@ -128,6 +137,11 @@ namespace OSCLock {
             }
         }
 
+        public static void ModifyEndPoint(bool add, string address, string type, Attributes.AccessValues accessValue, string description) {
+            if (add) _oscQueryService.AddEndpoint(address, type, accessValue, null, description);
+            else _oscQueryService.RemoveEndpoint(address);
+        }
+        
         private static async void OnOscMessage(OscPacket packet) {
             if (debugging) Console.WriteLine("Package recieved: " + packet);
             try {
@@ -163,6 +177,9 @@ namespace OSCLock {
             catch (Exception e) {
                 Console.WriteLine("Failed to send message to vrchat " + e.Message);
             }
+        }
+        public static void oscQueryDispose() {
+            _oscQueryService.Dispose();
         }
     }
 }

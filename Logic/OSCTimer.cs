@@ -83,17 +83,13 @@ namespace OSCLock.Logic {
                 inc_parameter = timerConfig.inc_parameter;
                 inc_step = timerConfig.inc_step;
 
-                //If inc_parameter is NOT null, then add a handler and print the added parameter.
                 if (inc_parameter != "") {
+                    if (ConfigManager.ApplicationConfig.oscQuery) {
+                        VRChatConnector.ModifyEndPoint(true, inc_parameter, "b", Attributes.AccessValues.ReadWrite, "OSCLock Inc Param");
+                    }
                     VRChatConnector.AddHandler(inc_parameter, OnIncParam);
                     Console.WriteLine($"inc_parameter: {inc_parameter}");
                     Console.WriteLine($"inc_step: {inc_step}\n");
-
-                    //if oscquery we need to add an endpoint for inc
-                    if (ConfigManager.ApplicationConfig.oscQuery) {
-                        //OSCQueryService.AddEndpoint()
-
-                    }
                 }
                 else {
                     Console.WriteLine("inc_parameter not defined.\n");
@@ -102,16 +98,13 @@ namespace OSCLock.Logic {
                 dec_parameter = timerConfig.dec_parameter;
                 dec_step = -timerConfig.dec_step;
 
-                //If dec_parameter is NOT null, then add a handler and print the added parameter.
                 if (dec_parameter != "") {
+                    if (ConfigManager.ApplicationConfig.oscQuery) {
+                        VRChatConnector.ModifyEndPoint(true, dec_parameter, "b", Attributes.AccessValues.ReadWrite, "OSCLock Dec Param");
+                    }
                     VRChatConnector.AddHandler(dec_parameter, OnDecParam);
                     Console.WriteLine($"dec_parameter: {dec_parameter}");
                     Console.WriteLine($"dec_step: {dec_step}\n");
-
-                    //if oscquery we need to add an endpoint for dec
-                    if (ConfigManager.ApplicationConfig.oscQuery) {
-                        //TODO:
-                    }
                 }
                 else {
                     Console.WriteLine("dec_parameter not defined.\n");
@@ -132,6 +125,13 @@ namespace OSCLock.Logic {
                 Console.WriteLine($"readout_mode: {readout_mode}");
                 Console.WriteLine($"readout_parameter: {readout_parameter}");
                 Console.WriteLine($"readout_parameter2: {readout_parameter2}\n");
+
+                if (readout_parameter != "" && ConfigManager.ApplicationConfig.oscQuery) {
+                    VRChatConnector.ModifyEndPoint(true, readout_parameter, "f", Attributes.AccessValues.ReadOnly, "OSCLock Readout Param 1");
+                }
+                if (readout_parameter2 != "" && ConfigManager.ApplicationConfig.oscQuery) {
+                    VRChatConnector.ModifyEndPoint(true, readout_parameter2, "f", Attributes.AccessValues.ReadOnly, "OSCLock Readout Param 2");
+                }
 
                 _timer = new Timer();
 
@@ -290,7 +290,6 @@ namespace OSCLock.Logic {
         public static bool HasTimeElapsed() {
             return GetTimeLeftTotal() <= 0;
         }
-
 
         public static async Task Start() {
             if (!HasTimeElapsed()) {
