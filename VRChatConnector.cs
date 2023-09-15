@@ -57,11 +57,7 @@ namespace OSCLock {
                 try {
                     listener_port = Extensions.GetAvailableUdpPort();
 
-                    //TODO: Query VRChat for the write port.
-                    //write_port = 
-
-
-                    //This works but it just gets EVERYTHING. Pain.
+                    //This works but OSCQuery currently sends EVERYTHING. It's not ideal.
                     _oscQueryService = new OSCQueryServiceBuilder()
                         .WithServiceName("OSCLock")
                         .WithUdpPort(listener_port)
