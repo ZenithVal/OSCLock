@@ -141,6 +141,7 @@ namespace OSCLock {
             }
         }
 
+        //Modify end point for OSCQuery
         public static void ModifyEndPoint(bool add, string address, string type, Attributes.AccessValues accessValue, string description) {
             if (add) _oscQueryService.AddEndpoint(address, type, accessValue, new object[] {false}, description);
             else _oscQueryService.RemoveEndpoint(address);

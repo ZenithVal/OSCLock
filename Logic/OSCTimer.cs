@@ -84,6 +84,7 @@ namespace OSCLock.Logic {
                 inc_step = timerConfig.inc_step;
 
                 if (inc_parameter != "") {
+                    //Add oscQuery endpoint
                     if (ConfigManager.ApplicationConfig.oscQuery) {
                         VRChatConnector.ModifyEndPoint(true, inc_parameter, "b", Attributes.AccessValues.WriteOnly, "OSCLock Inc Param");
                     }
@@ -99,6 +100,7 @@ namespace OSCLock.Logic {
                 dec_step = -timerConfig.dec_step;
 
                 if (dec_parameter != "") {
+                    //Add oscQuery endpoint
                     if (ConfigManager.ApplicationConfig.oscQuery) {
                         VRChatConnector.ModifyEndPoint(true, dec_parameter, "b", Attributes.AccessValues.WriteOnly, "OSCLock Dec Param");
                     }
