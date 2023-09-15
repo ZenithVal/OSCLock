@@ -186,8 +186,28 @@
     <Error Condition="!Exists('packages\System.Runtime.WindowsRuntime.5.0.0-preview.5.20278.1\build\net461\System.Runtime.WindowsRuntime.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\System.Runtime.WindowsRuntime.5.0.0-preview.5.20278.1\build\net461\System.Runtime.WindowsRuntime.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>; Move all assemblies and related files to Dependancies folder
-ROBOCOPY "$(TargetDir) " "$(TargetDir)Dependancies\ " /XF *.exe *.config *.manifest /XD Dependancies logs data /E /IS /MOVE
+    <PostBuildEvent>; Clean up dependancies
+del "$(TargetDir)FluentColorConsole.xml"
+del "$(TargetDir)MeaMod.DNS.dll"
+del "$(TargetDir)MeaMod.DNS.xml"
+del "$(TargetDir)Microsoft.Extensions.Logging.Abstractions.xml"
+del "$(TargetDir)Newtonsoft.Json.dll"
+del "$(TargetDir)Newtonsoft.Json.xml"
+del "$(TargetDir)OSCLock.pdb"
+del "$(TargetDir)SharpOSC.pdb"
+del "$(TargetDir)System.Buffers.dll"
+del "$(TargetDir)System.Buffers.xml"
+del "$(TargetDir)System.Memory.dll"
+del "$(TargetDir)System.Memory.xml"
+del "$(TargetDir)System.Numerics.Vectors.dll"
+del "$(TargetDir)System.Numerics.Vectors.xml"
+del "$(TargetDir)System.Runtime.CompilerServices.Unsafe.dll"
+del "$(TargetDir)System.Runtime.CompilerServices.Unsafe.xml"
+del "$(TargetDir)vrc-oscquery-lib.pdb"
+del "$(TargetDir)Windows.winmd"
+
+; Move all assemblies and related files to Dependencies folder
+ROBOCOPY "$(TargetDir) " "$(TargetDir)Dependencies\ " /XF *.exe *.config *.manifest /XD Dependencies logs data /E /IS /MOVE
 if %25errorlevel%25 leq 4 exit 0 else exit %25errorlevel%25</PostBuildEvent>
   </PropertyGroup>
 </Project>
