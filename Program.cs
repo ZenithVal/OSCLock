@@ -22,7 +22,7 @@ namespace OSCLock {
             if (File.Exists("app.pass"))
             {
                 isEncrypted = true;
-                //Idk how to really hide this. Too lazy to hide it in RAM either. Very secure, I know. - Zeni
+                //VERY Secure app password, I know. It's not meant to be real, this is just fun security theater. 
                 appPassword = Encryption.Read("app.pass", "7b7079bb6379001dce"); 
                 Console.WriteLine("Application Config is encrypted.\n");
                 //Console.WriteLine(appPassword);
