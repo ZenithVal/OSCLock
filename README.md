@@ -195,4 +195,6 @@ Want to:
 - Prior programming before git history by @NeetCode 08/2022
 - SharpOSC | [MIT Liscense](https://github.com/tecartlab/SharpOSC/blob/master/License.txt)
 - OSCQuery | [MIT Liscense](https://github.com/vrchat-community/vrc-oscquery-lib/blob/main/License.md)
+- Tomlet | [MIT Liscense](https://github.com/SamboyCoding/Tomlet/blob/master/LICENSE)
+- FluentColorConsole | [MIT Liscense](https://github.com/developer82/FluentColorConsole/blob/master/LICENSE)
 - App Heart Icon | [Game-icons.net](https://game-icons.net/1x1/delapouite/locked-heart.html) under [CC by 3.0](https://creativecommons.org/licenses/by/3.0/)
