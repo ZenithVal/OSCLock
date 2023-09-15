@@ -37,11 +37,15 @@ Tables containing information on all available settings you can change in the co
 
 | Value           | Info                                                        | Default     |
 |:--------------- | ----------------------------------------------------------- |:-----------:|
+| OSCQuery        | Enable [OSCQuery](https://github.com/vrchat-community/vrc-oscquery-lib) (IP & Listening port will be ignored)| false|
+||||
 | ip              | Address to send OSC data to                                 | "127.0.0.1" |
 | listener_port   | Port to listen for OSC data on                              | 9001        |
 | write_port      | Port to send OSC data to                                    | 9000        |
+||||
 | mode            | Testing, Basic, Or Timer                                    | "Timer"     |
 | debugging       | Extra console readouts, mainly for OSC debugging            | false       |
+||||
 | lock_type       | Not used yet, maybe for different bluetooth locks later.    | ESmartLock  |
 | esmart_username | Account username for login                                  | ""          |
 | esmart_password | Account password for login                                  | ""          |
@@ -140,7 +144,7 @@ It's hidden in the app interface but the { and } buttons still function. <br>
 
 # FAQ
 ### How safe is this?
-- **For like the 3rd time, IT'S NOT.** PLEASE exercise caution.
+- **IT'S NOT.** PLEASE exercise caution.
 - **Do not put the lock on anything that could put YOU in danger.** 
 - Bluetooth is unreliable as heck. It'll drop randomly sometimes.
 - Remember you can't open the lock without clicking the unlock button!
@@ -173,21 +177,22 @@ Look for the white/green color laytout with the ESmartLock Icon. If a specific b
 The code as it is right now was only ever really meant to be a draft but we all know how that goes. At some point it'll probably be refactored, optimized, and, modularized to make it easier to add features.
 
 Want to:
- - The above
- - Add more modes
+ - The above.
+ - New Modes:
    - Extensions of the basic timer mode.
    - Some "Gamified" elements.
- - Automate a simple avatar setup
- - Unique avatar add ons/integrations
- - Have Zeni actually know how to code
- - Support difficent brands of bluetooth locks (VERY painful without an API)
- - Make the encryption feature not security theater (Probably never, might be a safety hazard.)
+   - Feel free to suggest.
+ - Automate a simple avatar setup.
+ - Unique avatar add ons/integrations.
+ - Support difficent brands of bluetooth locks. (VERY painful without an API, unlikely)
+ - Make the encryption feature not security theater. (Probably never, would be a safety hazard.)
 
 
 <br>
 
 # Credits & Licenses
 
-- Prior programming before git by @NeetCode. 08/2022
-- SharpOSC [MIT Liscense](https://github.com/tecartlab/SharpOSC/blob/master/License.txt)
-- App Icon  [Game-icons.net](https://game-icons.net/1x1/delapouite/locked-heart.html) under [CC by 3.0](https://creativecommons.org/licenses/by/3.0/)
+- Prior programming before git history by @NeetCode 08/2022
+- SharpOSC | [MIT Liscense](https://github.com/tecartlab/SharpOSC/blob/master/License.txt)
+- OSCQuery | [MIT Liscense](https://github.com/vrchat-community/vrc-oscquery-lib/blob/main/License.md)
+- App Heart Icon | [Game-icons.net](https://game-icons.net/1x1/delapouite/locked-heart.html) under [CC by 3.0](https://creativecommons.org/licenses/by/3.0/)
