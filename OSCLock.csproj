@@ -188,7 +188,6 @@
   <PropertyGroup>
     <PostBuildEvent>; Clean up dependancies
 del "$(TargetDir)FluentColorConsole.xml"
-del "$(TargetDir)MeaMod.DNS.dll"
 del "$(TargetDir)MeaMod.DNS.xml"
 del "$(TargetDir)Microsoft.Extensions.Logging.Abstractions.xml"
 del "$(TargetDir)Newtonsoft.Json.dll"
