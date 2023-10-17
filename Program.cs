@@ -7,6 +7,7 @@ using OSCLock.Configs;
 using OSCLock.Logic;
 using System.IO;
 using FluentColorConsole;
+using VRC.OSCQuery;
 
 namespace OSCLock {
     internal class Program {
@@ -21,7 +22,7 @@ namespace OSCLock {
             if (File.Exists("app.pass"))
             {
                 isEncrypted = true;
-                //Idk how to really hide this. Too lazy to hide it in RAM either. Very secure, I know. - Zeni
+                //VERY Secure app password, I know. It's not meant to be real, this is just fun security theater. 
                 appPassword = Encryption.Read("app.pass", "7b7079bb6379001dce"); 
                 Console.WriteLine("Application Config is encrypted.\n");
                 //Console.WriteLine(appPassword);
@@ -47,11 +48,11 @@ namespace OSCLock {
             Console.WriteLine("  S -- Status of app & lock");
             Console.WriteLine("  U -- Unlock device");
             Console.WriteLine("  Q -- Quits the app");
-            if (isEncrypted) Console.WriteLine("} -- Decrypts Config & Timer files");
+            if (isEncrypted) Console.WriteLine("  } -- Decrypts files");
 
             //Decided to not inform the user about accessing encryption, since it's documented in the readme.
             //if (!isEncrypted)  Console.WriteLine("{ -- Encrypts Config & Timer files\n");
-            //else Console.WriteLine("} -- Decrypts Config & Timer files\n");
+            //else Console.WriteLine("} -- Decrypts Config & Timer filesu\n");
 
             //Bumper
             Console.WriteLine("");
@@ -152,15 +153,7 @@ namespace OSCLock {
 
             do {
                 Console.Clear();
-                //Swithc statements for the possible UI options
-                //S - await PrintStatus();
-                //H - await PrintHelp();
-                //T - await StartTimer();
-                //U - await UnlockDevice();
-                //F7 - await EncryptApp();
-                //F8 - await DecryptApp();
-                //Q - Quit
-                //Default - Console.WriteLine($"Unknown command {Key}"); and PrintHelp();
+                //Switch statements for the possible UI options
 
                 switch (Key) {
                     case 's':
@@ -189,6 +182,10 @@ namespace OSCLock {
 
                 Console.Write(">");
             } while ((Key = Console.ReadKey().KeyChar.ToString().ToLower().ToCharArray().First()) != 'q');
+        }
+
+        private static void Exit() {
+            VRChatConnector.oscQueryDispose();
         }
     }
 }

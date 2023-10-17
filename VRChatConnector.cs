@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
 using FluentColorConsole;
 using OSCLock.Configs;
 using OSCLock.Logic;
 using SharpOSC;
-
+using VRC.OSCQuery;
+using static VRC.OSCQuery.Attributes;
 
 namespace OSCLock {
     public static class VRChatConnector {
@@ -20,11 +21,14 @@ namespace OSCLock {
         private static UDPListener oscListener;
         private static UDPSender oscSender;
         public static bool debugging;
+        private static bool oscQuery;
         private static int listener_port;
         private static int write_port;
         private static string ipAddress;
 
         public delegate Task AddressHandler(OscMessage address);
+
+        public static OSCQueryService _oscQueryService;
 
         public static Dictionary<string, AddressHandler> addressHandlers = new Dictionary<string, AddressHandler>();
 
@@ -37,28 +41,58 @@ namespace OSCLock {
 
             //Load VRchat Connector settings.
             try {
+                oscQuery = ConfigManager.ApplicationConfig.oscQuery;
                 listener_port = ConfigManager.ApplicationConfig.listener_port;
                 write_port = ConfigManager.ApplicationConfig.write_port;
                 ipAddress = ConfigManager.ApplicationConfig.ipAddress ?? "127.0.0.1";
                 debugging = ConfigManager.ApplicationConfig.debugging;
+            }
+            catch (Exception e) {
+                ColorConsole.WithRedText.WriteLine($"Connector config load failed: {e.Message}\n\nPlease check your config file and reboot.");
+                Task.Delay(10000).Wait();
+                Environment.Exit(0);
+            }
 
-                if (ipAddress == "127.0.0.1") Console.WriteLine("ip: LocalHost");
+            if (oscQuery) {
+                try {
+                    listener_port = Extensions.GetAvailableUdpPort();
+
+                    //This works but OSCQuery currently sends EVERYTHING. It's not ideal.
+                    _oscQueryService = new OSCQueryServiceBuilder()
+                        .WithServiceName("OSCLock")
+                        .WithUdpPort(listener_port)
+
+                        .WithTcpPort(Extensions.GetAvailableTcpPort())
+                        .StartHttpServer()
+
+                        .WithDiscovery(new MeaModDiscovery())
+                        .AdvertiseOSC()
+                        .AdvertiseOSCQuery()
+                        .Build();
+
+                }
+                catch (Exception e) {
+                    ColorConsole.WithRedText.WriteLine($"OSCQuery failed: {e.Message}\n\n");
+                    Task.Delay(5000).Wait();
+                    Environment.Exit(0);
+                }
+
+            }
+
+            //Config readout
+            Console.WriteLine($"OSCQuery: {oscQuery}");
+
+            if (ipAddress == "127.0.0.1") Console.WriteLine("ip: LocalHost");
                 //If debugging, display the whole IP.
                 else if (debugging) Console.WriteLine("ip: " + ipAddress);
                 //If not localhost, partially hide the IP. Just in case.
                 else Console.WriteLine("ip: " + ipAddress.Substring(0, 3) + "###.###." + ipAddress.Substring(ipAddress.Length - 3, 3));
 
-                Console.WriteLine("listener_port: " + listener_port);
-                Console.WriteLine("write_port: " + write_port);
+            Console.WriteLine("listener_port: " + listener_port);
+            Console.WriteLine("write_port: " + write_port);
 
-                Console.WriteLine($"mode: {ConfigManager.ApplicationConfig.mode}");
-                Console.WriteLine($"debugging: {debugging}");
-            }
-            catch (Exception e) {
-                ColorConsole.WithRedText.WriteLine($"Connector config load failed: {e.Message}\n\nPlease check your config file and reboot.");
-                Task.Delay(5000).Wait();
-                Environment.Exit(0);
-            }
+            Console.WriteLine($"mode: {ConfigManager.ApplicationConfig.mode}");
+            Console.WriteLine($"debugging: {debugging}");
 
             //Boot OSC Listener and Sender
             try {
@@ -66,7 +100,7 @@ namespace OSCLock {
                 oscSender = new UDPSender(ipAddress, write_port);
 
             }
-            //90% of the time this will fail because the port they attempted to use is already occupied.
+            //Usually this only fails if the port it attempted to use was occupied by another app.
             catch (Exception e) {
                 Console.WriteLine($"\nUDPListener failed: {e.Message}\n\n");
                 ColorConsole.WithRedText.WriteLine("Make sure you're not attempting to run two apps on the same port.");
@@ -101,13 +135,14 @@ namespace OSCLock {
 
 
             }
-            
-
-            //todo: add one for avatar change' - Neet
-            //Actually, what would be the purpose of that? - Zeni
         }
 
-
+        //Modify end point for OSCQuery
+        public static void ModifyEndPoint(bool add, string address, string type, Attributes.AccessValues accessValue, string description) {
+            if (add) _oscQueryService.AddEndpoint(address, type, accessValue, new object[] {false}, description);
+            else _oscQueryService.RemoveEndpoint(address);
+        }
+        
         private static async void OnOscMessage(OscPacket packet) {
             if (debugging) Console.WriteLine("Package recieved: " + packet);
             try {
@@ -115,10 +150,7 @@ namespace OSCLock {
                     AddressHandler handler;
                     if (debugging) Console.WriteLine($"{message.Address}" + $"({message.Arguments[0]})");
                     if (addressHandlers.TryGetValue(message.Address, out handler)) {
-                        //Better to do the bool true/false check in the handler since basic mode also listens for false.
-                        //if (message.Arguments[0] is true) {
-                            await handler(message);
-                        //}
+                    await handler(message);
                     }
                 }
             }
@@ -143,6 +175,9 @@ namespace OSCLock {
             catch (Exception e) {
                 Console.WriteLine("Failed to send message to vrchat " + e.Message);
             }
+        }
+        public static void oscQueryDispose() {
+            _oscQueryService.Dispose();
         }
     }
 }
