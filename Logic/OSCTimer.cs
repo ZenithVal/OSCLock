@@ -38,18 +38,11 @@ namespace OSCLock.Logic {
 
         public static async Task OnIncParam(OscMessage message) {
             var shouldAdd = (bool)message.Arguments[0];
-            if (input_delay > 0 & shouldAdd) {
-                if (DateTime.Now > lastAdded) {
-                    Console.WriteLine($"Param recieved - Attempting to add {inc_step} minute(s)");
-                    lastAdded = DateTime.Now.AddMilliseconds(input_delay);
-                }
-                else {
-                    ColorConsole.WithYellowText.WriteLine($"Restricted by input delay until: " + lastAdded);
-                }
-            }
-            else if (shouldAdd) {
+            if (shouldAdd) {
                 Console.WriteLine($"Param recieved - Attempting to add {inc_step} seconds(s)");
-                AddTime(inc_step);
+                if (input_delay > 0 && DateTime.Now < lastAdded) {
+                    ColorConsole.WithYellowText.WriteLine($"Restricted by input delay until: " + lastAdded);
+                } else AddTime(inc_step);
             }
         }
 
