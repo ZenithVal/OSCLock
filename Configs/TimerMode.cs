@@ -35,7 +35,7 @@ namespace OSCLock.Configs {
         public int dec_step { get; set; }
 
         [TomlInlineComment("Cooldown (miliseconds) between allowed inputs, 0 to disable.")]
-        public int input_delay { get; set; }
+        public int input_cooldown { get; set; }
 
 
         [TomlPrecedingComment("-- Outgoing OSC Parameters ---")]

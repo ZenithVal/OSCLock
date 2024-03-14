@@ -118,7 +118,7 @@ namespace OSCLock.Configs {
                     dec_parameter = "/avatar/parameters/timer_dec",
                     dec_step = 300,
 
-                    input_delay = 1500,
+                    input_cooldown = 1500,
 
                     readout_mode = 0,
                     readout_parameter = "/avatar/parameters/timer_readout",

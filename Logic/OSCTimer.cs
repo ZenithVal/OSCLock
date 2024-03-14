@@ -110,7 +110,7 @@ namespace OSCLock.Logic {
                     Console.WriteLine($"Address: {handler.Key} | Value: {handler.Value}");
                 }
 
-                input_delay = timerConfig.input_delay;
+                input_delay = timerConfig.input_cooldown;
                 Console.WriteLine($"input_delay: {input_delay}\n");
 
                 readout_mode = timerConfig.readout_mode;
