@@ -124,6 +124,8 @@ namespace OSCLock.Configs {
                     readout_parameter = "/avatar/parameters/timer_readout",
                     readout_parameter2 = "",
 
+                    cooldown_parameter = "",
+
                     readout_interval = 500
                 }
             }));

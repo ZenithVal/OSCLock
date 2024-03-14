@@ -24,25 +24,34 @@ namespace OSCLock.Logic {
         private static int inc_step;
         private static string dec_parameter;
         private static int dec_step;
-        private static float input_delay;
+        private static float input_cooldown;
 
         private static int readout_mode;
         private static string readout_parameter;
         private static string readout_parameter2;
 
+        private static bool cooldown_tracker;
+        private static string cooldown_parameter;
+        private static DateTime cooldownEndTime = DateTime.Now;
+
         private static int starting_time;
         private static int random_min;
         private static int random_max;
-
-        private static DateTime lastAdded = DateTime.Now;
 
         public static async Task OnIncParam(OscMessage message) {
             var shouldAdd = (bool)message.Arguments[0];
             if (shouldAdd) {
                 Console.WriteLine($"Param recieved - Attempting to add {inc_step} seconds(s)");
-                if (input_delay > 0 && DateTime.Now < lastAdded) {
-                    ColorConsole.WithYellowText.WriteLine($"Restricted by input delay until: " + lastAdded);
-                } else AddTime(inc_step);
+
+                if (input_cooldown > 0 && DateTime.Now < cooldownEndTime)
+                {
+                    ColorConsole.WithYellowText.WriteLine($"Restricted by input cooldown until: " + cooldownEndTime);
+                }
+                else
+                {
+                    AddTime(inc_step);
+                    cooldownEndTime = DateTime.Now.AddMilliseconds(input_cooldown);
+                } 
             }
         }
 
@@ -110,16 +119,20 @@ namespace OSCLock.Logic {
                     Console.WriteLine($"Address: {handler.Key} | Value: {handler.Value}");
                 }
 
-                input_delay = timerConfig.input_cooldown;
-                Console.WriteLine($"input_delay: {input_delay}\n");
+                input_cooldown = timerConfig.input_cooldown;
+                Console.WriteLine($"input_cooldoown: {input_cooldown}\n");
 
                 readout_mode = timerConfig.readout_mode;
                 readout_parameter = timerConfig.readout_parameter;
                 readout_parameter2 = timerConfig.readout_parameter2;
 
+                cooldown_parameter = timerConfig.cooldown_parameter;
+
                 Console.WriteLine($"readout_mode: {readout_mode}");
                 Console.WriteLine($"readout_parameter: {readout_parameter}");
-                Console.WriteLine($"readout_parameter2: {readout_parameter2}\n");
+                Console.WriteLine($"readout_parameter2: {readout_parameter2}");
+                Console.WriteLine($"cooldown_parameter: {cooldown_parameter}");
+                Console.WriteLine();
 
                 if (readout_parameter != "" && ConfigManager.ApplicationConfig.oscQuery) {
                     VRChatConnector.ModifyEndPoint(true, readout_parameter, "f", Attributes.AccessValues.ReadOnly, "OSCLock Readout Param 1");
@@ -418,6 +431,29 @@ namespace OSCLock.Logic {
         private static async void OnProgress(object sender, ElapsedEventArgs elapsedEventArgs) {
 
             var remainingTime = ((EndTime - DateTime.Now).TotalMinutes);
+
+            // Cooldown readout
+            if (cooldown_parameter != "" && input_cooldown > 0) // output true if on cooldown
+            {
+                if (DateTime.Now < cooldownEndTime)
+                {
+                    if (!cooldown_tracker)
+                    {
+                        var message = new OscMessage(cooldown_parameter, true);
+                        VRChatConnector.SendToVRChat(message);
+                        cooldown_tracker = true;
+                    }
+                }
+                else
+                {
+                    if (cooldown_tracker)
+                    {
+                        var message = new OscMessage(cooldown_parameter, false);
+                        VRChatConnector.SendToVRChat(message);
+                        cooldown_tracker = false;
+                    }
+                }
+            }
 
 
             try

@@ -42,6 +42,8 @@ namespace OSCLock.Configs {
         public int readout_mode { get; set; }
         public string readout_parameter { get; set; }
         public string readout_parameter2 { get; set; }
+        public string cooldown_parameter { get; set; }
+
 
 
         [TomlInlineComment("Time (miliseconds) between outgoing messages")]
