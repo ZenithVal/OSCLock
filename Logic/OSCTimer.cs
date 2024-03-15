@@ -51,7 +51,8 @@ namespace OSCLock.Logic {
                 {
                     AddTime(inc_step);
                     cooldownEndTime = DateTime.Now.AddMilliseconds(input_cooldown);
-                } 
+                }
+                CooldownSync(true);
             }
         }
 
@@ -60,6 +61,8 @@ namespace OSCLock.Logic {
             if (shouldDec) {
                 Console.WriteLine($"Param recieved - Attempting to remove {dec_step} seconds(s)");
                 AddTime(dec_step);
+                cooldownEndTime = DateTime.Now;
+                CooldownSync(true);
             }
         }
 
@@ -428,11 +431,8 @@ namespace OSCLock.Logic {
                 await Program.PrintHelp();
         }
 
-        private static async void OnProgress(object sender, ElapsedEventArgs elapsedEventArgs) {
-
-            var remainingTime = ((EndTime - DateTime.Now).TotalMinutes);
-
-            // Cooldown readout
+        private static async void CooldownSync(bool forceUpdate)
+        {
             if (cooldown_parameter != "" && input_cooldown > 0) // output true if on cooldown
             {
                 if (DateTime.Now < cooldownEndTime)
@@ -453,8 +453,20 @@ namespace OSCLock.Logic {
                         cooldown_tracker = false;
                     }
                 }
-            }
 
+                if (forceUpdate)
+                {
+                    var message = new OscMessage(cooldown_parameter, cooldown_tracker);
+                    VRChatConnector.SendToVRChat(message);
+                }
+            }
+        }
+
+        private static async void OnProgress(object sender, ElapsedEventArgs elapsedEventArgs) {
+
+            var remainingTime = ((EndTime - DateTime.Now).TotalMinutes);
+
+            CooldownSync(false);
 
             try
             {
