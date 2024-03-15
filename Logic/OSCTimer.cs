@@ -24,12 +24,13 @@ namespace OSCLock.Logic {
         private static int inc_step;
         private static string dec_parameter;
         private static int dec_step;
-        private static float input_cooldown;
 
         private static int readout_mode;
         private static string readout_parameter;
         private static string readout_parameter2;
 
+        private static float input_cooldown;
+        private static bool input_cooldown_ignore;
         private static bool cooldown_tracker;
         private static string cooldown_parameter;
         private static DateTime cooldownEndTime = DateTime.Now;
@@ -43,7 +44,7 @@ namespace OSCLock.Logic {
             if (shouldAdd) {
                 Console.WriteLine($"Param recieved - Attempting to add {inc_step} seconds(s)");
 
-                if (input_cooldown > 0 && DateTime.Now < cooldownEndTime)
+                if (input_cooldown > 0 && !input_cooldown_ignore && DateTime.Now < cooldownEndTime)
                 {
                     ColorConsole.WithYellowText.WriteLine($"Restricted by input cooldown until: " + cooldownEndTime);
                 }
@@ -123,7 +124,10 @@ namespace OSCLock.Logic {
                 }
 
                 input_cooldown = timerConfig.input_cooldown;
-                Console.WriteLine($"input_cooldoown: {input_cooldown}\n");
+                input_cooldown_ignore = timerConfig.input_cooldown_ignore;
+                Console.WriteLine($"input_cooldoown: {input_cooldown}");
+                Console.WriteLine($"input_cooldown_ignore: {input_cooldown_ignore}");
+                Console.WriteLine();
 
                 readout_mode = timerConfig.readout_mode;
                 readout_parameter = timerConfig.readout_parameter;
