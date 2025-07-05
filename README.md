@@ -60,6 +60,7 @@ Tables containing information on all available settings you can change in the co
 | Value              | Info                                                             | Default |
 |:------------------ | ---------------------------------------------------------------- |:-------:|
 | max                | Maximum time. How much sand can the hourglass hold at a time?    | 60      |
+| rollover           | Timer switches from MM:SS to HH:MM as needed (readout mode 3)    | False   |
 | absolute_min       | Time will be added if it total time is below this. 0 disables.   | 0       |
 | absolute_max       | If overall time reaches this, inc_step wont work. 0 disables.    | 120     |
 |                    |                                                                  |         |
@@ -73,7 +74,7 @@ Tables containing information on all available settings you can change in the co
 | dec_step           | Time in seconds to subtract (int)                                | 300     |
 | input_cooldown     | Minimum cooldown between allowed inputs.                         | 1500    |
 |                    |                                                                  |         |
-| readout_mode       | Method of translating time remaining via OSC. Chart below        | 0       |
+| readout_mode       | Method of translating time remaining via OSC. Chart below        | 3       |
 | readout_parameter  | Readout parameter 1                                              | ""      |
 | readout_parameter2 | Readout parameter 2 (optional)                                   | ""      |
 |                    |                                                                  |         |
@@ -86,7 +87,7 @@ Tables containing information on all available settings you can change in the co
 
 readout_mode determines how data is output from OSCLock. <br> Choose a method that works for you and your avatar. 
 
-> P1 = readout_parameter and P2 = readout_parameter2
+> P1 = readout_parameter1 and P2 = readout_parameter2
 
 | readout_mode | Use of Readout parameters                                      |
 |:------------ | -------------------------------------------------------------- |
@@ -94,9 +95,9 @@ readout_mode determines how data is output from OSCLock. <br> Choose a method th
 | 1            | P1, float 0 to +1                                              |
 | 2            | P1, float -1 to +1                                             |
 | 3            | P1, float -1 to +1 for minutes. P2, float -1 to +1 for seconds |
-| 4            | P1, float -1 to +1 for minutes. P2, int 1:1 with seconds       |
-| 5            | P1 & P2, ints 1:1 minutes and seconds respectively             |
-| 6            | P1, int 1:1 mins/seconds. P2, bool determines min/sec data     |
+
+In v1.02, some readout modes were removed for sanity.
+<br> If you used them please let me know.
 </details>
 
 
@@ -188,7 +189,6 @@ Want to:
    - Extensions of the basic timer mode.
    - Some "Gamified" elements.
    - Feel free to suggest.
- - Automate a simple avatar setup.
  - Unique avatar add ons/integrations.
  - Support difficent brands of bluetooth locks. (VERY painful without an API, unlikely)
  - Make the encryption feature not security theater. (Probably never, would be a safety hazard.)
