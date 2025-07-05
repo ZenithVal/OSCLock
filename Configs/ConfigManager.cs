@@ -117,7 +117,6 @@ namespace OSCLock.Configs
 
 				TimerConfig = new TimerMode {
 					maxTime = 60,
-					rollover = true,
 					absMin = 0,
 					absMax = 120,
 					StartTime = new DefaultTime {
@@ -130,9 +129,9 @@ namespace OSCLock.Configs
 					dec_parameter = "/avatar/parameters/OSCLock/-",
 					dec_step = 300,
 
-					input_cooldown = 1000,
+					input_cooldown = 0,
 
-					readout_mode = 0,
+					readout_mode = 4,
 					readout_parameter1 = "/avatar/parameters/OSCLock/Minutes",
 					readout_parameter2 = "/avatar/parameters/OSCLock/Seconds",
 

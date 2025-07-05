@@ -60,7 +60,6 @@ Tables containing information on all available settings you can change in the co
 | Value              | Info                                                             | Default |
 |:------------------ | ---------------------------------------------------------------- |:-------:|
 | max                | Maximum time. How much sand can the hourglass hold at a time?    | 60      |
-| rollover           | Timer switches from MM:SS to HH:MM as needed (readout mode 3)    | False   |
 | absolute_min       | Time will be added if it total time is below this. 0 disables.   | 0       |
 | absolute_max       | If overall time reaches this, inc_step wont work. 0 disables.    | 120     |
 |                    |                                                                  |         |
@@ -72,10 +71,10 @@ Tables containing information on all available settings you can change in the co
 | inc_step           | Time in seconds to add (int)                                     | 60      |
 | dec_parameter      | When this Bool is true via OSC, it should decrease the timer.    | ""      |
 | dec_step           | Time in seconds to subtract (int)                                | 300     |
-| input_cooldown     | Minimum cooldown between allowed inputs.                         | 1500    |
+| input_cooldown     | Minimum cooldown between allowed inputs.                         | 0       |
 |                    |                                                                  |         |
-| readout_mode       | Method of translating time remaining via OSC. Chart below        | 3       |
-| readout_parameter  | Readout parameter 1                                              | ""      |
+| readout_mode       | Method of translating time remaining via OSC. Chart below        | 4       |
+| readout_parameter1 | Readout parameter 1                                              | ""      |
 | readout_parameter2 | Readout parameter 2 (optional)                                   | ""      |
 |                    |                                                                  |         |
 | cooldown_parameter | True while cooldown is active                                    | ""      |
@@ -95,6 +94,7 @@ readout_mode determines how data is output from OSCLock. <br> Choose a method th
 | 1            | P1, float 0 to +1                                              |
 | 2            | P1, float -1 to +1                                             |
 | 3            | P1, float -1 to +1 for minutes. P2, float -1 to +1 for seconds |
+| 4            | P1, int, P2 int. Automatically formatted for MM:SS or HH:MM    |
 
 In v1.02, some readout modes were removed for sanity.
 <br> If you used them please let me know.

@@ -18,8 +18,8 @@ namespace OSCLock.Logic
 		private static DateTime EarlietEndTime;
 		private static Timer _timer;
 
-		private static int maxAccumulated;
-		private static bool rollover;
+		private static int maxAccumulatedMinutes;
+		private static TimeSpan maxAccumulatedTime;
 		private static int absolute_min;
 		private static int absolute_max;
 
@@ -80,11 +80,9 @@ namespace OSCLock.Logic
 
 			try
 			{
-				maxAccumulated = timerConfig.maxTime;
-				Console.WriteLine($"\nmax: {maxAccumulated}");
-
-				rollover = timerConfig.rollover;
-				Console.WriteLine($"readout_rollover: {rollover}\n");
+				maxAccumulatedMinutes = timerConfig.maxTime;
+				Console.WriteLine($"\nmax: {maxAccumulatedMinutes}");
+				maxAccumulatedTime = TimeSpan.FromMinutes(maxAccumulatedMinutes);
 
 				absolute_min = timerConfig.absMin;
 				absolute_max = timerConfig.absMax;
@@ -257,33 +255,44 @@ namespace OSCLock.Logic
 
 		public static void AddTime(double timeToAdd)
 		{
-			var maxTime = ConfigManager.ApplicationConfig.TimerConfig.maxTime;
+			var newEndTime = EndTime.AddSeconds(timeToAdd);
+			TimeSpan newTimeSpan = newEndTime - DateTime.Now;
 
-			var newTimeSpan = (int)(EndTime.AddSeconds(timeToAdd) - DateTime.Now).TotalMinutes;
-
-			if (newTimeSpan > maxTime)
+			//Device capacity
+			if (newTimeSpan > maxAccumulatedTime)
 			{
-				ColorConsole.WithYellowText.WriteLine("Reached timer device cap");
+				ColorConsole.WithYellowText.WriteLine($"Reached timer device max of {maxAccumulatedMinutes} minutes.");
 				//If the new time span is greater than the max time, we need to remove the difference from the minutes to add
-				timeToAdd -= (newTimeSpan - maxTime);
+				var timeOverflow = newTimeSpan - maxAccumulatedTime;
+				timeToAdd -= timeOverflow.TotalSeconds;
+				newEndTime = EndTime.AddSeconds(timeToAdd);
 			}
 
-			var newEndTime = EndTime.AddSeconds(timeToAdd);
-
+			//Min-Max
 			if (absolute_max > 0 && timeToAdd > 0)
 			{
-				//Checking if going past absolute max
 				if (newEndTime > AbsoluteEndTime)
 				{
 					newEndTime = AbsoluteEndTime;
-					ColorConsole.WithYellowText.WriteLine("Reached overall maximum time limit");
+					ColorConsole.WithYellowText.WriteLine($"Reached overall maximum time limit of {absolute_max} minutes.");
+				}
+				else if (newEndTime < EarlietEndTime)
+				{
+					newEndTime = EarlietEndTime;
+					ColorConsole.WithYellowText.WriteLine($"Timer can not go below {absolute_min} minutes.");
 				}
 			}
 
+			//Is timer over?
 			if (newEndTime < DateTime.Now)
+			{
 				newEndTime = DateTime.Now;
+			}
 
 			EndTime = newEndTime;
+			newTimeSpan = EndTime - DateTime.Now;
+			Console.WriteLine($"{newTimeSpan.ToString(@"dd\.hh\:mm\:ss")} remaining");
+
 			try
 			{
 				if (Program.isEncrypted)
@@ -294,7 +303,6 @@ namespace OSCLock.Logic
 				{
 					File.WriteAllText("timer.end", EndTime.ToString("O"));
 				}
-
 			}
 			catch (Exception e)
 			{
@@ -311,7 +319,7 @@ namespace OSCLock.Logic
 
 				if (absolute_min > 0 && EarlietEndTime > currentTime)
 				{ //Endtime in past, but minimum time has not passed
-					ColorConsole.WithYellowText.WriteLine("Absolute minimum time has not yet elapsed, ");
+					ColorConsole.WithYellowText.WriteLine("Absolute minimum time has not yet elapsed");
 
 					//Going to use ceiling instead of floor to prevent the timer from having to fire minimum warning twice in rare cases.
 					var timeDiff = Math.Ceiling((EarlietEndTime - currentTime).TotalSeconds);
@@ -328,9 +336,9 @@ namespace OSCLock.Logic
 
 					//Makes sure we don't go past the max accumulated time. 
 					//EG: If their max timer is 30 minutes but their minimum time is 40, it should only add a total of 30 minutes.
-					if (timeDiff > maxAccumulated * 60)
+					if (timeDiff > maxAccumulatedMinutes * 60)
 					{
-						timeDiff = maxAccumulated * 60;
+						timeDiff = maxAccumulatedMinutes * 60;
 					}
 
 					Console.WriteLine($"adding remaining time.");
@@ -415,9 +423,9 @@ namespace OSCLock.Logic
 				ColorConsole.WithYellowText.Write("capped by minimum time to ");
 			}
 			//Maximum check
-			else if (starting_time > maxAccumulated && maxAccumulated > 0)
+			else if (starting_time > maxAccumulatedMinutes && maxAccumulatedMinutes > 0)
 			{
-				starting_time = maxAccumulated;
+				starting_time = maxAccumulatedMinutes;
 
 				ColorConsole.WithYellowText.Write("capped by maxtime to ");
 			}
@@ -525,7 +533,8 @@ namespace OSCLock.Logic
 
 		private static async void OnProgress(object sender, ElapsedEventArgs elapsedEventArgs)
 		{
-			var remainingTime = ((EndTime - DateTime.Now).TotalMinutes);
+			TimeSpan remainingTime = EndTime - DateTime.Now;
+			var remainingTimeMinutes = remainingTime.TotalMinutes;
 
 			CooldownSync(false);
 
@@ -537,51 +546,39 @@ namespace OSCLock.Logic
 				switch (readout_mode)
 				{
 					case 1: //Single Float readout 0 to +1
-						readout1 = (float)(remainingTime / maxAccumulated);
+						readout1 = (float)(remainingTimeMinutes / maxAccumulatedMinutes);
 						break;
 
 					case 2: //Single Float readout -1 to +1
-						readout1 = (float)((remainingTime / maxAccumulated * 2) - 1);
+						readout1 = (float)((remainingTimeMinutes / maxAccumulatedMinutes * 2) - 1);
 						break;
 
 					case 3: //Double Float readout -1 to +1 Float 1 is mintues while Float #2 is seconds
-						if (rollover)
-						{
-							if (remainingTime > 90000) //IMO, HH:MM was already pushing it, this is just insane.
-							{
-								readout1 = 1.0f;
-								readout2 = 1.0f;
-
-							}
-							if (remainingTime > 1440) //DD:HH 
-							{
-
-								readout1 = (float)(remainingTime / 60 / 60 / 24); //Days
-								readout2 = (float)((remainingTime / 60 / 60) - Math.Floor(remainingTime / 60 / 60)); //Hours
-							}
-							else if (remainingTime > 60) //HH:MM
-							{
-								readout1 = (float)(remainingTime / 60 / 60); //Hours
-								readout2 = (float)((remainingTime / 60) - Math.Floor(remainingTime / 60)); //Minutes
-							}
-							else //MM:SS
-							{
-								readout1 = (float)(remainingTime / 60);
-								readout2 = (float)(remainingTime - Math.Floor(remainingTime));
-							}
-						}
-						else
-						{
-							readout1 = (float)(remainingTime / maxAccumulated);
-							readout2 = (float)(remainingTime - Math.Floor(remainingTime));
-						}
+						readout1 = (float)(remainingTimeMinutes / maxAccumulatedMinutes);
+						readout2 = (float)(remainingTimeMinutes - Math.Floor(remainingTimeMinutes));
 
 						//Convert to -1 to +1
 						readout1 = (readout1 * 2) - 1;
 						readout2 = (readout2 * 2) - 1;
 						break;
 
-					//For now, other modes gone. May reimpliment at a later date if there's desire.
+					case 4: // Double int readout, automatically formatting mm:ss, hh:mm, or dd:hh
+						if (remainingTimeMinutes > 1440) //dd:hh 
+						{
+							readout1 = remainingTime.Days;
+							readout2 = remainingTime.Hours;
+						}
+						else if (remainingTimeMinutes > 60) //hh:mm
+						{
+							readout1 = remainingTime.Hours;
+							readout2 = remainingTime.Minutes;
+						}
+						else // mm:ss
+						{
+							readout1 = remainingTime.Minutes;
+							readout2 = remainingTime.Seconds;
+						}
+						break;
 
 					default:
 						//If this happens, it's user error.
@@ -589,9 +586,11 @@ namespace OSCLock.Logic
 				}
 
 				var message1 = new OscMessage(readout_parameter1, readout1);
+				VRChatConnector.SendToVRChat(message1);
 				if (readout_mode > 2)
 				{
 					var message2 = new OscMessage(readout_parameter2, readout2);
+					VRChatConnector.SendToVRChat(message2);
 				}
 
 			}
