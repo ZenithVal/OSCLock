@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
 using System.Timers;
 using FluentColorConsole;
@@ -17,6 +18,7 @@ namespace OSCLock.Logic {
         private static Timer _timer;
 
         private static int maxAccumulated;
+        private static bool rollover;
         private static int absolute_min;
         private static int absolute_max;
 
@@ -26,7 +28,7 @@ namespace OSCLock.Logic {
         private static int dec_step;
 
         private static int readout_mode;
-        private static string readout_parameter;
+        private static string readout_parameter1;
         private static string readout_parameter2;
 
         private static float input_cooldown;
@@ -73,6 +75,9 @@ namespace OSCLock.Logic {
             try {
                 maxAccumulated = timerConfig.maxTime;
                 Console.WriteLine($"\nmax: {maxAccumulated}");
+
+                rollover = timerConfig.rollover;
+                Console.WriteLine($"readout_rollover: {rollover}\n");
 
                 absolute_min = timerConfig.absMin;
                 absolute_max = timerConfig.absMax;
@@ -130,19 +135,19 @@ namespace OSCLock.Logic {
                 Console.WriteLine();
 
                 readout_mode = timerConfig.readout_mode;
-                readout_parameter = timerConfig.readout_parameter;
+                readout_parameter1 = timerConfig.readout_parameter1;
                 readout_parameter2 = timerConfig.readout_parameter2;
 
                 cooldown_parameter = timerConfig.cooldown_parameter;
 
                 Console.WriteLine($"readout_mode: {readout_mode}");
-                Console.WriteLine($"readout_parameter: {readout_parameter}");
+                Console.WriteLine($"readout_parameter1: {readout_parameter1}");
                 Console.WriteLine($"readout_parameter2: {readout_parameter2}");
                 Console.WriteLine($"cooldown_parameter: {cooldown_parameter}");
                 Console.WriteLine();
 
-                if (readout_parameter != "" && ConfigManager.ApplicationConfig.oscQuery) {
-                    VRChatConnector.ModifyEndPoint(true, readout_parameter, "f", Attributes.AccessValues.ReadOnly, "OSCLock Readout Param 1");
+                if (readout_parameter1 != "" && ConfigManager.ApplicationConfig.oscQuery) {
+                    VRChatConnector.ModifyEndPoint(true, readout_parameter1, "f", Attributes.AccessValues.ReadOnly, "OSCLock Readout Param 1");
                 }
                 if (readout_parameter2 != "" && ConfigManager.ApplicationConfig.oscQuery) {
                     VRChatConnector.ModifyEndPoint(true, readout_parameter2, "f", Attributes.AccessValues.ReadOnly, "OSCLock Readout Param 2");
@@ -151,7 +156,7 @@ namespace OSCLock.Logic {
                 _timer = new Timer();
 
                 var callbackInterval = timerConfig.readout_interval;
-                if (callbackInterval > 0 && !String.IsNullOrEmpty(timerConfig.readout_parameter)) {
+                if (callbackInterval > 0 && !String.IsNullOrEmpty(timerConfig.readout_parameter1)) {
                     _timer.Elapsed += OnProgress;
                 }
                 else callbackInterval = 1000;
@@ -406,7 +411,7 @@ namespace OSCLock.Logic {
 
                 _timer.Stop();
 
-                var message = new OscMessage(readout_parameter, (float)-1.0); 
+                var message = new OscMessage(readout_parameter1, (float)-1.0); 
                 var message2 = new OscMessage(readout_parameter2, (float)-1.0);
                 VRChatConnector.SendToVRChat(message);
                 VRChatConnector.SendToVRChat(message2);
@@ -425,7 +430,7 @@ namespace OSCLock.Logic {
                 _timer.Stop();
                 EndTime = DateTime.Now;
 
-                var message = new OscMessage(readout_parameter, (float)-1.0);
+                var message = new OscMessage(readout_parameter1, (float)-1.0);
                 var message2 = new OscMessage(readout_parameter2, (float)-1.0);
                 VRChatConnector.SendToVRChat(message);
                 VRChatConnector.SendToVRChat(message2);
@@ -466,90 +471,78 @@ namespace OSCLock.Logic {
             }
         }
 
-        private static async void OnProgress(object sender, ElapsedEventArgs elapsedEventArgs) {
-
+        private static async void OnProgress(object sender, ElapsedEventArgs elapsedEventArgs) 
+        {
             var remainingTime = ((EndTime - DateTime.Now).TotalMinutes);
 
             CooldownSync(false);
 
             try
             {
-                switch (readout_mode)
+				float readout1 = 0.0f;
+				float readout2 = 0.0f;
+
+				switch (readout_mode)
                 {
                     case 1: //Single Float readout 0 to +1
-                        var Readout1 = (float)(remainingTime / maxAccumulated);
-                        var message1 = new OscMessage(readout_parameter, Readout1);
-                        VRChatConnector.SendToVRChat(message1);
+                        readout1 = (float)(remainingTime / maxAccumulated);
                         break;
 
                     case 2: //Single Float readout -1 to +1
-                        var Readout2 = (float)((remainingTime / maxAccumulated * 2) - 1);
-                        var message2 = new OscMessage(readout_parameter, Readout2);
-                        VRChatConnector.SendToVRChat(message2);
+                        readout1 = (float)((remainingTime / maxAccumulated * 2) - 1);
                         break;
 
-                    case 3: //Double Float readout -1 to +1 Float 1 is mintues while Float 2 is seconds
-                        var Readout3Minutes = (float)((remainingTime / maxAccumulated * 2) - 1);
-                        var Readout3Seconds = (float)(((remainingTime - Math.Floor(remainingTime))) * 2) - 1;
+                    case 3: //Double Float readout -1 to +1 Float 1 is mintues while Float #2 is seconds
+                        if (rollover)
+                        {
+                            if (remainingTime > 90000) //IMO, HH:MM was already pushing it, this is just insane.
+                            {
+                                readout1 = 1.0f; 
+                                readout2 = 1.0f; 
+                                
+                            }
+							if (remainingTime > 1440) //DD:HH 
+							{
+								
+								readout1 = (float)(remainingTime / 60 / 60 / 24); //Days
+								readout2 = (float)((remainingTime / 60 / 60) - Math.Floor(remainingTime / 60 / 60)); //Hours
+							}
+						    else if (remainingTime > 60) //HH:MM
+							{
+                                readout1 = (float)(remainingTime / 60 / 60); //Hours
+                                readout2 = (float)((remainingTime / 60) - Math.Floor(remainingTime / 60)); //Minutes
+							}
+							else //MM:SS
+							{
+								readout1 = (float)(remainingTime / 60);
+								readout2 = (float)(remainingTime - Math.Floor(remainingTime));
+							}
+						}
+                        else
+                        {
+							readout1 = (float)(remainingTime / maxAccumulated);
+							readout2 = (float)(remainingTime - Math.Floor(remainingTime));
+						}
 
-                        var message3Minutes = new OscMessage(readout_parameter, Readout3Minutes);
-                        var message3Seconds = new OscMessage(readout_parameter2, Readout3Seconds);
+						//Convert to -1 to +1
+						readout1 = (readout1 * 2) - 1; 
+                        readout2 = (readout2 * 2) - 1;
+						break;
 
-                        VRChatConnector.SendToVRChat(message3Minutes);
-                        VRChatConnector.SendToVRChat(message3Seconds);
-                        break;
-
-                    case 4: //Float -1 to +1 for minutes, Rounded down int for seconds
-                        var Readout4Minutes = (float)((remainingTime / maxAccumulated * 2) - 1);
-                        var Readout4Seconds = (float)Math.Floor((remainingTime - Math.Floor(remainingTime)) * 60);
-
-
-                        var message4Minutes = new OscMessage(readout_parameter, Readout4Minutes);
-                        var message4Seconds = new OscMessage(readout_parameter2, Readout4Seconds);
-
-                        VRChatConnector.SendToVRChat(message4Minutes);
-                        VRChatConnector.SendToVRChat(message4Seconds);
-                        break;
-
-                    case 5: //Double int readout, straight translation of minutes and seconds (rounded down)
-                        var Readout5Minutes = (float)Math.Floor(remainingTime);
-                        var Readout5Seconds = (float)Math.Floor((remainingTime - Readout5Minutes) * 60);
-
-                        var message5Minutes = new OscMessage(readout_parameter, Readout5Minutes);
-                        var message5Seconds = new OscMessage(readout_parameter2, Readout5Seconds);
-
-                        VRChatConnector.SendToVRChat(message5Minutes);
-                        VRChatConnector.SendToVRChat(message5Seconds);
-                        break;
-
-                    case 6: //Signle int rounded down and a boolean to tell if it's sending minutes or seconds.
-                        var Readout6Minutes = (float)Math.Floor(remainingTime);
-                        var Readout6Seconds = (float)Math.Floor((remainingTime - Readout6Minutes) * 60);
-
-                        var message6Seconds = new OscMessage(readout_parameter, Readout6Seconds);
-                        var message6BoolTrue = new OscMessage(readout_parameter2, true);
-
-                        VRChatConnector.SendToVRChat(message6BoolTrue);
-                        VRChatConnector.SendToVRChat(message6Seconds);
-
-                        Task.Delay(50).Wait();
-                        //There NEEDS to be a delay here or the bool will be overwritten by the next message.
-                        //Hopefully with it being less than a second, it'll be unnoticable. 
-
-                        var message6Minutes = new OscMessage(readout_parameter, Readout6Minutes);
-                        var message6BoolFalse = new OscMessage(readout_parameter2, false);
-
-                        VRChatConnector.SendToVRChat(message6BoolFalse);
-                        VRChatConnector.SendToVRChat(message6Minutes);
-
-                        break;
+                    //For now, other modes gone. May reimpliment at a later date if there's desire.
 
                     default:
-                        //Invalid or no readout mode. Whatever!
-                        break;
+						//If this happens, it's user error.
+						break;
+				}
 
-                }
-            }
+				var message1 = new OscMessage(readout_parameter1, readout1);
+                if (readout_mode > 2)
+                {
+					var message2 = new OscMessage(readout_parameter2, readout2);
+				}
+
+			}
             catch (Exception e)
             {
                 ColorConsole.WithRedText.WriteLine("Failed to write vrchat readout parameter" + e.Message);

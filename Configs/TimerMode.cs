@@ -7,6 +7,10 @@ namespace OSCLock.Configs {
         [TomlInlineComment("Max minutes at a given moment. How much sand can the hourglass hold at a time?")]
         public int maxTime { get; set; }
 
+        [TomlProperty("rollover")]
+        [TomlInlineComment("(For MM:SS timers built on 60:60 caps only) readouts switches from mm:ss to hh:ss if capping out.")]
+        public bool rollover { get; set; }
+
         [TomlProperty("absolute_min")]
         [TomlInlineComment("(Minutes). Time will be added if it total time is below this. 0 disables.")]
         public int absMin { get; set; }
@@ -41,7 +45,7 @@ namespace OSCLock.Configs {
 
         [TomlPrecedingComment("-- Outgoing OSC Parameters ---")]
         public int readout_mode { get; set; }
-        public string readout_parameter { get; set; }
+        public string readout_parameter1 { get; set; }
         public string readout_parameter2 { get; set; }
         public string cooldown_parameter { get; set; }
 

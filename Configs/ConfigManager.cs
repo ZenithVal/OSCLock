@@ -5,8 +5,9 @@ using FluentColorConsole;
 using Tomlet;
 using Tomlet.Models;
 
-namespace OSCLock.Configs {
-    public static class ConfigManager {
+namespace OSCLock.Configs
+{
+	public static class ConfigManager {
         private static string CONFIG_FILE = "config.toml";
         public static MainConfig ApplicationConfig;
         private static TomlDocument lastDocument;
@@ -106,6 +107,7 @@ namespace OSCLock.Configs {
 
                 TimerConfig = new TimerMode {
                     maxTime = 60,
+                    rollover = true,
                     absMin = 0,
                     absMax = 120,
                     StartTime = new DefaultTime {
@@ -113,18 +115,18 @@ namespace OSCLock.Configs {
                         randomMin = 10,
                         randomMax = 20
                     },
-                    inc_parameter = "/avatar/parameters/timer_inc",
+                    inc_parameter = "/avatar/parameters/OSCLock/+",
                     inc_step = 60,
-                    dec_parameter = "/avatar/parameters/timer_dec",
+                    dec_parameter = "/avatar/parameters/OSCLock/-",
                     dec_step = 300,
 
-                    input_cooldown = 1500,
+                    input_cooldown = 1000,
 
                     readout_mode = 0,
-                    readout_parameter = "/avatar/parameters/timer_readout",
-                    readout_parameter2 = "",
+                    readout_parameter1 = "/avatar/parameters/OSCLock/Minutes",
+                    readout_parameter2 = "/avatar/parameters/OSCLock/Seconds",
 
-                    cooldown_parameter = "",
+                    cooldown_parameter = "/avatar/parameters/OSCLock/Cooldown",
 
                     readout_interval = 500
                 }
