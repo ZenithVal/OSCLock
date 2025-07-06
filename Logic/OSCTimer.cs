@@ -126,6 +126,7 @@ namespace OSCLock.Logic
 				Console.WriteLine($"readout_mode: {readout_mode}");
 				Console.WriteLine($"readout_parameter1: {readout_parameter1}");
 				Console.WriteLine($"readout_parameter2: {readout_parameter2}");
+
 				Console.WriteLine($"cooldown_parameter: {cooldown_parameter}");
 				Console.WriteLine($"capacity_max_parameter: {capacity_max_parameter}");
 				Console.WriteLine($"absolute_max_parameter: {absolute_max_parameter}");
@@ -139,6 +140,18 @@ namespace OSCLock.Logic
 				if (readout_parameter2 != "" && ConfigManager.ApplicationConfig.oscQuery)
 				{
 					VRChatConnector.ModifyEndPoint(true, readout_parameter2, "f", Attributes.AccessValues.ReadOnly, "OSCLock Readout Param 2");
+				}
+				if (cooldown_parameter != "" && ConfigManager.ApplicationConfig.oscQuery)
+				{
+					VRChatConnector.ModifyEndPoint(true, cooldown_parameter, "b", Attributes.AccessValues.ReadOnly, "OSCLock Cooldown Param");
+				}
+				if (capacity_max_parameter != "" && ConfigManager.ApplicationConfig.oscQuery)
+				{
+					VRChatConnector.ModifyEndPoint(true, capacity_max_parameter, "b", Attributes.AccessValues.ReadOnly, "OSCLock Capacity Max Param");
+				}
+				if (absolute_max_parameter != "" && ConfigManager.ApplicationConfig.oscQuery)
+				{
+					VRChatConnector.ModifyEndPoint(true, absolute_max_parameter, "b", Attributes.AccessValues.ReadOnly, "OSCLock Absolute Max Param");
 				}
 
 				_timer = new Timer();
@@ -234,20 +247,23 @@ namespace OSCLock.Logic
 			{
 				Console.WriteLine($"Inc Param recieved - Attempting to add {inc_step} seconds(s)");
 
+				if (absolute_max_state)
+				{
+					ColorConsole.WithYellowText.WriteLine($"Reached absolute maximum time limit of {absolute_max} minutes");
+					CheckAbsMax(true);
+					return;
+				}
+
 				if (cooldown_state)
 				{
 					ColorConsole.WithYellowText.WriteLine($"Input is on cooldown");
 					CheckCooldown(true);
 				}
-				else if (absolute_max_state)
-				{
-					ColorConsole.WithYellowText.WriteLine($"Reached absolute maximum time limit of {absolute_max} minutes");
-					CheckAbsMax(true);
-				}
 				else
 				{
 					AddTime(inc_step);
 					cooldownEndTime = DateTime.Now.AddMilliseconds(inc_cooldown);
+					CheckCooldown(true);
 				}
 			}
 		}
@@ -258,7 +274,7 @@ namespace OSCLock.Logic
 			{
 				var inputSeconds = (int)message.Arguments[0];
 				if (inputSeconds == 0) return;
-				Console.WriteLine($"Manual parameter recieved - Adding {inputSeconds} minute(s) to timer.");
+				Console.WriteLine($"Manual parameter recieved - Adding {inputSeconds} second(s) to timer");
 				AddTime(inputSeconds);
 			}
 			catch (Exception e)
@@ -282,8 +298,8 @@ namespace OSCLock.Logic
 				var timeOverflow = newTimeSpan - maxAccumulatedTime;
 				timeToAdd -= timeOverflow.TotalSeconds;
 				newEndTime = EndTime.AddSeconds(timeToAdd);
-				CheckCapacityMax(true);
 			}
+			CheckCapacityMax(true);
 
 			//Min-Max
 			if (absolute_max > 0 && timeToAdd > 0)
@@ -293,7 +309,6 @@ namespace OSCLock.Logic
 					newEndTime = AbsoluteEndTime;
 					ColorConsole.WithYellowText.WriteLine($"Reached overall maximum time limit of {absolute_max} minutes.");
 					absolute_max_state = true;
-					CheckAbsMax(true);
 				}
 				if (newEndTime < EarlietEndTime)
 				{
@@ -301,10 +316,7 @@ namespace OSCLock.Logic
 					ColorConsole.WithYellowText.WriteLine($"Timer can't go below {absolute_min} minutes.");
 				}
 			}
-			else if (absolute_max_state && timeToAdd < 0)
-			{
-
-			}
+			CheckAbsMax(true);
 
 			//Is timer over?
 			if (newEndTime < DateTime.Now)
@@ -431,6 +443,8 @@ namespace OSCLock.Logic
 
 			Console.Write("New timer started with ");
 
+			ResetParameters();
+
 			if (starting_time < 0)
 			{
 				var randomTime = new Random().Next(random_min, random_max);
@@ -486,6 +500,16 @@ namespace OSCLock.Logic
 			await Program.PrintHelp();
 		}
 
+		private static async void ResetParameters()
+		{
+			var cooldown = new OscMessage(cooldown_parameter, false);
+			var capacityMax = new OscMessage(capacity_max_parameter, false);
+			var absoluteMax = new OscMessage(absolute_max_parameter, false);
+			VRChatConnector.SendToVRChat(cooldown);
+			VRChatConnector.SendToVRChat(capacityMax);
+			VRChatConnector.SendToVRChat(absoluteMax);
+		}
+
 		private static async void CheckIfUnlockable(object sender, ElapsedEventArgs elapsedEventArgs)
 		{
 			if (HasTimeElapsed())
@@ -494,16 +518,11 @@ namespace OSCLock.Logic
 
 				_timer.Stop();
 
+				ResetParameters();
 				var readout1 = new OscMessage(readout_parameter1, (float)-1.0);
 				var readout2 = new OscMessage(readout_parameter2, (float)-1.0);
-				var cooldown = new OscMessage(cooldown_parameter, false);
-				var capacityMax = new OscMessage(capacity_max_parameter, false);
-				var absoluteMax = new OscMessage(absolute_max_parameter, false);
 				VRChatConnector.SendToVRChat(readout1);
 				VRChatConnector.SendToVRChat(readout2);
-				VRChatConnector.SendToVRChat(cooldown);
-				VRChatConnector.SendToVRChat(capacityMax);
-				VRChatConnector.SendToVRChat(absoluteMax);
 
 				Program.isAllowedToUnlock = true;
 			}
@@ -559,7 +578,7 @@ namespace OSCLock.Logic
 				return;
 			}
 
-			if (TimeRemaining.Minutes + inc_step*60 > maxAccumulatedMinutes)
+			if (TimeRemaining.Minutes + (inc_step/60) >= maxAccumulatedMinutes)
 			{
 				capacity_max_state = true;
 			}
@@ -595,7 +614,7 @@ namespace OSCLock.Logic
 			try
 			{
 				if (string.IsNullOrEmpty(address)) return;
-				var message = new OscMessage(capacity_max_parameter, false);
+				var message = new OscMessage(address, value);
 				VRChatConnector.SendToVRChat(message);
 			}
 			catch (Exception e)
