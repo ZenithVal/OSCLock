@@ -124,11 +124,11 @@ namespace OSCLock.Configs
 						randomMin = 10,
 						randomMax = 20
 					},
-					inc_parameter = "/avatar/parameters/OSCLock/+",
+					inc_parameter = "/avatar/parameters/OSCLock/AddTime",
 					inc_step = 60,
-					manual_parameter = "/avatar/parameters/OSCLock/Manual",
+					manual_parameter = "/avatar/parameters/OSCLock/ManualTime",
 
-					inc_cooldown = 0,
+					inc_cooldown = 15000,
 
 					readout_mode = 4,
 					readout_parameter1 = "/avatar/parameters/OSCLock/Minutes",

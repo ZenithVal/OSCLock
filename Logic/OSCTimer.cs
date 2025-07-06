@@ -494,12 +494,16 @@ namespace OSCLock.Logic
 
 				_timer.Stop();
 
-				var message = new OscMessage(readout_parameter1, (float)-1.0);
-				var message2 = new OscMessage(readout_parameter2, (float)-1.0);
-				VRChatConnector.SendToVRChat(message);
-				VRChatConnector.SendToVRChat(message2);
-				//Makes sure the VRC param is set to lowest possible value. 
-				//Negative number is fine, it'll be clamped if they're using bools or ints.
+				var readout1 = new OscMessage(readout_parameter1, (float)-1.0);
+				var readout2 = new OscMessage(readout_parameter2, (float)-1.0);
+				var cooldown = new OscMessage(cooldown_parameter, false);
+				var capacityMax = new OscMessage(capacity_max_parameter, false);
+				var absoluteMax = new OscMessage(absolute_max_parameter, false);
+				VRChatConnector.SendToVRChat(readout1);
+				VRChatConnector.SendToVRChat(readout2);
+				VRChatConnector.SendToVRChat(cooldown);
+				VRChatConnector.SendToVRChat(capacityMax);
+				VRChatConnector.SendToVRChat(absoluteMax);
 
 				Program.isAllowedToUnlock = true;
 			}
