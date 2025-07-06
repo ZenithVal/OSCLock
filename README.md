@@ -69,15 +69,16 @@ Tables containing information on all available settings you can change in the co
 |                    |                                                                  |         |
 | inc_parameter      | When this Bool is true via OSC, it should increase the timer.    | ""      |
 | inc_step           | Time in seconds to add (int)                                     | 60      |
-| dec_parameter      | When this Bool is true via OSC, it should decrease the timer.    | ""      |
-| dec_step           | Time in seconds to subtract (int)                                | 300     |
+| manual_parameter   | When this Bool is true via OSC, it should decrease the timer.    | ""      |
 | input_cooldown     | Minimum cooldown between allowed inputs.                         | 0       |
 |                    |                                                                  |         |
 | readout_mode       | Method of translating time remaining via OSC. Chart below        | 4       |
 | readout_parameter1 | Readout parameter 1                                              | ""      |
 | readout_parameter2 | Readout parameter 2 (optional)                                   | ""      |
 |                    |                                                                  |         |
-| cooldown_parameter | True while cooldown is active                                    | ""      |
+| cooldown_param     | True while cooldown is active                                    | ""      |
+| capacity_max_param | True while capacity of timer is maxed.                           |         |
+| absolute_max_param | True while timer has reached it's absolute max.                  |         |
 | readout_interval   | Time in miliseconds between parameter updates.                   | 500     |
 </details>
 

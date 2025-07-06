@@ -16,6 +16,7 @@ namespace OSCLock.Logic
 		private static DateTime EndTime;
 		private static DateTime AbsoluteEndTime;
 		private static DateTime EarlietEndTime;
+		private static TimeSpan TimeRemaining;
 		private static Timer _timer;
 
 		private static int maxAccumulatedMinutes;
@@ -25,54 +26,26 @@ namespace OSCLock.Logic
 
 		private static string inc_parameter;
 		private static int inc_step;
-		private static string dec_parameter;
-		private static int dec_step;
+		private static string manual_parameter;
+
+		private static float inc_cooldown;
+		private static bool cooldown_state = false;
+		private static string cooldown_parameter;
+
+		private static DateTime cooldownEndTime = DateTime.Now;
+
+		private static string capacity_max_parameter;
+		private static bool capacity_max_state = false;
+		private static string absolute_max_parameter;
+		private static bool absolute_max_state = false;
 
 		private static int readout_mode;
 		private static string readout_parameter1;
 		private static string readout_parameter2;
 
-		private static float input_cooldown;
-		private static bool input_cooldown_ignore;
-		private static bool cooldown_tracker;
-		private static string cooldown_parameter;
-		private static DateTime cooldownEndTime = DateTime.Now;
-
 		private static int starting_time;
 		private static int random_min;
 		private static int random_max;
-
-		public static async Task OnIncParam(OscMessage message)
-		{
-			var shouldAdd = (bool)message.Arguments[0];
-			if (shouldAdd)
-			{
-				Console.WriteLine($"Param recieved - Attempting to add {inc_step} seconds(s)");
-
-				if (input_cooldown > 0 && !input_cooldown_ignore && DateTime.Now < cooldownEndTime)
-				{
-					ColorConsole.WithYellowText.WriteLine($"Restricted by input cooldown until: " + cooldownEndTime);
-				}
-				else
-				{
-					AddTime(inc_step);
-					cooldownEndTime = DateTime.Now.AddMilliseconds(input_cooldown);
-				}
-				CooldownSync(true);
-			}
-		}
-
-		public static async Task OnDecParam(OscMessage message)
-		{
-			var shouldDec = (bool)message.Arguments[0];
-			if (shouldDec)
-			{
-				Console.WriteLine($"Param recieved - Attempting to remove {dec_step} seconds(s)");
-				AddTime(dec_step);
-				cooldownEndTime = DateTime.Now;
-				CooldownSync(true);
-			}
-		}
 
 		public static void Setup()
 		{
@@ -115,23 +88,21 @@ namespace OSCLock.Logic
 					Console.WriteLine("inc_parameter not defined.\n");
 				}
 
-				dec_parameter = timerConfig.dec_parameter;
-				dec_step = -timerConfig.dec_step;
+				manual_parameter = timerConfig.manual_parameter;
 
-				if (dec_parameter != "")
+				if (manual_parameter != "")
 				{
 					//Add oscQuery endpoint
 					if (ConfigManager.ApplicationConfig.oscQuery)
 					{
-						VRChatConnector.ModifyEndPoint(true, dec_parameter, "b", Attributes.AccessValues.WriteOnly, "OSCLock Dec Param");
+						VRChatConnector.ModifyEndPoint(true, manual_parameter, "b", Attributes.AccessValues.WriteOnly, "OSCLock Manual Param");
 					}
-					VRChatConnector.AddHandler(dec_parameter, OnDecParam);
-					Console.WriteLine($"dec_parameter: {dec_parameter}");
-					Console.WriteLine($"dec_step: {dec_step}\n");
+					VRChatConnector.AddHandler(manual_parameter, OnManualParam);
+					Console.WriteLine($"manual_parameter: {manual_parameter}");
 				}
 				else
 				{
-					Console.WriteLine("dec_parameter not defined.\n");
+					Console.WriteLine("manual_parameter not defined.\n");
 				}
 
 				//print the addressHandlers dictionary
@@ -140,10 +111,8 @@ namespace OSCLock.Logic
 					Console.WriteLine($"Address: {handler.Key} | Value: {handler.Value}");
 				}
 
-				input_cooldown = timerConfig.input_cooldown;
-				input_cooldown_ignore = timerConfig.input_cooldown_ignore;
-				Console.WriteLine($"input_cooldoown: {input_cooldown}");
-				Console.WriteLine($"input_cooldown_ignore: {input_cooldown_ignore}");
+				inc_cooldown = timerConfig.inc_cooldown;
+				Console.WriteLine($"inc_cooldoown: {inc_cooldown}");
 				Console.WriteLine();
 
 				readout_mode = timerConfig.readout_mode;
@@ -151,11 +120,16 @@ namespace OSCLock.Logic
 				readout_parameter2 = timerConfig.readout_parameter2;
 
 				cooldown_parameter = timerConfig.cooldown_parameter;
+				capacity_max_parameter = timerConfig.capacity_max_parameter;
+				absolute_max_parameter = timerConfig.absolute_max_parameter;
 
 				Console.WriteLine($"readout_mode: {readout_mode}");
 				Console.WriteLine($"readout_parameter1: {readout_parameter1}");
 				Console.WriteLine($"readout_parameter2: {readout_parameter2}");
 				Console.WriteLine($"cooldown_parameter: {cooldown_parameter}");
+				Console.WriteLine($"capacity_max_parameter: {capacity_max_parameter}");
+				Console.WriteLine($"absolute_max_parameter: {absolute_max_parameter}");
+
 				Console.WriteLine();
 
 				if (readout_parameter1 != "" && ConfigManager.ApplicationConfig.oscQuery)
@@ -253,6 +227,48 @@ namespace OSCLock.Logic
 			//Load previous time and check if timer is already running
 		}
 
+		public static async Task OnIncParam(OscMessage message)
+		{
+			var shouldAdd = (bool)message.Arguments[0];
+			if (shouldAdd)
+			{
+				Console.WriteLine($"Inc Param recieved - Attempting to add {inc_step} seconds(s)");
+
+				if (cooldown_state)
+				{
+					ColorConsole.WithYellowText.WriteLine($"Input is on cooldown");
+					CheckCooldown(true);
+				}
+				else if (absolute_max_state)
+				{
+					ColorConsole.WithYellowText.WriteLine($"Reached absolute maximum time limit of {absolute_max} minutes");
+					CheckAbsMax(true);
+				}
+				else
+				{
+					AddTime(inc_step);
+					cooldownEndTime = DateTime.Now.AddMilliseconds(inc_cooldown);
+				}
+			}
+		}
+
+		public static async Task OnManualParam(OscMessage message)
+		{
+			try
+			{
+				var inputSeconds = (int)message.Arguments[0];
+				if (inputSeconds == 0) return;
+				Console.WriteLine($"Manual parameter recieved - Adding {inputSeconds} minute(s) to timer.");
+				AddTime(inputSeconds);
+			}
+			catch (Exception e)
+			{
+				ColorConsole.WithRedText.WriteLine("Failed to parse manual parameter: " + e.Message);
+				return;
+			}
+		}
+
+
 		public static void AddTime(double timeToAdd)
 		{
 			var newEndTime = EndTime.AddSeconds(timeToAdd);
@@ -266,6 +282,7 @@ namespace OSCLock.Logic
 				var timeOverflow = newTimeSpan - maxAccumulatedTime;
 				timeToAdd -= timeOverflow.TotalSeconds;
 				newEndTime = EndTime.AddSeconds(timeToAdd);
+				CheckCapacityMax(true);
 			}
 
 			//Min-Max
@@ -275,12 +292,18 @@ namespace OSCLock.Logic
 				{
 					newEndTime = AbsoluteEndTime;
 					ColorConsole.WithYellowText.WriteLine($"Reached overall maximum time limit of {absolute_max} minutes.");
+					absolute_max_state = true;
+					CheckAbsMax(true);
 				}
-				else if (newEndTime < EarlietEndTime)
+				if (newEndTime < EarlietEndTime)
 				{
 					newEndTime = EarlietEndTime;
-					ColorConsole.WithYellowText.WriteLine($"Timer can not go below {absolute_min} minutes.");
+					ColorConsole.WithYellowText.WriteLine($"Timer can't go below {absolute_min} minutes.");
 				}
+			}
+			else if (absolute_max_state && timeToAdd < 0)
+			{
+
 			}
 
 			//Is timer over?
@@ -500,43 +523,90 @@ namespace OSCLock.Logic
 			await Program.PrintHelp();
 		}
 
-		private static async void CooldownSync(bool forceUpdate)
+		private static bool lastSentCooldownstate = false;
+		private static async void CheckCooldown(bool forceUpdate)
 		{
-			if (cooldown_parameter != "" && input_cooldown > 0) // output true if on cooldown
+			if (inc_cooldown <= 0 || !cooldown_state && !forceUpdate)
 			{
-				if (DateTime.Now < cooldownEndTime)
-				{
-					if (!cooldown_tracker)
-					{
-						var message = new OscMessage(cooldown_parameter, true);
-						VRChatConnector.SendToVRChat(message);
-						cooldown_tracker = true;
-					}
-				}
-				else
-				{
-					if (cooldown_tracker)
-					{
-						var message = new OscMessage(cooldown_parameter, false);
-						VRChatConnector.SendToVRChat(message);
-						cooldown_tracker = false;
-					}
-				}
+				return;
+			}
 
-				if (forceUpdate)
-				{
-					var message = new OscMessage(cooldown_parameter, cooldown_tracker);
-					VRChatConnector.SendToVRChat(message);
-				}
+			if (DateTime.Now < cooldownEndTime)
+			{ 
+				cooldown_state = true;
+			}
+			else
+			{
+				cooldown_state = false;
+			}
+
+			if (cooldown_state != lastSentCooldownstate || forceUpdate)
+			{
+				SendOSCBool(cooldown_parameter, cooldown_state);
+				lastSentCooldownstate = cooldown_state;
+			}
+		}
+
+		private static bool lastSentCapacityState = false;
+		private static async void CheckCapacityMax(bool forceUpdate)
+		{
+			if (!capacity_max_state && !forceUpdate)
+			{
+				return;
+			}
+
+			if (TimeRemaining.Minutes + inc_step*60 > maxAccumulatedMinutes)
+			{
+				capacity_max_state = true;
+			}
+			else
+			{
+				capacity_max_state = false;
+			}
+
+			if (capacity_max_state != lastSentCapacityState || forceUpdate)
+			{
+				SendOSCBool(capacity_max_parameter, capacity_max_state);
+				lastSentCapacityState = capacity_max_state;
+			}
+		}
+
+		private static bool lastSentAbsMaxState = false;
+		private static async void CheckAbsMax(bool forceUpdate)
+		{
+			if (!absolute_max_state && !forceUpdate)
+			{
+				return;
+			}
+
+			if (absolute_max_state != lastSentAbsMaxState || forceUpdate)
+			{
+				SendOSCBool(absolute_max_parameter, absolute_max_state);
+				lastSentCapacityState = capacity_max_state;
+			}
+		}
+
+		private static async void SendOSCBool(string address, bool value)
+		{
+			try
+			{
+				if (string.IsNullOrEmpty(address)) return;
+				var message = new OscMessage(capacity_max_parameter, false);
+				VRChatConnector.SendToVRChat(message);
+			}
+			catch (Exception e)
+			{
+				ColorConsole.WithRedText.WriteLine($"Failed to write OSC bool parameter for {address}: " + e.Message);
 			}
 		}
 
 		private static async void OnProgress(object sender, ElapsedEventArgs elapsedEventArgs)
 		{
-			TimeSpan remainingTime = EndTime - DateTime.Now;
-			var remainingTimeMinutes = remainingTime.TotalMinutes;
+			TimeRemaining = EndTime - DateTime.Now;
+			var remainingTimeMinutes = TimeRemaining.TotalMinutes;
 
-			CooldownSync(false);
+			CheckCooldown(false);
+			CheckCapacityMax(false);
 
 			try
 			{
@@ -554,8 +624,8 @@ namespace OSCLock.Logic
 						break;
 
 					case 3: //Double Float readout -1 to +1 Float 1 is mintues while Float #2 is seconds
-						readout1 = (float)(remainingTimeMinutes / maxAccumulatedMinutes);
-						readout2 = (float)(remainingTimeMinutes - Math.Floor(remainingTimeMinutes));
+						readout1 = TimeRemaining.Minutes / 60;
+						readout2 = TimeRemaining.Seconds / 60;
 
 						//Convert to -1 to +1
 						readout1 = (readout1 * 2) - 1;
@@ -565,18 +635,18 @@ namespace OSCLock.Logic
 					case 4: // Double int readout, automatically formatting mm:ss, hh:mm, or dd:hh
 						if (remainingTimeMinutes > 1440) //dd:hh 
 						{
-							readout1 = remainingTime.Days;
-							readout2 = remainingTime.Hours;
+							readout1 = TimeRemaining.Days;
+							readout2 = TimeRemaining.Hours;
 						}
 						else if (remainingTimeMinutes > 60) //hh:mm
 						{
-							readout1 = remainingTime.Hours;
-							readout2 = remainingTime.Minutes;
+							readout1 = TimeRemaining.Hours;
+							readout2 = TimeRemaining.Minutes;
 						}
 						else // mm:ss
 						{
-							readout1 = remainingTime.Minutes;
-							readout2 = remainingTime.Seconds;
+							readout1 = TimeRemaining.Minutes;
+							readout2 = TimeRemaining.Seconds;
 						}
 						break;
 

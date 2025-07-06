@@ -126,16 +126,17 @@ namespace OSCLock.Configs
 					},
 					inc_parameter = "/avatar/parameters/OSCLock/+",
 					inc_step = 60,
-					dec_parameter = "/avatar/parameters/OSCLock/-",
-					dec_step = 300,
+					manual_parameter = "/avatar/parameters/OSCLock/Manual",
 
-					input_cooldown = 0,
+					inc_cooldown = 0,
 
 					readout_mode = 4,
 					readout_parameter1 = "/avatar/parameters/OSCLock/Minutes",
 					readout_parameter2 = "/avatar/parameters/OSCLock/Seconds",
 
 					cooldown_parameter = "/avatar/parameters/OSCLock/Cooldown",
+					capacity_max_parameter = "/avatar/parameters/OSCLock/CapacityMax",
+					absolute_max_parameter = "/avatar/parameters/OSCLock/AbsoluteMax",
 
 					readout_interval = 500
 				}
