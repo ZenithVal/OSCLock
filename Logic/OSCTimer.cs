@@ -154,6 +154,8 @@ namespace OSCLock.Logic
 					VRChatConnector.ModifyEndPoint(true, absolute_max_parameter, "b", Attributes.AccessValues.ReadOnly, "OSCLock Absolute Max Param");
 				}
 
+				ResetParameters();
+
 				_timer = new Timer();
 
 				var callbackInterval = timerConfig.readout_interval;
@@ -186,8 +188,18 @@ namespace OSCLock.Logic
 
 						AbsoluteEndTime = StartTime.AddMinutes(absolute_max);
 						EarlietEndTime = StartTime.AddMinutes(absolute_min);
-						Program.isAllowedToUnlock = false;
-						_timer.Start();
+
+						if (EndTime < DateTime.Now)
+						{
+							ColorConsole.WithYellowText.WriteLine("Previous timer has ended, resetting values.\n");
+							Program.isAllowedToUnlock = true;
+						}
+						else
+						{
+							ColorConsole.WithGreenText.WriteLine("Previous timer restored.\n");
+							Program.isAllowedToUnlock = false;
+							_timer.Start();
+						}
 					}
 					catch (Exception e)
 					{
